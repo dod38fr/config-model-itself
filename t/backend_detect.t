@@ -1,7 +1,7 @@
 # -*- cperl -*-
 
 use ExtUtils::testlib;
-use Test::More tests => 6 ;
+use Test::More tests => 4 ;
 use Config::Model;
 use Log::Log4perl qw(:easy) ;
 use Data::Dumper ;
@@ -51,16 +51,10 @@ my $backend = $root->fetch_element('backend') ;
 my @choices = $backend->get_choice ;
 
 ok( (scalar grep { $_ eq 'Yaml'} @choices), "Yaml plugin backend was found") ;
-ok( (scalar grep { $_ eq 'Debian::Dpkg::Copyright'} @choices), "Debian::Dpkg::Copyright plugin backend was found") ;
-
 
 my $help = $backend->get_help('Yaml') ;
 like($help,qr/provided by Config::Model::Backend::Yaml/,
    "Found Yaml NAME section from pod") ;
-
-$help = $backend->get_help('Debian::Dpkg::Copyright') ;
-like($help,qr/provided by Config::Model::Backend::Debian::Dpkg::Copyright/,
-   "Found Debian::Dpkg::Copyright NAME section from pod") ;
 
 $help = $backend->get_help('cds_file') ;
 is($help,"file ...", "cds_file help was kept") ;
