@@ -11,6 +11,7 @@ use File::Path ;
 use File::Copy ;
 use Config::Model::Itself::TkEditUI;
 use File::Copy::Recursive qw(fcopy rcopy dircopy);
+use Test::Memory::Cycle;
 
 use warnings;
 no warnings qw(once);
@@ -55,7 +56,7 @@ else {
     }
 }
 
-plan tests => 14 ; # avoid double print of plan when exec is run
+plan tests => 15 ; # avoid double print of plan when exec is run
 
 my $log4perl_user_conf_file = $ENV{HOME}.'/.log4config-model' ;
 
@@ -193,3 +194,4 @@ SKIP: {
 }
 
 
+memory_cycle_ok($model);

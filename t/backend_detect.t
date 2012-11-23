@@ -1,10 +1,11 @@
 # -*- cperl -*-
 
 use ExtUtils::testlib;
-use Test::More tests => 4 ;
+use Test::More tests => 5 ;
 use Config::Model;
 use Log::Log4perl qw(:easy) ;
 use Data::Dumper ;
+use Test::Memory::Cycle;
 
 use warnings;
 no warnings qw(once);
@@ -58,3 +59,5 @@ like($help,qr/provided by Config::Model::Backend::Yaml/,
 
 $help = $backend->get_help('cds_file') ;
 is($help,"file ...", "cds_file help was kept") ;
+
+memory_cycle_ok($model);

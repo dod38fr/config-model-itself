@@ -1,6 +1,7 @@
 use ExtUtils::testlib;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Config::Model;
+use Test::Memory::Cycle;
 use Log::Log4perl qw(:easy) ;
 use Config::Model::Itself ;
 
@@ -61,3 +62,4 @@ open(TMP,">$dot_file") || die "Cannot open $dot_file:$!";
 print TMP $res;
 close TMP ;
 
+memory_cycle_ok($model);

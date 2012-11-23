@@ -10,6 +10,7 @@ use File::Copy ;
 use File::Find ;
 use Config::Model::Itself ;
 use File::Copy::Recursive qw(fcopy rcopy dircopy);
+use Test::Memory::Cycle;
 
 use warnings;
 no warnings qw(once);
@@ -51,7 +52,7 @@ else {
     }
 }
 
-plan tests => 18 ; # avoid double print of plan when exec is run
+plan tests => 19 ; # avoid double print of plan when exec is run
 
 my $meta_model = Config::Model -> new ( ) ;# model_dir => '.' );
 
@@ -256,3 +257,4 @@ is(scalar @elt4,scalar @elt1,"Check number of elements of root4") ;
 
 # require Tk::ObjScanner; Tk::ObjScanner::scan_object($meta_model) ;
 
+memory_cycle_ok($model);

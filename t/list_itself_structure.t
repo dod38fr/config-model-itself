@@ -7,6 +7,7 @@ use Config::Model::Itself ;
 
 use warnings;
 no warnings qw(once);
+use Test::Memory::Cycle;
 
 use strict;
 
@@ -53,3 +54,4 @@ ok($list,"got structure") ;
 
 print $list if $trace ;
 
+use Test::Memory::Cycle;
