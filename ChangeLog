@@ -1,8 +1,14 @@
-2012-06-19  Dominique Dumont  <domi.dumont@free.fr> 1.233
+{{$NEXT}}
+
+    * Fix quit bug in model test widget
+    * integrate model pod generation at build time
+    * Added memory cycle tests where possible
+
+2012-06-19  Dominique Dumont  <domi.dumont@free.fr> 1.234
 
     * Fix test that relied on Dpkg model (which used to be provided
       by Config::Model)
-    
+
 2012-06-19  Dominique Dumont  <domi.dumont@free.fr> 1.232
 
     * model Itself::Class: added accept_after
