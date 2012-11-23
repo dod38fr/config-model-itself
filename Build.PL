@@ -1,4 +1,4 @@
-#    Copyright (c) 2007-2010 Dominique Dumont.
+#    Copyright (c) 2009-2012 Dominique Dumont.
 #
 #    This file is part of Config-Model-Itself.
 #
@@ -23,15 +23,33 @@ use Data::Dumper ;
 use warnings FATAL => qw(all) ;
 use strict ;
 
-my @version_info = @ARGV ? (dist_version => $ARGV[0]) : () ;
+require 5.010;
 
-my $build = Module::Build->new
+# my %appli_files = map { ( $_, $_ ) } glob("lib/Config/Model/*.d/*");
+
+# check that pod docs are up-to-date this is redundant with work done by
+# dzil. But this enable to re-build the docs downstream.
+# Use $^X in there as requested in 
+# https://rt.cpan.org/Public/Bug/Display.html?id=74891
+my $class = Module::Build->subclass(
+    class => "Module::Build::Custom",
+    code => <<'SUBCLASS' );
+
+sub ACTION_build {
+    my $self = shift;
+    # below requires Config::Model 2.026
+    system ($^X, qw!-Ilib script/cme gen-class-pod!) ;
+    $self->SUPER::ACTION_build;
+}
+SUBCLASS
+
+my $build = $class->new
   (
    module_name   => 'Config::Model::Itself',
    license       => 'lgpl',
    dist_author   => "Dominique Dumont (ddumont at cpan dot org)",
-   dist_abstract => "Graphical model editor for Config::Model",
-   @version_info,
+   dist_abstract => "Graphical editor of configuration models",
+   # model_files => \%model_files ,
 
 ##{ $plugin->get_prereqs ##}
 
@@ -41,4 +59,6 @@ my $build = Module::Build->new
 
 
 $build->add_build_element('pl');
+# $build->add_build_element('appli');
+
 $build->create_build_script;
