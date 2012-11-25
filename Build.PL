@@ -37,8 +37,8 @@ my $class = Module::Build->subclass(
 
 sub ACTION_build {
     my $self = shift;
-    # below requires Config::Model 2.026
-    system ($^X, qw!-S cme gen-class-pod!) ;
+    # below requires Config::Model 2.027
+    system ($^X, qw!-S cme gen-class-pod Itself::Class!) ;
     $self->SUPER::ACTION_build;
 }
 SUBCLASS
