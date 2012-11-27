@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2012-11-27 - 1.235
+
     * Fix quit bug in model test widget
     * integrate model pod generation at build time
     * Added memory cycle tests where possible
