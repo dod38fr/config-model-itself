@@ -3,6 +3,9 @@
     * Fix quit bug in model test widget
     * integrate model pod generation at build time
     * Added memory cycle tests where possible
+    * Bump dependency on Config::Model 2.028 to generate 
+      properly the documentation for Itself model (which
+      may be should be called C::M::MyOwnDogFood... )
 
 2012-06-19  Dominique Dumont  <domi.dumont@free.fr> 1.234
 
