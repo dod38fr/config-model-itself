@@ -282,20 +282,26 @@ my %assert_payload = (
                 level      => 'hidden',
                 experience => 'advanced',
                 description =>
-'Perl regular expression to assert the validity of the value.',
+                    'Perl regular expression to assert the validity of the value. To check the '
+                    . q!whole value, use C<^> and C<$>. For instance C<^foo|bar$> will allow !
+                    . q!C<foo> or C<bar> but not C<foobar>. To be case insentive, !
+                    . q!use the C<(?i)> extended pattern. For instance, the regexp !
+                    . q!C<^(?i)foo|bar$> will also allow the values !
+                    . q!C<Foo> and C<Bar>.!,
                 @warp_in_uniline_or_string,
             },
 
             'assert' => {
                 %assert_payload,
                 description =>
-                  'Raise an error if the test code snippet does returns false',
+                  'Raise an error if the test code snippet does returns false. Note this snippet will '
+                  . 'also be run on undefined value, which may not be what you want.',
             },
 
             'warn_unless' => {
                 %assert_payload,
                 description =>
-                  'Warn user if the tes code snippet does returns false',
+                  'Warn user if the code snippet returns false',
             },
 
             'warn_if_match' => {
