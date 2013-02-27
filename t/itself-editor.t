@@ -23,8 +23,6 @@ $File::Copy::Recursive::DirPerms = 0755;
 my ($log,$show) = (0) x 2 ;
 my $arg = $ARGV[0] || '' ;
 my $trace = $arg =~ /t/ ? 1 : 0 ;
-$::verbose          = 1 if $arg =~ /v/;
-$::debug            = 1 if $arg =~ /d/;
 $log                = 1 if $arg =~ /l/;
 $show               = 1 if $arg =~ /[si]/;
 
