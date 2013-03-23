@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+2013-03-23 - 1.236
+
+    * Itself: use named parameters with load_data to avoid warnings
+    * Depends on Config::Model >= 2.030
+    * delegate Tk init to AnyEvent to avoid blocking at program exit
+    + Depends on AnyEvent
+
 2012-11-27 - 1.235
 
     * Fix quit bug in model test widget
