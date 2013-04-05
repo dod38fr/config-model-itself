@@ -1,6 +1,6 @@
 package Config::Model::Itself ;
 
-use Any::Moose ;
+use Mouse ;
 use namespace::autoclean;
 
 use IO::File ;
