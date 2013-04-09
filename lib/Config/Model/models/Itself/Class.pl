@@ -137,7 +137,7 @@
                 type         => 'leaf',
                 class        => 'Config::Model::Itself::BackendDetector',
                 value_type   => 'enum',
-                choice       => [qw/cds_file perl_file ini_file augeas custom/],
+                choice       => [qw/cds_file perl_file ini_file custom/],
                 migrate_from => {
                     formula   => '$old',
                     variables => { old => '- syntax' },
@@ -156,9 +156,7 @@
 "file with a perl data structure. Configuration filename is made with instance name",
                     custom =>
 "Custom format. You must specify your own class and method to perform the read or write function. See Config::Model::AutoRead doc for more details",
-                    augeas =>
-"Experimental backend with RedHat's Augeas library. See http://augeas.net for details",
-                }
+               }
             },
 
             'file' => {
@@ -186,19 +184,6 @@
                             mandatory => 1,
                         }
                     ],
-                }
-            },
-
-            'save' => {
-                type       => 'leaf',
-                value_type => 'enum',
-                choice     => [qw/backup newfile/],
-                level      => 'hidden',
-                description =>
-'Specify how to save the configuration file. Either create a newfile (with extension .augnew, and do not overwrite the original file) or move the original file into a backup file (.augsave extension). Configuration files are overwritten by default',
-                warp => {
-                    follow => '- backend',
-                    rules  => [ augeas => { level => 'normal', } ],
                 }
             },
 
@@ -329,32 +314,6 @@
                     follow => '- backend',
                     rules  => [ ini_file => { level => 'normal', } ],
                 }
-            },
-            'set_in' => {
-                type       => 'leaf',
-                value_type => 'reference',
-                refer_to   => '- - element',
-                level      => 'hidden',
-                description =>
-'Sometimes, the structure of a file loaded by Augeas starts directly with a list of items. For instance, /etc/hosts structure starts with a list of lines that specify hosts and IP addresses. This parameter specifies an element name in Config::Model root class that will hold the configuration data retrieved by Augeas',
-                warp => {
-                    follow => '- backend',
-                    rules  => [ augeas => { level => 'normal', } ],
-                }
-            },
-            'sequential_lens' => {
-                type  => 'list',
-                level => 'hidden',
-                cargo => {
-                    type       => 'leaf',
-                    value_type => 'uniline',
-                },
-                warp => {
-                    follow => { b                => '- backend' },
-                    rules  => [ '$b eq "augeas"' => { level => 'normal', } ],
-                },
-                description =>
-'List of hash or list Augeas lenses where value are stored in sequential Augeas nodes. See Config::Model::Backend::Augeas for details.',
             },
         ],
 

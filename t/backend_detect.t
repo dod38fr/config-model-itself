@@ -30,14 +30,13 @@ $model ->create_config_class
        'backend' => { type => 'leaf',
 		      class => 'Config::Model::Itself::BackendDetector' ,
 		      value_type => 'enum',
-		      choice => [qw/cds_file perl_file ini_file augeas custom/],
+		      choice => [qw/cds_file perl_file ini_file custom/],
 
 		       help => {
 			       cds_file => "file ...",
 			       ini_file => "Ini file ...",
 			       perl_file => "file  perl",
 			       custom => "Custom format",
-			       augeas => "Experimental backend",
 			      }
 		    }
       ],

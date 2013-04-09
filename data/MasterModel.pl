@@ -251,7 +251,7 @@
             'new_from_deprecated' => {
                 type         => 'leaf',
                 value_type   => 'enum',
-                choice       => [qw/cds_file perl_file ini_file augeas custom/],
+                choice       => [qw/cds_file perl_file ini_file custom/],
                 migrate_from => {
                     formula   => '$replace{$old}',
                     variables => { old => '- deprecated_p' },
@@ -376,11 +376,6 @@
                   } qw/warn allow forbid suppress/
             ),
 
-            ## too difficult to correctly test Augeas here
-            'sshd_augeas' => {
-                type              => 'node',
-                config_class_name => 'MasterModel::SshdWithAugeas',
-            },
         ],
         description => [ tree_macro => 'controls behavior of other elements' ],
         author    => "dod\@foo.com",

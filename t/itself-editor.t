@@ -43,21 +43,6 @@ sub wr_cds {
     close CDS ;
 }
 
-# trap warning if Augeas backend is not installed
-if (not  eval {require Config::Model::Backend::Augeas; } ) {
-    # do not use Test::Warnings with this
-    $SIG{__WARN__} = sub { warn $_[0] unless $_[0] =~ /unknown backend/};
-}
-else {
-    # workaround Augeas locale bug
-    no warnings qw/uninitialized/;
-    if ($ENV{LC_ALL} ne 'C' or $ENV{LANG} ne 'C') {
-	$ENV{LC_ALL} = $ENV{LANG} = 'C';
-	my $inc = join(' ',map("-I$_",@INC)) ;
-	exec("$^X $inc $0 @ARGV");
-    }
-}
-
 plan tests => 15 ; # avoid double print of plan when exec is run
 
 my $log4perl_user_conf_file = $ENV{HOME}.'/.log4config-model' ;
@@ -86,7 +71,6 @@ ok(1,"compiled");
 rmtree($wr_test) if -d $wr_test ;
 
 mkpath([$wr_conf1, $wr_model1, "$wr_conf1/etc/ssh/"], 0, 0755) ;
-copy('augeas_box/etc/ssh/sshd_config', "$wr_conf1/etc/ssh/") ;
 dircopy('data',$wr_model1) || die "cannot copy model data:$!" ;
 
 my $model = Config::Model->new(legacy => 'ignore',model_dir => $wr_model1 ) ;
