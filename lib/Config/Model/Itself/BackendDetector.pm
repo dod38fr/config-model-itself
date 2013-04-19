@@ -1,4 +1,4 @@
-#    Copyright (c) 2010 Dominique Dumont.
+#    Copyright (c) 2010-2013 Dominique Dumont.
 #
 #    This file is part of Config-Model-Itself.
 #
@@ -28,7 +28,11 @@ use warnings ;
 
 sub setup_enum_choice {
     my $self = shift ;
-    my @choices = ref $_[0] ? @{$_[0]} : @_ ;
+
+    # using a hash to make sure that a backend is not listed twice. This may
+    # happen in development environment where a backend in found in /usr/lib
+    # and in ./lib (or ./blib)
+    my %choices = map { ($_ => 1);} ref $_[0] ? @{$_[0]} : @_ ;
 
     # find available backends in all @INC directories
     my $wanted = sub { 
@@ -36,7 +40,7 @@ sub setup_enum_choice {
         if (-f $_ and $n =~ s/\.pm$// and $n !~ /Any$/) {
 	    $n =~ s!.*Backend/!! ;
 	    $n =~ s!/!::!g ;
-	    push @choices , $n ;
+	    $choices{$n} = 1 ;
         }
     } ;
 
@@ -45,7 +49,7 @@ sub setup_enum_choice {
         find ($wanted, $path ) if -d $path;
     }
     
-    $self->SUPER::setup_enum_choice(@choices) ;
+    $self->SUPER::setup_enum_choice(sort keys %choices) ;
 }
 
 sub set_help {
