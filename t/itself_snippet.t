@@ -41,8 +41,6 @@ my $wr_snippet = "$wr_test/wr_snippet";
 
 my $meta_model = Config::Model -> new ( ) ;# model_dir => '.' );
 
-Config::Model::Exception::Any->Trace(1) if $arg =~ /e/;
-
 ok(1,"compiled");
 
 rmtree($wr_test) if -d $wr_test ;
