@@ -100,6 +100,8 @@ sub read_all {
         # - translate legacy warp parameters
         # - expand elements name
         my $tmp_model = Config::Model -> new( skip_include => 1, legacy => $legacy ) ;
+        # @models order is important to write configuration class back in the same
+        # order as the declaration
         my @models = $tmp_model -> load ( 'Tmp' , $file ) ;
 
         my $rel_file = $file ;
