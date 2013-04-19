@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+2013-04-19 - 1.237
+
+    * Replaced Any::Moose with Mouse
+    * backend detector: do not list twice the same backend
+    * Removed augeas from model and tests. Augeas meta-model
+      is now delivered with Config::Model::Backend::Augeas
+
 2013-03-23 - 1.236
 
     * Itself: use named parameters with load_data to avoid warnings
