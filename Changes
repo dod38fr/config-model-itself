@@ -1,20 +1,20 @@
 {{$NEXT}}
 
-2013-04-19 - 1.237
+1.237 2013-04-19
 
     * Replaced Any::Moose with Mouse
     * backend detector: do not list twice the same backend
     * Removed augeas from model and tests. Augeas meta-model
       is now delivered with Config::Model::Backend::Augeas
 
-2013-03-23 - 1.236
+1.236 2013-03-23
 
     * Itself: use named parameters with load_data to avoid warnings
     * Depends on Config::Model >= 2.030
     * delegate Tk init to AnyEvent to avoid blocking at program exit
     + Depends on AnyEvent
 
-2012-11-27 - 1.235
+1.235 2012-11-27
 
     * Fix quit bug in model test widget
     * integrate model pod generation at build time
@@ -23,29 +23,29 @@
       properly the documentation for Itself model (which
       may be should be called C::M::MyOwnDogFood... )
 
-2012-06-19  Dominique Dumont  <domi.dumont@free.fr> 1.234
+1.234 2012-06-19
 
     * Fix test that relied on Dpkg model (which used to be provided
       by Config::Model)
 
-2012-06-19  Dominique Dumont  <domi.dumont@free.fr> 1.232
+1.232 2012-06-19
 
     * model Itself::Class: added accept_after
       (requires Config::Model 2.020)
     * config-model-edit: make sure that loading models are not 
       recorded as changed data
 
-2012-05-22  Dominique Dumont  <domi.dumont@free.fr> 1.231
+1.231 2012-05-22
 
     * added migrate_values_from (requires Config::Model 2.015)
     * migrate_keys_from cannot be warped (too complicated to mix
       warp and migration)
 
-2012-05-04  Dominique Dumont  <domi.dumont@free.fr> 1.230
+1.230 2012-05-04
 
     * Itself reader/writer: added force_write attribute
 
-2012-04-14  Dominique Dumont  <domi.dumont@free.fr> 1.229
+1.229 2012-04-14
 
     + new runtime dependency: Data::Compare, Path::Class
     + new test dependency: File::Copy::Recursive
@@ -66,7 +66,7 @@
     * Itself model: added use_as_upstream_default parameter
     * Itself backend: do not write empty model file
 
-2011-11-29  Dominique Dumont  <domi.dumont@free.fr> 1.228
+1.228 2011-11-29
 
     * Requires Config::Model >= 1.263
     * Meta model changes:
@@ -81,20 +81,20 @@
         * Itself/NonWarpableElement:
           + added write_as parameter (for booleans)
 
-2011-09-15  Dominique Dumont  <domi.dumont@free.fr> 1.227
+1.227 2011-09-15
 
 	* MigratedValue.pl: replaced value can be a string, not only a
 	uniline
 	* CommonElement.pl: added assert and warn_unless parameters 
 	  (requires Config::Model 1.258)
 
-2011-09-02  Dominique Dumont  <domi.dumont@free.fr> 1.226
+1.226 2011-09-02
 
         * WarpableElement.pl: added duplicates parameter
         * Depends on Config::Model 1.252
 
 
-2011-06-07  Dominique Dumont  <domi.dumont@free.fr> 1.225
+1.225 2011-06-07
 
         * Itself.pm:  munge pod text embedded in description 
           to avoid spurious pod formatting in model files
@@ -103,11 +103,11 @@
         * CommonElement.pl: warn parameter is a string and not a uniline
 	- Class.pl: name_match parameter is deprecated.
 
-2011-04-04 Dominique Dumont  <domi.dumont@free.fr> 1.224
+1.224 2011-04-04
 
         * Class.pl: added full_dump parameter for YAML and Perl backend
 
-2011-04-01 Dominique Dumont  <domi.dumont@free.fr> 1.223
+1.223 2011-04-01
 
         * dump and load annotations in pod doc in config class file
         * Class.pl: added copyright, author, license elements
@@ -117,16 +117,16 @@
         * Build depend on Test::Differences
         * Requires Config::Model 1.236
 
-2011-01-20 Dominique Dumont  <domi.dumont@free.fr> 1.222
+1.222 2011-01-20
 
         * added migrate_keys_from, undef_is parameters 
         * Above require Config::Model 1.230
 
-2011-01-09 Dominique Dumont  <domi.dumont@free.fr> 1.221
+1.221 2011-01-09
 
 	* Remove unwanted test package file (oops)
 
-2011-01-09 Dominique Dumont  <domi.dumont@free.fr> 1.220
+1.220 2011-01-09
 
 	* config-model-edit: use same log4perl config files as config-edit
 	* CommonElement: added warn* parameters 
@@ -134,17 +134,17 @@
         * Fix class deletion issue
         * Adapted model and test to new style of accept specification
 
-2010-10-15 Dominique Dumont  <domi.dumont@free.fr> 1.219
+1.219 2010-10-15
 
 	* removed obsolete push/pop_no_value_check calls 
 	* requires Config::Model 1.212
 
-2010-09-16 Dominique Dumont  <domi.dumont@free.fr> 1.218
+1.218 2010-09-16
 
 	* Fixed missing dependencies in Build.PL (Building from hg
 	requires Dist::Zilla and Dist-Zilla-Plugins-CJM >= 3.01)
 
-2010-09-14  Dominique Dumont  <domi.dumont@free.fr> 1.217
+1.217 2010-09-14
 
 	* Added allow_keys_matching parameter in ItselfWarpableElement.pl
 	(requires Config::Model 1.207)
@@ -153,24 +153,24 @@
 	* BackendDetector.pm: Fixed to handle backend names with embedded
 	:: (e.g. Debian::Dep5)
 
-2010-08-13  Dominique Dumont  <domi.dumont@free.fr> 1.216
+1.216 2010-08-13
 
 	* Added accept parameter in Itself/Class.pl
 	(requires Config::Model 1.206)
 	* Build.PL: added dependency on Tk to avoid CPAN smoke test
 	failure
 
-2010-04-06  Dominique Dumont  <dominique.dumont@hp.com> 1.215
+1.215 2010-04-06
 
 	* t/itself.t: Fix skip part to avoid failures when X is not
 	available.
 
-2010-03-31  Dominique Dumont  <domi.dumont@free.fr> 1.214
+1.214 2010-03-31
 
 	* config-model-edit (): ensure that model modified by loading data
 	or YAML is saved later on by the GUI.
 
-2010-03-25  Dominique Dumont  <dominique.dumont@hp.com> 1.213
+1.213 2010-03-25
 
 	* lib/Config/Model/Itself/BackendDetector.pm (): New class derived
 	from Config::Model::Value so config-model-edit can detect
@@ -180,68 +180,58 @@
 	* Build.PL: Added dedendency on Pod::POM, depends on Config::Model
 	1.001
 
-2010-03-17  Dominique Dumont  <domi.dumont@free.fr>
 
 	* lib/Config/Model/models/Itself/CommonElement.pl: add match
 	parameter from Config::Model 1.001
 
-2010-03-16  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* config-model-edit (): can use -force_load when loading data or
 	yaml data.
 	* Build.PL: depends on YAML::Any
 
-2010-02-26  Dominique Dumont  <dominique.dumont@hp.com>  1.212
+1.212 2010-02-26
 
 	* Build.PL: depends on Config::Model 0.643
 
-2010-02-25  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* config-model-edit: added load_yaml option to load model from a
 	YAML file.
 
-2010-02-23  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* config-model-edit: added dump_yaml option to dump models as YAML
 	file.
 
-2010-02-02  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* config-model-edit: added -dump -dump_type -load options. Non
 	options args are now interpreted as model modifications
 
-2010-01-31  Dominique Dumont  <domi.dumont@free.fr>
 
 	* lib/Config/Model/models/Itself/CommonElement.pl: warp out min and max
 
-2009-06-24  Dominique Dumont  <domi.dumont@free.fr> v1.211
+1.211 2009-06-24
 
 	* Build.PL: depend on Config::Model 0.637 and C::M::TkUI 1.210
 
-2009-06-23  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* lib/Config/Model/models/Itself/*.pl: Changed built_in parameter
 	to upstream_default and built_in_list to upstream_default_list
 
-2009-05-30  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* config-model-edit: added -save option.
 
 	* lib/Config/Model/models/Itself/Class.pl: Changed config_file
 	parameter to file (Req by Config::Model 0.636)
 
-2009-04-20  Dominique Dumont  <dominique.dumont@hp.com> v1.210
+1.210 2009-04-20
 
 	* config-model-edit: Fixed Log::Log4perl default configuration
 
-2009-04-12  Dominique Dumont  <domi.dumont@free.fr>
 
 	* lib/Config/Model/models/Itself/Class.pl: Added auto_create and
 	file parameter to read/write spec (Req by Config::Model
 	0.635). Parameter allow_empty is deprecated and will be replaced
 	by auto_create when you run config-edit-model
 
-2009-04-03  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* config-model-edit: new -dot_diagram option to get a dot file to
 	reprensent the structure of the configuration model
@@ -253,33 +243,30 @@
 	* lib/Config/Model/models/Itself/Element.pl: index_type is now
 	mandatory for hash types
 
-2009-03-30  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* lib/Config/Model/models/Itself/Element.pl: Added summary model
 	parameter (Config::Model 0.635)
 
-2009-03-12  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* lib/Config/Model/models/Itself/CommonElement.pl: 'choice' is
 	also available for 'reference' values
 
-2009-03-10  Dominique Dumont  <dominique.dumont@hp.com>  v1.209
+1.209 2009-03-10
 
 	* t/*.t: Backported mkpath calls to File::Path delivered by perl
 	5.8.8
 
-2009-02-24  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* lib/Config/Model/models/Itself/WarpableElement.pl: changed
 	auto_create in auto_create_keys and auto_create_ids (required by
 	Config::Model 0.634)
 
-2009-01-09  Dominique Dumont  <dominique.dumont@hp.com> v1.208
+1.208 2009-01-09
 
 	* lib/Config/Model/models/Itself/Class.pl: Added allow_empty
 	parameter. Minor corrections related to Augeas integration.
 
-2008-10-14  Dominique Dumont  <dominique.dumont@hp.com> v1.207
+1.207 2008-10-14
 
 	* lib/Config/Model/models/Itself/CommonElement.pl: Added ordered
 	parameter to checklist. Ordered checklist feature is required by
@@ -289,22 +276,21 @@
 	bump to v 1.207) so that the pm file versions matches the .tgz
 	distribution version.
 
-2008-09-23  Dominique Dumont  <dominique.dumont@hp.com> v0.206
+0.206 2008-09-23
 
 	* lib/Config/Model/models/Itself/Class.pl: Added seq_with_lens
 	parameter for Augeas backend.
 
-2008-08-01  Dominique Dumont  <dominique.dumont@hp.com>
 
 	* lib/Config/Model/models/Itself/Class.pl: Bug fix on Augeas
 	parameters
 
-2008-07-25  Dominique Dumont v0.205
+0.205 2008-07-25
 
 	* lib/Config/Model/models/Itself/Class.pl: Fixed specification of
 	Augeas parameters
 
-2008-07-25  Dominique Dumont v0.204
+0.204 2008-07-25
 
 	* lib/Config/Model/models/Itself/*.pl: 
 	All the changes described below will be handled by the 
@@ -323,44 +309,39 @@
 	  of Perl is needed (See Config::Model::ComputedValue documentation)
 
 
-2008-05-21  Dominique Dumont  v0.203
+0.203 2008-05-21
 
 	* config-model-edit: Fixed bug that prevented testing of the
 	configuration editor when starting from scratch.
 
-2008-05-18  Dominique Dumont  v0.202
+0.202 2008-05-18
 
 	* lib/Config/Model/models/Itself/CommonElement.pl: Added support for 
 	built in default list for check_list elements
 
-2008-04-21  Dominique Dumont 
 
 	* config-model-edit: Will now always launch Tk interface which has
 	a menu to test the configuration editor from the model under edition.
 	(some tests still to be written)
 
-2008-04-16  Dominique Dumont 
 
 	* lib/Config/Model/Itself.pm (list_class_element): new method to
 	help model debug
 
-2008-04-14  Dominique Dumont 
 
 	* lib/Config/Model/Itself.pm (read_all): Reworked model to fit with
 	new cargo arguments.
 	* tests: suppress legacy warnings
 	
-2008-04-03  Dominique Dumont v0.201
+0.201 2008-04-03
 
 	* lib/Config/Model/models/Itself/Element.pl: Fixed element and
 	cargo models. 
 
-2008-03-24  Domi  <domi@bilbo.maison>
 
 	* lib/Config/Model/models/Itself/WarpableElement.pl: added
 	description for 'replace' element
 
-2008-03-20  Dominique Dumont
 
 	* lib/Config/Model/models/Itself/WarpableElement.pl: removed
 	enum_integer type
@@ -368,31 +349,28 @@
 	* config-model-edit: Clarified where models are read and
 	written. 
 
-2008-03-18  Dominique Dumont  v0.102
+0.102 2008-03-18
 
 	* config-model-edit: Now use Config::Model::TkUI instead of
 	Config::Model::TkUi
 
-2008-03-16  Domi  <domi@bilbo.maison>
 
 	* lib/Config/Model/Itself.pm (read_all): Skip svn directory when
 	reading model files
 
-2008-03-10  Dominique Dumont  
 
 	* lib/Config/Model/Itself.pm (write_all): can now write
 	configuration class created with the editor. Each class created
 	will be saved in its own file. I.e. configuration class Foo::Bar
 	will be saved in Foo/Bar.pl
 
-2008-02-07  Dominique Dumont  
 
 	* config-model-edit: added possibity to use Tk interface.
 
 	* lib/Config/Model/models/Itself/WarpableElement.pl: added
 	'replace' parameter
 
-2007-10-16  Dominique Dumont v0.101
+0.101 2007-10-16
 
 	* All: first version
 	
