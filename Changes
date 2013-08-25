@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+2013-08-25 - 1.238
+
+   * Added default_layer backend parameter with DefaultLayer
+     class. This enable user to create a model with a global system
+     configuration file à la /etc/ssh/ssh_config. This requires
+     Config::Model 2.039
+
 1.237 2013-04-19
 
     * Replaced Any::Moose with Mouse
