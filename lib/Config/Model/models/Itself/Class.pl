@@ -67,12 +67,6 @@
                 refer_to   => '- element',
             },
 
-            [qw/write_config_dir read_config_dir/] => {
-                type       => 'leaf',
-                value_type => 'uniline',
-                status     => 'deprecated',
-            },
-
             generated_by => {
                 type       => 'leaf',
                 value_type => 'uniline',
@@ -121,7 +115,44 @@
     ],
 
     [
+        name => 'Itself::ConfigWR::DefaultLayer',
+
+        'element'     => [
+            'config_dir' => {
+                type         => 'leaf',
+                value_type   => 'uniline',
+                level        => 'normal',
+            },
+
+            os_config_dir => {
+                type => 'hash',
+                index_type => 'string',
+                cargo      => {
+                    type       => 'leaf',
+                    value_type => 'uniline',
+                },
+                summary => 'configuration file directory for specific OS',
+                description => 'Specify and alternate location of a configuration directory depending '
+                    .q!on the OS (as returned by C<$^O> or C<$Config{'osname'}>, see L<perlport/PLATFORMS>) !
+                    .q!Common values for C<$^O> are 'linux', 'MSWin32', 'darwin'!
+            },
+            'file' => {
+                type       => 'leaf',
+                value_type => 'uniline',
+                level      => 'normal',
+                summary    => 'target configuration file name',
+                description => 'specify the configuration file name. This parameter may '
+                    .'not be applicable depending on your application. It may also be '
+                    .'hardcoded in a custom backend. If not specified, the instance name '
+                    .'will be used as base name for your configuration file.',
+            },
+        ]
+    ],
+
+    [
         name => "Itself::ConfigWR",
+        include => "Itself::ConfigWR::DefaultLayer",
+        include_after => 'backend',
 
         'element' => [
 
@@ -159,17 +190,15 @@
                }
             },
 
-            'file' => {
-                type       => 'leaf',
-                value_type => 'uniline',
-                level      => 'normal',
-                summary    => 'target configuration file name',
-                description =>
-'specify the configuration file name. This parameter may not be applicable depending on your application. It may also be hardcoded in a custom backend. If not specified, the instance name will be used as base name for your configuration file.',
-                migrate_from => {
-                    variables => { old => '- config_file' },
-                    formula   => '$old',
-                }
+
+            default_layer => {
+                type => 'node',
+                config_class_name => 'Itself::ConfigWR::DefaultLayer',
+                summary => q!How to find default values in a global config file!,
+                description => q!Specifies where to find a global configuration file that !
+                    .q!specifies default values. For instance, this is used by OpenSSH to !
+                    .q!specify a global configuration file (C</etc/ssh/ssh_config>) that is !
+                    .q!overridden by user's file!,
             },
 
             'class' => {
@@ -282,16 +311,6 @@
                 }
             },
 
-
-            'config_file' => {
-                type       => 'leaf',
-                value_type => 'uniline',
-                status     => 'deprecated',
-                level      => 'normal',
-                description =>
-'Specify the configuration file (without path) that will store configuration information',
-            },
-
              'full_dump' => {
                 type             => 'leaf',
                 value_type       => 'boolean',
@@ -339,16 +358,6 @@
                 }
             },
 
-            'config_dir' => {
-                type         => 'leaf',
-                value_type   => 'uniline',
-                level        => 'normal',
-                migrate_from => {
-                    formula   => '$old',
-                    variables => { old => '- - read_config_dir' },
-                }
-            },
-
             'auto_create' => {
                 type             => 'leaf',
                 value_type       => 'boolean',
@@ -390,16 +399,6 @@
                             upstream_default => 'write',
                         }
                     ],
-                }
-            },
-            'config_dir' => {
-                type         => 'leaf',
-                value_type   => 'uniline',
-                level        => 'normal',
-                mandatory    => 1,
-                migrate_from => {
-                    formula   => '$old',
-                    variables => { old => '- - write_config_dir' },
                 }
             },
 
