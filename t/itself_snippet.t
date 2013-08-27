@@ -96,7 +96,6 @@ my %expected_snippet;
 $expected_snippet{MasterModel} = << "EOS" ;
 [
   {
-    'name' => 'MasterModel',
     'element' => [
       'a_string',
       {
@@ -106,7 +105,8 @@ $expected_snippet{MasterModel} = << "EOS" ;
           }
         }
       }
-    ]
+    ],
+    'name' => 'MasterModel'
   }
 ]
 ;
@@ -116,7 +116,6 @@ EOS
 $expected_snippet{"MasterModel/X_base_class2"} = << "EOS" ;
 [
   {
-    'name' => 'MasterModel::X_base_class2',
     'element' => [
       'X',
       {
@@ -124,7 +123,8 @@ $expected_snippet{"MasterModel/X_base_class2"} = << "EOS" ;
           'Cv' => 'Mighty help for Cv'
         }
       }
-    ]
+    ],
+    'name' => 'MasterModel::X_base_class2'
   }
 ]
 ;
