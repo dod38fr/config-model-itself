@@ -385,6 +385,7 @@ sub write_model_file {
     my $dumper = Data::Dumper->new( [ \@$data ] );
     $dumper->Indent(1);    # avoid too deep indentation
     $dumper->Terse(1);     # allow unnamed variables in dump
+    $dumper->Sortkeys(1);     # sort keys in hash
 
     my $dump = $dumper->Dump;
 
