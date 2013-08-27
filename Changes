@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+2013-08-27 - 1.239
+
+   * Itself writer: ensure that hash data in models snippets 
+     have a predictable order (fix tests for perl 5.18)
+
 2013-08-25 - 1.238
 
    * Added default_layer backend parameter with DefaultLayer
