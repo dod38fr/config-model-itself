@@ -165,13 +165,26 @@ sub read_all {
         check => $force_load ? 'no' : 'yes'
     ) ;
 
-    # load annotations
+    # load annotations and comment header
     for my $file (@files) {
         $logger->info("loading annotations from file $file");
         my $fh = IO::File->new($file) || die "Can't open $file: $!" ;
         my @lines = $fh->getlines ;  
         $fh->close;
         $model_obj->load_pod_annotation(join('',@lines)) ;
+
+        my @headers ;
+        foreach my $l (@lines) {
+            if ($l =~ /^\s*#/ or $l =~ /^\s*$/){
+                push @headers, $l
+            }
+            else {
+                last;
+            }
+        }
+        my $rel_file = $file ;
+        $rel_file =~ s/^$dir\/?//;
+        $self->{header}{$rel_file} = \@headers;
     }
 
     return $self->{map} = \%class_file_map ;
@@ -281,7 +294,7 @@ sub write_all {
 
         next unless @data ; # don't write empty model
 
-        write_model_file ("$dir/$file", \@notes, \@data);
+        write_model_file ("$dir/$file", $self->{header}{$file}, \@notes, \@data);
     }
     
     $self->model_object->instance->clear_changes ;
@@ -308,7 +321,7 @@ sub write_model_snippet {
         my @notes = $self->model_object->grab("class:$class")->dump_annotations_as_pod ;
         my $class_dir = $class.'.d';
         $class_dir =~ s!::!/!g;
-        write_model_file ("$snippet_dir/$class_dir/$model_file", \@notes, [ $data ]);
+        write_model_file ("$snippet_dir/$class_dir/$model_file", [], \@notes, [ $data ]);
     }
 
     $self->model_object->instance->clear_changes ;
@@ -369,9 +382,10 @@ sub read_model_snippet {
 # New subroutine "write_model_file" extracted - Mon Mar 12 13:38:29 2012.
 #
 sub write_model_file {
-    my $wr_file = shift;
-    my $notes   = shift;
-    my $data    = shift;
+    my $wr_file  = shift;
+    my $comments = shift ;
+    my $notes    = shift;
+    my $data     = shift;
 
     my $wr_dir = dirname($wr_file);
     unless ( -d $wr_dir ) {
@@ -392,6 +406,7 @@ sub write_model_file {
     # munge pod text embedded in values to avoid spurious pod formatting
     $dump =~ s/\n=/\n'.'=/g;
 
+    $wr->print(@$comments) ;
     $wr->print( $dump, ";\n\n" );
 
     $wr->print( join( "\n", @$notes ) );
