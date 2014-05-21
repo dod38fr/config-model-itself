@@ -1,7 +1,6 @@
 package Config::Model::Itself ;
 
 use Mouse ;
-use namespace::autoclean;
 
 use IO::File ;
 use Log::Log4perl;
