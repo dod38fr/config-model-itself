@@ -16,7 +16,7 @@ require AnyEvent::Impl::Tk ;
 use Tk ;
 use Config::Model::TkUI ;
 use Config::Model::Itself::TkEditUI ;
-use Path::Class ;
+use Path::Tiny ;
 use lib qw/lib/ ;
 
 my $log4perl_syst_conf_file = '/etc/log4config-model.conf' ;
@@ -37,7 +37,7 @@ my $log4perl_conf
 Log::Log4perl::init($log4perl_conf);
 
 
-my $dev_model_dir = dir(qw/lib Config Model models/);
+my $dev_model_dir = path(qw/lib Config Model models/);
 my $root_model ;
 my $trace = 0 ;
 
@@ -100,7 +100,7 @@ Config::Model::Exception::Any->Trace(1) if $trace ;
 die "Unspecified root configuration model (option -model)\n"
   unless defined $root_model ;
 
-my $model_dir = $model_dir_path ? dir(split m!/!, $model_dir_path) : $dev_model_dir ;
+my $model_dir = $model_dir_path ? path(split m!/!, $model_dir_path) : $dev_model_dir ;
 
 if (! -d $model_dir->stat) {
     $model_dir->mkpath(0, 0755) || die "can't create $model_dir:$!";
@@ -123,7 +123,7 @@ $system_model_dir .= '/models' ;
 # now load model
 my $rw_obj = Config::Model::Itself -> new(
     model_object => $meta_root,
-    model_dir    => $plugin_file ? $system_model_dir : $model_dir->stringify,
+    model_dir    => $plugin_file ? $system_model_dir : $model_dir->canonpath,
 ) ;
 
 # my $root_model_file = $root_model ;
