@@ -7,9 +7,6 @@ use Log::Log4perl qw(:easy) ;
 use Data::Dumper ;
 use Config::Model::Itself ;
 
-use AnyEvent ;
-require AnyEvent::Impl::Tk ;
-
 use Tk ;
 use File::Path ;
 use File::Copy ;
@@ -119,7 +116,7 @@ ok(1,"Read all models in data dir") ;
 
 SKIP: {
 
-    my $mw = eval { $AnyEvent::Impl::Tk::mw  ; };
+    my $mw = eval { MainWindow-> new ; };
 
     # cannot create Tk window
     skip "Cannot create Tk window",8 if $@;

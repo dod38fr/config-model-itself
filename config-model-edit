@@ -10,9 +10,6 @@ use Log::Log4perl ;
 use Config::Model::Itself ;
 use YAML::Any;
 
-use AnyEvent ;
-require AnyEvent::Impl::Tk ;
-
 use Tk ;
 use Config::Model::TkUI ;
 use Config::Model::Itself::TkEditUI ;
@@ -210,11 +207,7 @@ if ($save) {
     exit ;
 }
 
-my $mw ;
-{
-    no warnings 'once' ;
-    $mw = $AnyEvent::Impl::Tk::mw ;
-}
+my $mw = MainWindow-> new;
 
 $mw->withdraw ;
 # Thanks to Jerome Quelin for the tip

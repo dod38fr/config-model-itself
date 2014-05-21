@@ -1,7 +1,7 @@
 package Config::Model::Itself ;
 
 use Mouse ;
-use Config::Model 2.039;
+use Config::Model 2.055;
 
 use IO::File ;
 use Log::Log4perl 1.11;
