@@ -87,13 +87,11 @@
                         A => {
                             default    => 'Av',
                             level      => 'normal',
-                            permission => 'intermediate',
                             choice     => [qw/Av Bv Cv/],
                         },
                         B => {
                             default    => 'Bv',
                             level      => 'normal',
-                            permission => 'advanced',
                             choice     => [qw/Av Bv Cv/]
                         }
                     }

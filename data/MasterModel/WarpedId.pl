@@ -58,8 +58,7 @@
                 type       => 'hash',
                 index_type => 'string',
                 cargo_type => 'leaf',
-                level      => 'hidden'
-                ,    # must also accept level permission and description here
+                level      => 'hidden',
                 warp => {
                     follow  => '- macro',
                     'rules' => { 'A' => { level => 'normal', }, }

@@ -100,7 +100,6 @@
 
     [
         name              => 'MasterModel',
-        permission        => [ [qw/tree_macro/] => 'advanced' ],
         class_description => "Master description",
         level             => [ [qw/hash_a tree_macro int_v/] => 'important' ],
 
