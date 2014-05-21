@@ -161,7 +161,7 @@ my %assert_payload = (
 
             'min' => {
                 type        => 'leaf',
-                value_type  => 'integer',
+                value_type  => 'number',
                 level       => 'hidden',
                 description => 'minimum value',
                 warp        => {
@@ -182,7 +182,7 @@ my %assert_payload = (
 
             'max' => {
                 type        => 'leaf',
-                value_type  => 'integer',
+                value_type  => 'number',
                 level       => 'hidden',
                 description => 'maximum value',
                 warp        => {
