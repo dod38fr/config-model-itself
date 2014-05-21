@@ -1,8 +1,4 @@
-# $Author: ddumont $
-# $Date: 2008-04-14 15:57:49 +0200 (Mon, 14 Apr 2008) $
-# $Revision: 604 $
-
-#    Copyright (c) 2007-2008 Dominique Dumont.
+#    Copyright (c) 2007-2014 Dominique Dumont.
 #
 #    This file is part of Config-Model-Itself.
 #
@@ -32,6 +28,7 @@
        'experience' 
        => {
 	   type => 'leaf',
+       status => 'deprecated',
 	   value_type => 'enum', 
 	   choice => [qw/master advanced beginner/] ,
 	  },
@@ -63,7 +60,7 @@
 
    'description' 
    => [
-       experience => 'Used to categorize configuration elements in several "required skills". Use this feature if you need to hide a parameter to novice users',
+       experience => 'Deprecated. Will be removed from models',
        level => 'Used to highlight important parameter or to hide others. Hidden parameter are mostly used to hide features that are unavailable at start time. They can be made available later using warp mechanism',
       ],
   ],

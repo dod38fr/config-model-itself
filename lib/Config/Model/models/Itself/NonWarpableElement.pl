@@ -48,7 +48,6 @@
                 summary    => "Override Config::Model::Value:",
                 description =>
                   "Perl class name of a child of Config::Model::Value",
-                experience => 'master',
                 'warp'     => {
                     follow  => { 't'            => '- type' },
                     'rules' => [ '$t eq "leaf"' => { level => 'normal', } ]
@@ -105,7 +104,6 @@
                 type       => 'leaf',
                 level      => 'hidden',
                 value_type => 'uniline',
-                experience => 'advanced',
                 warp       => {
                     follow => {
                         t  => '- type',
@@ -130,7 +128,6 @@
                     vt => '- value_type',
                 },
                 level      => 'hidden',
-                experience => 'master',
                 'rules'    => [
                     '$t  eq "check_list" or $vt eq "reference"' => {
                         level             => 'normal',
@@ -150,7 +147,6 @@
                 type       => 'leaf',
                 level      => 'hidden',
                 value_type => 'uniline',
-                experience => 'advanced',
                 warp       => {
                     follow  => { t               => '- type' },
                     'rules' => [ '$t  eq "leaf"' => { level => 'important', }, ]
@@ -165,7 +161,6 @@
             'compute' => {
                 type       => 'warped_node',
                 level      => 'hidden',
-                experience => 'advanced',
 
                 follow  => { t => '- type', },
                 'rules' => [
@@ -182,7 +177,6 @@
             'migrate_from' => {
                 type       => 'warped_node',
                 level      => 'hidden',
-                experience => 'advanced',
 
                 follow  => { t => '- type', },
                 'rules' => [
@@ -220,7 +214,6 @@
                 type       => 'leaf',
                 level      => 'hidden',
                 value_type => 'uniline',
-                experience => 'advanced',
                 warp       => {
                     follow  => { 't'                            => '?type' },
                     'rules' => [ '$t eq "hash" or $t eq "list"' => { level => 'normal', } ]
@@ -235,7 +228,6 @@
                 type       => 'leaf',
                 level      => 'hidden',
                 value_type => 'uniline',
-                experience => 'advanced',
                 warp       => {
                     follow  => { 't'            => '?type' },
                     'rules' => [ '$t eq "hash"' => { level => 'normal', } ]

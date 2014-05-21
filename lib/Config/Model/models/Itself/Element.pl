@@ -50,6 +50,7 @@
            value_type => 'enum', 
            choice => [qw/master advanced beginner/] ,
            upstream_default => 'beginner',
+           status => 'deprecated',
            description => 'Used to categorize configuration elements in several "required skills". Use this feature if you need to hide a parameter to novice users',
           },
 
@@ -80,7 +81,6 @@
       'warp' 
       => { type => 'warped_node' , # ?
            level => 'hidden',
-           experience => 'advanced',
            follow => { elt_type => '- type' } ,
            rules  => [
                       '$elt_type ne "node"' =>

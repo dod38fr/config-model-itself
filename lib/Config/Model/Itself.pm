@@ -211,18 +211,6 @@ sub get_perl_data_model{
     # - Do NOT translate legacy warp parameters
     # - Do not compact elements name
 
-    # - move experience, description and level status back in class info.
-    # my $all_elt_data = $model->{element} || [] ;
-    # for (my $i = 0 ; $i < @$all_elt_data; $i ++) {
-    # 	my $elt_name = $all_elt_data->[$i++] ;
-    # 	my $elt_data = $all_elt_data->[$i] ;
-    # 	foreach my $item (qw/description/) {
-    # 	    my $moved_data = delete $elt_data->{$item}  ;
-    # 	    next unless defined $moved_data ;
-    # 	    push @{$model->{$item}}, $elt_name, $moved_data ; 
-    # 	}
-    # } 
-
     # don't forget to add name
     $model->{name} = $class_name if keys %$model;
 
@@ -574,7 +562,6 @@ Config::Model::Itself - Model editor for Config::Model
  # create Curses user interface
  my $dialog = Config::Model::CursesUI-> new
       (
-       experience => 'advanced',
        store => $wr_back,
       ) ;
 
