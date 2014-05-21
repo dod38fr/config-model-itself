@@ -1,9 +1,10 @@
 package Config::Model::Itself ;
 
 use Mouse ;
+use Config::Model 2.039;
 
 use IO::File ;
-use Log::Log4perl;
+use Log::Log4perl 1.11;
 use Carp ;
 use Data::Dumper ;
 use File::Find ;
