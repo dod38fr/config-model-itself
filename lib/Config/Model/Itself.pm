@@ -524,15 +524,14 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 
+
+# ABSTRACT: Model editor for Config::Model
+
 __END__
 
 
 
 =pod
-
-=head1 NAME
-
-Config::Model::Itself - Model editor for Config::Model
 
 =head1 SYNOPSIS
 
@@ -653,19 +652,6 @@ Class usage (i.e. C<config_class_name> parameter) is represented by
 dashed lines. The name of the element is attached to the dashed line.
 
 =back
-
-=head1 AUTHOR
-
-Dominique Dumont, (ddumont at cpan dot org)
-
-=head1 COPYRIGHT
-
-Copyright (C) 2007-2012 by Dominique Dumont
-
-=head1 LICENSE
-
-This library is free software; you can redistribute it and/or modify
-it under the LGPL terms.
 
 =head1 SEE ALSO
 

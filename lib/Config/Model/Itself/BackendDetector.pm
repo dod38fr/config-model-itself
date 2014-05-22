@@ -1,21 +1,3 @@
-#    Copyright (c) 2010-2013 Dominique Dumont.
-#
-#    This file is part of Config-Model-Itself.
-#
-#    Config-Model-Itself is free software; you can redistribute it and/or
-#    modify it under the terms of the GNU Lesser Public License as
-#    published by the Free Software Foundation; either version 2.1 of
-#    the License, or (at your option) any later version.
-#
-#    Config-Xorg is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#    Lesser Public License for more details.
-#
-#    You should have received a copy of the GNU Lesser Public License
-#    along with Config-Model; if not, write to the Free Software
-#    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-
 package Config::Model::Itself::BackendDetector ;
 
 use Pod::POM ;
@@ -93,11 +75,9 @@ sub set_help {
 
 1;
 
+# ABSTRACT:  Detect available read/write backends usable by config models
+
 __END__
-
-=head1 NAME
-
-Config::Model::Itself::BackendDetector - Detect available read/write backends
 
 =head1 SYNOPSIS
 
@@ -144,10 +124,6 @@ plugin backends are all the C<Config::Model::Backend::*> classes.
 This module will detect available plugin backend and query their pod
 documentation to provide a contextual help for config-model graphical
 editor.
-
-=head1 AUTHOR
-
-Dominique Dumont, (ddumont at cpan dot org)
 
 =head1 SEE ALSO
 
