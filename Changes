@@ -1,5 +1,23 @@
 {{$NEXT}}
 
+1.240 2014-05-22
+
+    Main change is the deprecation of the experience attribute.
+    config-model-edit can be used to clean up experience parameter
+    from existing model.
+
+    Dependency changes:
+    * removed usage of AnyEvent (requires C::M 2.055)
+    * removed use namespace::autoclean
+    * config-model-edit: use Path::Tiny instead of Path::Class
+
+    Other changes:
+    * min and max parameters accept number.
+    * removed obsolete permission attribute from test models
+      (which broke test with C::M >= 2.056)
+    * preserve header comments when reading/writing model files
+    * config-model-edit begins with "#!/usr/bin/env perl"
+
 2013-08-27 - 1.239
 
    * Itself writer: ensure that hash data in models snippets 
