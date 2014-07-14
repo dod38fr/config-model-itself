@@ -32,7 +32,7 @@
                         '$t eq "leaf"' => {
                             choice => [
                                 qw/boolean enum integer reference
-                                  number uniline string/
+                                  number uniline string file dir/
                             ],
                             level     => 'normal',
                             mandatory => 1,
