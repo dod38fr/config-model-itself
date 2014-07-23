@@ -2,13 +2,14 @@
 
 use strict ;
 use warnings ;
+use 5.10.1;
 
 use Config::Model;
 use Getopt::Long ;
 use Pod::Usage ;
 use Log::Log4perl ;
 use Config::Model::Itself ;
-use YAML::Any;
+use YAML::Tiny;
 
 use Tk ;
 use Config::Model::TkUI ;
