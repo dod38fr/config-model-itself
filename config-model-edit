@@ -71,6 +71,7 @@ my $load ;
 # my $model_modified = 0;
 my $open_item = '';
 my $plugin_file = '';
+my $read_system;
 
 my $result = GetOptions (
 			 "dir=s"            => \$model_dir_path,
@@ -87,6 +88,7 @@ my $result = GetOptions (
 			 "dump-yaml|dump_yaml!"       => \$do_yaml ,
 			 "open-item|open_item=s"      => \$open_item ,
 			 "plugin-file=s"     => \$plugin_file ,
+             "system!" => \$read_system,
 			);
 
 pod2usage(2) if not $result ;
@@ -118,10 +120,14 @@ my $system_model_dir = $INC{'Config/Model.pm'} ;
 $system_model_dir =~ s/\.pm//;
 $system_model_dir .= '/models' ;
 
+my $meta_model_dir = ($read_system || $plugin_file)  ? $system_model_dir : $model_dir->canonpath ;
+
+say "Reading model from $meta_model_dir" if $read_system;
+
 # now load model
 my $rw_obj = Config::Model::Itself -> new(
     model_object => $meta_root,
-    model_dir    => $plugin_file ? $system_model_dir : $model_dir->canonpath,
+    model_dir    => $meta_model_dir,
 ) ;
 
 # my $root_model_file = $root_model ;
@@ -301,6 +307,10 @@ For instance:
  lib/Config/Model/models/Debian/Dpkg.d/my-plugin.pl
  lib/Config/Model/models/Debian/Dpkg/Control/Source.d/my-plugin.pl
 
+=item system
+
+Read model from system files, i.e. from installed files, not from
+C<./lib> directory.
 
 =item -trace
 
