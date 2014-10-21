@@ -2,6 +2,7 @@ package Config::Model::Itself ;
 
 use Mouse ;
 use Config::Model 2.055;
+use 5.010;
 
 use IO::File ;
 use Log::Log4perl 1.11;
@@ -455,41 +456,35 @@ sub get_dot_diagram {
 
     my $meta_class = $self->{model_object}->fetch_element('class') ;
     foreach my $class_name ($meta_class->fetch_all_indexes ) {
-        my $c_model = $self->{model_object}->config_model->get_raw_model($class_name);
-        my $elts = $c_model->{element} || []; # array ref
-
         my $d_class = $class_name ;
         $d_class =~ s/::/__/g;
 
         my $elt_list = '';
         my $use = '';
-        for (my $idx = 0; $idx < @$elts; $idx += 2) {
-            my $elt_info = $elts->[$idx] ;
-            my @elt_names = ref $elt_info ? @$elt_info : ($elt_info) ;
-            my $type = $elts->[$idx+1]{type} ;
 
-            foreach my $elt_name (@elt_names) {
-                my $of = '';
-                my $cargo = $elts->[$idx+1]{cargo}{type} ;
-                $of = " of $cargo" if defined $cargo ;
-                $elt_list .= "- $elt_name ($type$of)\\n";
-                $use .= $self->scan_used_class($d_class,$elt_name,
-                                               $elts->[$idx+1]);
+        my $class_obj =  $self->{model_object}->grab(qq!class:"$class_name"!);
+        my @elts =  $class_obj ->grab(qq!element!) ->fetch_all_indexes ;
+        foreach my $elt_name ( @elts ) {
+            my $of = '';
+            my $elt_obj = $class_obj->grab(qq!element:"$elt_name"!) ;
+            my $type = $elt_obj->grab_value("type") ;
+            if ($type =~ /^list|hash$/) {
+                my $cargo = $elt_obj->grab("cargo");
+                my $ct = $cargo->grab_value("type") ;
+                $of = " of $ct" ;
+                $use .= $self->scan_used_class($d_class,$elt_name,$cargo);
             }
+            else {
+                $use .= $self->scan_used_class($d_class,$elt_name,$elt_obj);
+            }
+            $elt_list .= "- $elt_name ($type$of)\\n";
         }
 
         $dot .= $d_class 
              .  qq! [shape=box label="$class_name\\n$elt_list"];\n!
              .  $use . "\n";
 
-        my $include = $c_model->{include} ;
-        if (defined $include) {
-            my $inc_ref = ref $include ? $include : [ $include ] ;
-            foreach my $t (@$inc_ref) {
-                $t =~ s/::/__/g;
-                $dot.= qq!$d_class -> $t ;\n!;
-            }
-        }
+        $dot .= $self->scan_includes($class_name, $class_obj) ;
     }
 
     $dot .="}\n";
@@ -497,27 +492,44 @@ sub get_dot_diagram {
     return $dot ;
 }
 
-sub scan_used_class {
-    my ($self,$d_class,$elt_name,$ref) = @_ ;
-    my $res = '' ;
+sub scan_includes {
+    my ($self,$class_name, $class_obj) = @_ ;
+    my $d_class = $class_name ;
+    $d_class =~ s/::/__/g;
 
-    if (ref($ref) eq 'HASH') {
-        foreach my $k (keys %$ref) {
-            my $v = $ref->{$k} ;
-            if ($k eq 'config_class_name') {
-                $v =~ s/::/__/g;
-                $res .= qq!$d_class -> $v !
-                      . qq![ style=dashed, label="$elt_name" ];\n!;
-            }
-            if (ref $v) {
-                $res .= $self->scan_used_class($d_class,$elt_name,$v);
-            }
-        }
+    my @includes = $class_obj->grab('include')->fetch_all_values ;
+    my $dot = '';
+    foreach my $c (@includes) {
+        say "$class_name includes $c";
+        my $t = $c;
+        $t =~ s/::/__/g;
+        $dot.= qq!$d_class -> $t ;\n!;
     }
-    elsif (ref($ref) eq 'ARRAY') {
-        map {$res .= $self->scan_used_class($d_class,$elt_name,$_);} @$ref ;
-    }
-    return $res ;
+    return $dot;
+}
+
+sub scan_used_class {
+    my ($self,$d_class,$elt_name, $elt_obj) = @_ ;
+
+    # define leaf call back
+    my $disp_leaf = sub {
+        my ($scanner, $data_ref, $node,$element_name,$index, $leaf_object) = @_ ;
+        return unless $element_name eq 'config_class_name';
+        my $v =  $leaf_object->fetch;
+        return unless $v;
+        $v =~ s/::/__/g;
+        $$data_ref .= qq!$d_class -> $v !
+            . qq![ style=dashed, label="$elt_name" ];\n!;
+    } ;
+
+    # simple scanner, (print all values)
+    my $scan = Config::Model::ObjTreeScanner-> new (
+        leaf_cb => $disp_leaf, # only mandatory parameter
+    ) ;
+
+    my $result = '' ;
+    $scan->scan_node(\$result, $elt_obj) ;
+    return $result ;
 }
 
 __PACKAGE__->meta->make_immutable;
