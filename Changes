@@ -1,5 +1,16 @@
 {{$NEXT}}
 
+1.241 2014-10-22
+
+    * config-model-edit: 
+      + added system option to read a model from system files
+      * fix yaml and load_yaml options
+      * fix dump and dumptype options
+      * fixed dot diagram generator (i.e. -dot-diagram option)
+    * dependency change: use YAML::Tiny instead of YAML::Any
+    * leaf value model:
+      + added file and dir and warn_if properties
+
 1.240 2014-05-22
 
     Main change is the deprecation of the experience attribute.
