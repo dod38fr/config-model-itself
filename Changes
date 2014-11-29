@@ -1,5 +1,15 @@
 {{$NEXT}}
 
+1.242 2014-11-29
+
+	New feature:
+    * Allow 'class' parameter for node, hash and list. This parameter
+      can be used to override the Perl class used to implement node,
+      hash or list element. Use with care.
+
+    Bug fix:
+    * replaced dep declaration YAML::any with YAML::Tiny
+
 1.241 2014-10-22
 
     * config-model-edit: 
