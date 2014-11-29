@@ -226,9 +226,16 @@ my $cmu = $mw->ConfigModelEditUI(
     -model_name => $root_model,
 );
 
+if (not $meta_root->fetch_element('class')->fetch_size) {
+    $open_item ||=  qq(class:"$root_model" );
+}
+else {
+    $open_item ||= 'class';
+}
+
 if ($open_item) {
     my $obj = $meta_root->grab($open_item) ;
-    $cmu->force_element_display($obj) ;
+    $cmu->after(10, sub { $cmu->force_element_display($obj) });
 }
 
 &MainLoop ; # Tk's
