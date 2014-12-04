@@ -41,6 +41,15 @@
                 }
             },
 
+            'class' => {
+                type       => 'leaf',
+                value_type => 'uniline',
+                summary    => "Override implementation of configuration node",
+                description =>
+                "Perl class name used to override the default implementation of a configuration node. "
+                ."This Perl class must inherit L<Config::Model::Node>. Use with care."
+            },
+
             'element' => {
                 type       => 'hash',
                 level      => 'important',

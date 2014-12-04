@@ -48,12 +48,12 @@
                 summary    => "Override implementation of element",
                 description =>
                 "Perl class name used to override the implementation of the configuration element. "
-                ."This override Perl class must inherit a Config::Model clas that matches the element type, "
-                ."i.e. Config::Model::Value, Config::Model::HashId, Config::Model::ListId "
-                ."or Config::Model::Node. Use with care.",
+                ."This override Perl class must inherit a Config::Model class that matches the element type, "
+                ."i.e. Config::Model::Value, Config::Model::HashId or Config::Model::ListId. "
+                ."Use with care.",
                 'warp'     => {
                     follow  => { 't'              => '- type' },
-                    'rules' => [ '$t and $t !~ /warped/' => { level => 'normal', } ]
+                    'rules' => [ '$t and $t !~ /node/' => { level => 'normal', } ]
                 }
             },
 
