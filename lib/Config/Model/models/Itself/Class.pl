@@ -47,7 +47,18 @@
                 summary    => "Override implementation of configuration node",
                 description =>
                 "Perl class name used to override the default implementation of a configuration node. "
-                ."This Perl class must inherit L<Config::Model::Node>. Use with care."
+                ."This Perl class must inherit L<Config::Model::Node>. Use with care.",
+                assert => {
+                    "1_load_class" => {
+                        code => 'not defined $_ or eval{Mouse::Util::load_class($_)}; not $@;',
+                        msg  => 'Error while loading $_ class ',
+                    },
+                    "2_class_inherit" => {
+                        code => 'not defined $_ or $_->isa("Config::Model::Node")',
+                        msg  => 'class $_ must inherit Config::Model::Node',
+                    }
+            },
+
             },
 
             'element' => {
