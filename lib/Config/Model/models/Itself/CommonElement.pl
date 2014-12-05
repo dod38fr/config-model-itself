@@ -64,7 +64,7 @@ my %assert_payload = (
                 type       => 'leaf',
                 value_type => 'string',
                 description =>
-'Warning message to show user. Leave blank or undef to use generated message',
+'Warning message to show user. "$_" will contain the bad value. Example "value $_ is bad". Leave blank or undef to use generated message',
             },
             fix => {
                 type       => 'leaf',
