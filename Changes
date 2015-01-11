@@ -1,5 +1,15 @@
 {{$NEXT}}
 
+1.243 2015-01-11
+
+   A small change for this release:
+  
+    * Version 1.242 added the possibility to override the Perl class
+      implementing a configuration node by adding a class parameter in a
+      place that is confusing. This release fix this bug: this optional
+      override class is now declared at the top of a configuration class.
+    * Depends on Config::Model 2.064
+
 1.242 2014-11-29
 
 	New feature:
