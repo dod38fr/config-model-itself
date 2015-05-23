@@ -1,4 +1,4 @@
-#    Copyright (c) 2007-2011 Dominique Dumont.
+#    Copyright (c) 2007-2015 Dominique Dumont.
 #
 #    This file is part of Config-Model-Itself.
 #
@@ -72,7 +72,7 @@
                 },
             },
 
-            'include' => {
+            [qw/include include_backend/] => {
                 type  => 'list',
                 cargo => {
                     type       => 'leaf',
@@ -118,8 +118,9 @@
         ],
         'description' => [
             element => "Specify the elements names of this configuration class.",
-            include => "Include the specification of another class into this class.",
+            include => "Include the element description of another class into this class.",
             include_after => "insert the included elements after a specific element",
+            include_backend => "Include the read/write specification of another class into this class.",
             class_description => "Explain the purpose of this configuration class. This description will be re-used to generate the documentation of your configuration class. You can use pod markup to format your description. See L<perlpod> for details.",
             read_config => "Specify the Perl class(es) and function(s) used to read configuration data. The specified function will be tried in sequence to get configuration data. ",
             write_config => "Specify the Perl class and function used to write configuration data.",
