@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+1.244 2015-05-23
+
+   A minor new feature:
+   * Class model: added include_backend parameter (for Xorg...)
+
 1.243 2015-01-11
 
    A small change for this release:
