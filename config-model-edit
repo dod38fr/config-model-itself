@@ -102,7 +102,7 @@ die "Unspecified root configuration model (option -model)\n"
 
 my $model_dir = $model_dir_path ? path(split m!/!, $model_dir_path) : $dev_model_dir ;
 
-if (! -d $model_dir->stat) {
+if (! $model_dir->is_dir) {
     $model_dir->mkpath(0, 0755) || die "can't create $model_dir:$!";
 }
 
