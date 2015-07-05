@@ -550,7 +550,7 @@ __END__
  my $meta_model = Config::Model -> new ( ) ;
 
  # load Config::Model model
- my $meta_inst = $model->instance (
+ my $meta_inst = $meta_model->instance (
     root_class_name => 'Itself::Model' ,
     instance_name   => 'meta_model' ,
  );
