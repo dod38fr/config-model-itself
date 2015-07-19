@@ -152,6 +152,7 @@ SKIP: {
     unless ($show) {
         my $step = 0;
 
+        # build a FILO queue of test subs
         my $oldsub ;
         while (@test) {
             # iterate through test list in reverse order
