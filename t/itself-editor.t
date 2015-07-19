@@ -133,7 +133,7 @@ SKIP: {
                                       -store_sub => $write_sub,
                                       -model_name => 'MasterModel',
                                   ) ;
-    my $delay = 2000 ;
+    my $delay = 500 ;
 
     my $tktree= $cmu->Subwidget('tree') ;
     my $mgr   = $cmu->Subwidget('multi_mgr') ;
