@@ -40,7 +40,7 @@ sub wr_cds {
     close CDS ;
 }
 
-plan tests => 15 ; # avoid double print of plan when exec is run
+plan tests => 15 ;       # avoid double print of plan when exec is run
 
 my $log4perl_user_conf_file = $ENV{HOME}.'/.log4config-model' ;
 
@@ -75,17 +75,17 @@ ok(1,"loaded Master model") ;
 
 # check that Master Model can be loaded by Config::Model
 my $inst1 = $model->instance (root_class_name   => 'MasterModel', 
-			      instance_name     => 'test_orig',
-			      root_dir          => $wr_conf1,
-			     );
+                              instance_name     => 'test_orig',
+                              root_dir          => $wr_conf1,
+                          );
 ok($inst1,"created master_model instance") ;
 
 my $root1 = $inst1->config_root ;
 my @elt1 = $root1->get_element_name ;
 
 $root1->load("a_string=toto lot_of_checklist macro=AD - "
-	    ."! warped_values macro=C where_is_element=get_element "
-	    ."                get_element=m_value_element m_value=Cv") ;
+             ."! warped_values macro=C where_is_element=get_element "
+             ."                get_element=m_value_element m_value=Cv") ;
 ok($inst1,"loaded some data in master_model instance") ;
 
 my $meta_inst = $meta_model->instance(
@@ -124,55 +124,54 @@ SKIP: {
     $mw->withdraw ;
 
     my $write_sub = sub { 
-	$rw_obj->write_all();
+        $rw_obj->write_all();
     } ;
 
     my $cmu = $mw->ConfigModelEditUI (-root => $meta_root,
-				      -root_dir => $wr_conf1,
-				      -model_dir => $wr_model1 ,
-				      -store_sub => $write_sub,
-				      -model_name => 'MasterModel',
-				     ) ;
+                                      -root_dir => $wr_conf1,
+                                      -model_dir => $wr_model1 ,
+                                      -store_sub => $write_sub,
+                                      -model_name => 'MasterModel',
+                                  ) ;
     my $delay = 2000 ;
 
     my $tktree= $cmu->Subwidget('tree') ;
     my $mgr   = $cmu->Subwidget('multi_mgr') ;
 
-    my @test
-      = (
-         view => sub { $cmu->create_element_widget('view','itself_instance.class');},
-	 open_class => sub { $tktree->open('itself_instance.class');1;},
-	 open_instance => sub{$tktree->open('itself_instance.class.MasterModel');1;},
-	 # save step is mandatory to avoid interaction
-	 save => sub { $cmu -> save ; 1;},
-	 'open test window' => sub { $cmu -> test_model ; },
-	 'reopen test window' => sub { $cmu -> test_model ; },
-	 exit => sub { $cmu->quit ; 1;}
-        );
+    my @test = (
+        view                 => sub { $cmu->create_element_widget('view','itself_instance.class');},
+        open_class           => sub { $tktree->open('itself_instance.class');1;},
+        open_instance        => sub{$tktree->open('itself_instance.class.MasterModel');1;},
+        # save step is mandatory to avoid interaction
+        save                 => sub { $cmu -> save ; 1;},
+        'open test window'   => sub { $cmu -> test_model ; },
+        'reopen test window' => sub { $cmu -> test_model ; },
+        exit                 => sub { $cmu->quit ; 1;}
+    );
 
     unless ($show) {
-	my $step = 0;
+        my $step = 0;
 
-	my $oldsub ;
+        my $oldsub ;
         while (@test) {
-	    # iterate through test list in reverse order
-	    my $t = pop @test ;
-	    my $k = pop @test ;
-	    my $next_sub = $oldsub ;
-	    my $s = sub { 
-		my $res = &$t; 
-		ok($res,"Step ".$step++." $k done");
-		$mw->after($delay, $next_sub) if defined $next_sub;
-	    };
-	    $oldsub = $s ;
+            # iterate through test list in reverse order
+            my $t = pop @test ;
+            my $k = pop @test ;
+            my $next_sub = $oldsub ;
+            my $s = sub {
+                my $res = &$t;
+                ok($res,"Step ".$step++." $k done");
+                $mw->after($delay, $next_sub) if defined $next_sub;
+            };
+            $oldsub = $s ;
         }
 
-	$mw->after($delay, $oldsub) ; # will launch first test
+        $mw->after($delay, $oldsub) ; # will launch first test
     }
 
     ok(1,"window launched") ;
 
-    MainLoop ; # Tk's
+    MainLoop ;                  # Tk's
 
 }
 
