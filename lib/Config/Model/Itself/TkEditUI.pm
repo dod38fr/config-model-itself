@@ -59,7 +59,30 @@ sub Populate {
 sub test_model {
     my $cw = shift ;
 
-    $cw->save_if_yes("save model data ?") ;
+    if ( $cw->{root}->instance->needs_save ) {
+        my $answer = $cw->Dialog(
+            -title          => "save model before test",
+            -text           => "Save model ?",
+            -buttons        => [ qw/yes no cancel/, 'show changes' ],
+            -default_button => 'yes',
+        )->Show;
+
+        if ( $answer eq 'yes' ) {
+            $cw->save( sub {$cw->_launch_test;});
+        }
+        elsif ( $answer eq 'no' ) {
+            $cw->_launch_test;
+        }
+        elsif ( $answer =~ /show/ ) {
+            $cw->show_changes( sub { $cw->test_model } );
+        }
+    }
+    else {
+        $cw->_launch_test;
+    }
+}
+sub _launch_test {
+    my $cw = shift ;
 
     my $testw =  $cw -> {test_widget} ;
     $testw->destroy if defined $testw and Tk::Exists($testw);
