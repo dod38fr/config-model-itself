@@ -1,5 +1,14 @@
 {{$NEXT}}
 
+1.245 2015-07-19
+
+  Bug fixes in config-model-edit:
+    * fix saving of model done before launching test from menu
+    * fix creation of model directory done when starting a model from scratch
+
+  Doc fix:
+    * small synopsis fix in doc of Config::Model::Itself
+
 1.244 2015-05-23
 
    A minor new feature:
