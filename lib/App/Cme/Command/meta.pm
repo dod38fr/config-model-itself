@@ -312,10 +312,8 @@ sub _edit {
         $open_item ||= 'class';
     }
 
-    if ($open_item) {
-        my $obj = $meta_root->grab($open_item) ;
-        $cmu->after(10, sub { $cmu->force_element_display($obj) });
-    }
+    my $obj = $meta_root->grab($open_item) ;
+    $cmu->after(10, sub { $cmu->force_element_display($obj) });
 
     &MainLoop ; # Tk's
 
