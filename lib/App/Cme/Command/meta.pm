@@ -25,6 +25,8 @@ my %meta_cmd = (
     'dump-yaml' => \&dump_yaml,
     'gen-dot' => \&gen_dot,
     edit => \&edit,
+    save => \&save,
+    plugin => \&plugin,
 );
 
 sub validate_args {
@@ -55,7 +57,6 @@ sub opt_spec {
         ],
 		[ "open-item=s"   => "force the UI to open the specified node"],
 		[ "plugin-file=s" => "create a model plugin in this file" ],
-		[ "save!"         => "force save. Used to migrate a model from old to new syntax"],
         [ "load-yaml=s"   => "load model from YAML file" ],
         [ "load=s"        => "load model from cds file (Config::Model serialisation file)"],
         [ "system!"       => "read model from system files" ],
@@ -84,69 +85,14 @@ sub read_data {
     else {
         open(LOAD,$load_file) || die "cannot open load file $load_file:$!";
         @data = <LOAD> ;
-        close LOAD; 
+        close LOAD;
     }
 
     return wantarray ? @data : join('',@data);
 }
 
-sub execute {
-    my ($self, $opt, $args) = @_;
-
-    # how to specify root-model when starting from scratch ?
-    # ask question and fill application file ?
-
-    my $root_model = $opt->{_root_model};
-    say "Running ",$opt->{_meta_command}, " on $root_model";
-
-    my $model_dir = path(split m!/!, $opt->{dir}) ;
-
-    if (! $model_dir->is_dir) {
-        $model_dir->mkpath(0, 0755) || die "can't create $model_dir:$!";
-    }
-
-    my $meta_model = Config::Model -> new();
-
-    my $meta_inst = $meta_model->instance(
-        root_class_name => 'Itself::Model',
-        instance_name   => $root_model . ' model',
-        check           => $opt->{'force-load'} ? 'no' : 'yes',
-    );
-
-    my $meta_root = $meta_inst -> config_root ;
-
-    my $system_model_dir = $INC{'Config/Model.pm'} ;
-    $system_model_dir =~ s/\.pm//;
-    $system_model_dir .= '/models' ;
-
-    my $meta_model_dir = ($opt->{system} || $opt->{'plugin_file'})  ? $system_model_dir
-                       :                                              $model_dir->canonpath ;
-
-    say "Reading model from $meta_model_dir" if $opt->system();
-
-    # now load model
-    my $rw_obj = Config::Model::Itself -> new(
-        model_object => $meta_root,
-        model_dir    => $meta_model_dir,
-    ) ;
-
-    $meta_inst->initial_load_start ;
-    $meta_inst->layered_start if $opt->{'plugin-file'};
-
-    $rw_obj->read_all(
-        force_load => $opt->{'force-load'},
-        root_model => $root_model,
-        # legacy     => 'ignore',
-    );
-
-    if ($opt->{'plugin_file'}) {
-        $meta_inst->layered_stop;
-
-        # load any existing plugin file
-        $rw_obj->read_model_snippet(snippet_dir => $model_dir, model_file => $opt->{'plugin_file'}) ;
-    }
-
-    $meta_inst->initial_load_stop ;
+sub load_optional_data {
+    my ($self, $args, $opt, $root_model, $meta_root) = @_;
 
     if (defined $opt->{load}) {
         my $data = read_data($opt->{load}) ;
@@ -165,37 +111,147 @@ sub execute {
         $data = qq(class:"$root_model" ).$data unless $data =~ /^\s*class:/ ;
         $meta_root->load($data) ;
     }
+}
 
-    my $write_sub = $opt->{'plugin_file'} ? 
-        sub {
-            $rw_obj->write_model_snippet(
-                snippet_dir => $model_dir,
-                model_file => $opt->{'plugin_file'}
-            );
-        }
-        : sub { 
+sub load_meta_model {
+    my ($self, $opt, $args) = @_;
+
+    my $root_model = $opt->{_root_model};
+    my $model_dir = path(split m!/!, $opt->{dir}) ;
+
+    if (! $model_dir->is_dir) {
+        $model_dir->mkpath(0, 0755) || die "can't create $model_dir:$!";
+    }
+
+    my $meta_model = $self->{meta_model} = Config::Model -> new();
+
+    my $meta_inst = $meta_model->instance(
+        root_class_name => 'Itself::Model',
+        instance_name   => $root_model . ' model',
+        check           => $opt->{'force-load'} ? 'no' : 'yes',
+    );
+
+    my $meta_root = $meta_inst -> config_root ;
+
+    my $system_model_dir = $INC{'Config/Model.pm'} ;
+    $system_model_dir =~ s/\.pm//;
+    $system_model_dir .= '/models' ;
+
+    return ($meta_inst, $meta_root, $model_dir, $system_model_dir);
+}
+
+sub load_meta_root {
+    my ($self, $opt, $args) = @_;
+
+    my ($meta_inst, $meta_root, $model_dir, $system_model_dir) = $self->load_meta_model($opt,$args);
+
+    my $root_model = $opt->{_root_model};
+    my $meta_model_dir = $opt->{system} ? $system_model_dir
+                       :                  $model_dir->canonpath ;
+
+    say "Reading model from $meta_model_dir" if $opt->system();
+
+    # now load model
+    my $rw_obj = Config::Model::Itself -> new(
+        model_object => $meta_root,
+        model_dir    => $meta_model_dir,
+    ) ;
+
+    $meta_inst->initial_load_start ;
+
+    $rw_obj->read_all(
+        force_load => $opt->{'force-load'},
+        root_model => $root_model,
+        # legacy     => 'ignore',
+    );
+
+    $meta_inst->initial_load_stop ;
+
+    $self->load_optional_data($args, $opt, $root_model, $meta_root) ;
+
+    my $write_sub = sub {
             my $wr_dir = shift || $model_dir ;
             $rw_obj->write_all( );
         } ;
 
-    if ($opt->{save}) {
-        &$write_sub ;
-        exit ;
-    }
+    return ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub);
+}
+
+sub load_meta_plugin {
+    my ($self, $opt, $args) = @_;
+
+    my ($meta_inst, $meta_root, $model_dir, $system_model_dir) = $self->load_meta_model($opt,$args);
+
+    my $root_model = $opt->{_root_model};
+    my $meta_model_dir = $system_model_dir ;
+    my $plugin_file = shift @$args or die "missing plugin file";
+
+    # now load model
+    my $rw_obj = Config::Model::Itself -> new(
+        model_object => $meta_root,
+        model_dir    => $meta_model_dir,
+    ) ;
+
+    $meta_inst->initial_load_start ;
+    $meta_inst->layered_start;
+
+    $rw_obj->read_all(
+        force_load => $opt->{'force-load'},
+        root_model => $root_model,
+        # legacy     => 'ignore',
+    );
+
+    $meta_inst->layered_stop;
+
+    # load any existing plugin file
+    $rw_obj->read_model_snippet(snippet_dir => $model_dir, model_file => $plugin_file) ;
+
+    $meta_inst->initial_load_stop ;
+
+    $self->load_optional_data($args, $opt, $root_model, $meta_root) ;
+
+    my $write_sub = sub {
+            $rw_obj->write_model_snippet(
+                snippet_dir => $model_dir,
+                model_file => $opt->{'plugin_file'}
+            );
+        } ;
+
+    return ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub);
+}
+
+sub execute {
+    my ($self, $opt, $args) = @_;
+
+    # how to specify root-model when starting from scratch ?
+    # ask question and fill application file ?
+
+    my $root_model = $opt->{_root_model};
+    say "Running ",$opt->{_meta_command}, " on $root_model";
 
     my $cmd_sub = $meta_cmd{$opt->{_meta_command}};
 
-    $self->$cmd_sub($opt, $args, $rw_obj, $model_dir, $meta_root, $root_model, $write_sub);
+    $self->$cmd_sub($opt, $args);
+}
+
+sub save {
+    my ($self, $opt, $args) = @_;
+    my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_root($opt, $args) ;
+
+    &$write_sub;
 }
 
 sub gen_dot {
-    my ($self, $opt, $args, $rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = @_ ;
+    my ($self, $opt, $args) = @_;
+    my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     print $rw_obj->get_dot_diagram ;
 }
 
 sub dump_cds {
-    my ($self, $opt, $args, $rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = @_ ;
+    my ($self, $opt, $args) = @_;
+    my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_root($opt, $args) ;
+
     say "running dump_cds";
     my $dump_file = shift @$args;
 
@@ -212,7 +268,8 @@ sub dump_cds {
 }
 
 sub dump_yaml{
-    my ($self, $opt, $args, $rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = @_ ;
+    my ($self, $opt, $args) = @_;
+    my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_model($opt, $args) ;
 
     require YAML::Tiny;
     import YAML::Tiny qw/Dump/;
@@ -220,8 +277,20 @@ sub dump_yaml{
 
 }
 
+sub plugin {
+    my ($self, $opt, $args) = @_;
+    my @info = $self->load_meta_plugin($opt, $args) ;
+    $self->_edit($opt, $args, @info);
+}
+
 sub edit {
-    my ($self, $opt, $args, $rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = @_ ;
+    my ($self, $opt, $args) = @_;
+    my @info = $self->load_meta_root($opt, $args) ;
+    $self->_edit($opt, $args, @info);
+}
+
+sub _edit {
+    my ($self, $opt, $args, $rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = @_;
 
     my $mw = MainWindow-> new;
 
@@ -288,7 +357,7 @@ The model editor program is config-model-edit.
 =head1 USAGE
 
 C<config-model-edit> will read and write model file from
-C<./lib/Config/Model/models>. 
+C<./lib/Config/Model/models>.
 
 When you specify a C<-model> options, only configuration models matching
 this options will be loaded. I.e.
@@ -309,13 +378,13 @@ edited.
 
 =item -plugin-file foo.pl
 
-this option can be used to create model plugins. A model plugin is an addendum to 
-an existing model. The resulting file will be saved in a C<.d> directory besides the 
-original file to be taken into account. 
+this option can be used to create model plugins. A model plugin is an addendum to
+an existing model. The resulting file will be saved in a C<.d> directory besides the
+original file to be taken into account.
 
 For instance:
 
- $ config-model-edit -model Debian::Dpkg -plugin-file my-plugin.pl 
+ $ config-model-edit -model Debian::Dpkg -plugin-file my-plugin.pl
  # perform additions to Debian::Dpkg and Debian::Dpkg::Control::Source and save
  $ find lib -name my-plugin.pl
  lib/Config/Model/models/Debian/Dpkg.d/my-plugin.pl
@@ -332,7 +401,7 @@ Provides a full stack trace when exiting on error.
 
 =item -force-load
 
-Load file even if error are found in data. Bad data are loaded, but should be cleaned up 
+Load file even if error are found in data. Bad data are loaded, but should be cleaned up
 before saving the model. See menu C<< File -> check >> in the GUI.
 
 =item -dot-diagram
@@ -369,7 +438,7 @@ Load configuration data in model from YAML file. This
 option can be used with C<-save> to directly save a model loaded from
 the YAML file or from STDIN.
 
-=item -dump_yaml 
+=item -dump_yaml
 
 Dump a model in YAML format
 
@@ -402,7 +471,7 @@ following files:
 
  ~/.log4config-model
 
-=item * 
+=item *
 
  /etc/log4config-model.conf
 
@@ -424,9 +493,9 @@ Dominique Dumont, ddumont at cpan dot org
 
 =head1 SEE ALSO
 
-L<Config::Model>, 
-L<Config::Model::Node>, 
-L<Config::Model::Instance>, 
+L<Config::Model>,
+L<Config::Model::Node>,
+L<Config::Model::Instance>,
 L<Config::Model::HashId>,
 L<Config::Model::ListId>,
 L<Config::Model::WarpedNode>,
