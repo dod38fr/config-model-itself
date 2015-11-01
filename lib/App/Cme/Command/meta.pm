@@ -74,7 +74,7 @@ sub description {
     return $self->get_documentation;
 }
 
-sub load_data {
+sub read_data {
     my $load_file = shift ;
 
     my @data ;
@@ -149,13 +149,13 @@ sub execute {
     $meta_inst->initial_load_stop ;
 
     if (defined $opt->{load}) {
-        my $data = load_data($opt->{load}) ;
+        my $data = read_data($opt->{load}) ;
         $data = qq(class:"$root_model" ).$data unless $data =~ /^\s*class:/ ;
         $meta_root->load($data);
     }
 
     if (defined $opt->{'load-yaml'}) {
-        my $yaml = load_data($opt->{'load-yaml'}) ;
+        my $yaml = read_data($opt->{'load-yaml'}) ;
         my $pdata = Load($yaml) ;
         $meta_root->load_data($pdata) ;
     }
