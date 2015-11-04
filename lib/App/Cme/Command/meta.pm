@@ -105,12 +105,6 @@ sub load_optional_data {
         my $pdata = Load($yaml) ;
         $meta_root->load_data($pdata) ;
     }
-
-    if (@$args) {
-        my $data = join(' ',@$args) ;
-        $data = qq(class:"$root_model" ).$data unless $data =~ /^\s*class:/ ;
-        $meta_root->load($data) ;
-    }
 }
 
 sub load_meta_model {
@@ -245,26 +239,21 @@ sub gen_dot {
     my ($self, $opt, $args) = @_;
     my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_root($opt, $args) ;
 
-    print $rw_obj->get_dot_diagram ;
+    my $out = shift @$args || "model.dot";
+    say "Creating dot file $out";
+    path($out) -> spew( $rw_obj->get_dot_diagram );
 }
 
 sub dump_cds {
     my ($self, $opt, $args) = @_;
     my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_root($opt, $args) ;
 
-    say "running dump_cds";
-    my $dump_file = shift @$args;
+    my $dump_file = shift @$args || 'model.cds';
+    say "Dumping $root_model in $dump_file";
 
     my $dump_string = $meta_root->dump_tree( mode => $opt->{dumptype} || 'custom' ) ;
 
-    if ($dump_file) {
-        open(DUMP,">$dump_file") or die "cannot dump in $dump_file:$!";
-        print DUMP $dump_string ;
-        close DUMP;
-    }
-    else {
-        print $dump_string ;
-    }
+    path($dump_file)->spew($dump_string);
 }
 
 sub dump_yaml{
@@ -273,7 +262,12 @@ sub dump_yaml{
 
     require YAML::Tiny;
     import YAML::Tiny qw/Dump/;
-    print Dump($meta_root->dump_as_data(ordered_hash_as_list => 0)) ;
+    my $dump_file = shift @$args || 'model.yml';
+    say "Dumping $root_model in $dump_file";
+
+    my $dump_string = Dump($meta_root->dump_as_data(ordered_hash_as_list => 0)) ;
+
+    path($dump_file)->spew($dump_string);
 
 }
 
@@ -329,66 +323,88 @@ __END__
   cme meta [ options ] edit Sshd
 
   # plugin mode
-  cme meta [options] edit Debian::Dpkg -plugin-file dpkg-snippet.pl
+  cme meta [options] plugin Debian::Dpkg dpkg-snippet.pl
 
 =head1 DESCRIPTION
 
-config-model-edit will provides a Perl/Tk graphical interface to edit
-configuration models that will be used by Config::Model.
+C<cme meta edit> provides a Perl/Tk graphical interface to create or
+edit configuration models that will be used by L<Config::Model>.
 
-Config::Model is a general purpose configuration framework based on
-configuration models (See L<Config::Model> for details).
-
-This configuration model is also expressed as structured data. This
-structure data is structured and follow a set of rules which are
-described for humans in L<Config::Model>.
-
-The structure and rules documented in L<Config::Model> are also expressed
-in a model in the files provided with L<Config::Model::Itself>.
-
-Hence the possibity to verify, modify configuration data provided by
-Config::Model can also be applied on configuration models using the
-same user interface as L<config-edit>.
-
-The model editor program is config-model-edit.
+This tool enables you to create configuration checker or editor for
+configuration files of an application.
 
 =head1 USAGE
 
-C<config-model-edit> will read and write model file from
-C<./lib/Config/Model/models>.
+C<cme meta> supports several sub commands like C<edit> or C<plugin>. These
+sub commands are detailed below.
 
-When you specify a C<-model> options, only configuration models matching
-this options will be loaded. I.e.
+=head2 edit
 
-  config-model-edit -model Xorg
+C<cme meta edit> is the most useful sub command. It will read and
+write model file from C<./lib/Config/Model/models> directory.
+
+Only configuration models matching the 4th parameter will be loaded. I.e.
+
+  cme meta edit Xorg
 
 will load models C<Xorg> (file C<Xorg.pl>) and all other C<Xorg::*> like
 C<Xorg::Screen> (file C<Xorg/Screen.pl>).
 
-=head1 Options
+Besides C<edit>, the following sub commands are available:
 
-=over
+=head2 plugin
 
-=item -model
-
-Mandatory option that specifies the configuration model to be
-edited.
-
-=item -plugin-file foo.pl
-
-this option can be used to create model plugins. A model plugin is an addendum to
-an existing model. The resulting file will be saved in a C<.d> directory besides the
-original file to be taken into account.
+This sub command is used to create model plugins. A model plugin is an
+addendum to an existing model. The resulting file will be saved in a
+C<.d> directory besides the original file to be taken into account.
 
 For instance:
 
- $ config-model-edit -model Debian::Dpkg -plugin-file my-plugin.pl
+ $ cme meta plugin Debian::Dpkg my-plugin.pl
  # perform additions to Debian::Dpkg and Debian::Dpkg::Control::Source and save
  $ find lib -name my-plugin.pl
  lib/Config/Model/models/Debian/Dpkg.d/my-plugin.pl
  lib/Config/Model/models/Debian/Dpkg/Control/Source.d/my-plugin.pl
 
-=item system
+=head2 gen-dot [ file.dot ]
+
+Create a dot file that represent the stucture of the configuration
+model. By default, the generated dot file is C<model.dot>
+
+ $ cme meta gen-dot Itself itself.dot
+ $ dot -T png itself.dot > itself.png
+
+C<include> are represented by solid lines. Class usage
+(i.e. C<config_class_name> parameter) is represented by dashed
+lines. The name of the element is attached to the dashed line.
+
+=head2 dump [ file.cds ]
+
+Dump configuration content in the specified file (or C<model.cds>) using
+Config::Model dump string syntax (hence the C<cds> file extension).
+See L<Config::Model::Loader> for details on the syntax)
+
+By default, dump only custom values, i.e. different from application
+built-in values or model default values. See -dumptype option for
+other types of dump
+
+ $ cme meta dump Itself
+
+=head2 dump-yaml [ file.yml ]
+
+Dump configuration content in the specified file (or C<model.yml>) in
+YAML format.
+
+=head2 save
+
+Force a save of the model even if no edition was done. This option is
+useful to migrate a model when Config::Model model feature changes.
+
+=head1 Options
+
+=over
+
+=item -system
 
 Read model from system files, i.e. from installed files, not from
 C<./lib> directory.
@@ -397,57 +413,28 @@ C<./lib> directory.
 
 Provides a full stack trace when exiting on error.
 
-=item -force-load
-
-Load file even if error are found in data. Bad data are loaded, but should be cleaned up
-before saving the model. See menu C<< File -> check >> in the GUI.
-
-=item -dot-diagram
-
-Returns a dot file that represent the stucture of the configuration
-model. C<include> are represented by solid lines. Class usage
-(i.e. C<config_class_name> parameter) is represented by dashed
-lines. The name of the element is attached to the dashed line.
-
-=item -dump [ file ]
-
-Dump configuration content on STDOUT or in the specified with
-Config::Model syntax.
-
-By default, dump only custom values, i.e. different from application
-built-in values or model default values. See -dumptype option for
-other types of dump
-
-=item -dumptype [ full | preset | custom ]
-
-Choose to dump every values (full), only preset values or only
-customized values (default)
-
 =item -load <cds_file_to_load> | -
 
 Load model from cds file (using Config::Model serialisation format,
 typically done with -dump option). This option can be used with
-C<-save> to directly save a model loaded from the cds file or from
+C<save> to directly save a model loaded from the cds file or from
 STDIN.
 
 =item -load-yaml <yaml_file_to_load> | -
 
 Load configuration data in model from YAML file. This
-option can be used with C<-save> to directly save a model loaded from
-the YAML file or from STDIN.
+option can be used with C<save> to directly save a model loaded from
+a YAML file or from STDIN.
 
-=item -dump_yaml
+=item -force-load
 
-Dump a model in YAML format
+Load file even if error are found in data. Bad data are loaded, but should be cleaned up
+before saving the model. See menu C<< File -> check >> in the GUI.
 
-=item -save
+=item -dumptype [ full | preset | custom ]
 
-Force a save of the model even if no edition was done. This option is
-useful to migrate a model when Config::Model model feature changes.
-
-=item -dir
-
-Directory where to read and write model
+Choose to dump every values (full), only preset values or only
+customized values (default) (only for C<dump> sub command)
 
 =item -open-item 'path'
 
@@ -483,7 +470,20 @@ Without these files, the following Log4perl config is used:
  log4perl.appender.Screen.layout = Log::Log4perl::Layout::PatternLayout
  log4perl.appender.Screen.layout.ConversionPattern = %d %m %n
 
-Log4Perl categories are shown in L<config-edit/LOGGING>
+Log4Perl categories are shown in L<cme/LOGGING>
+
+=head1 Dogfooding
+
+The GUI shown by C<cme meta edit> is created from a configuration
+model that describes the structure and parameters of a configuration
+model. (which explains the "Itself" name. This module could also be
+named C<Config::Model::DogFooding>).
+
+This explains why the GUI shown by C<cme meta edit> looks like the GUI
+shown by C<cme edit>: the same GUI generator is used>.
+
+If you're new to L<Config::Model>, I'd advise not to peek under this
+hood lest you'll loose your sanity.
 
 =head1 AUTHOR
 
@@ -491,12 +491,48 @@ Dominique Dumont, ddumont at cpan dot org
 
 =head1 SEE ALSO
 
+=over
+
+=item *
+
+L<Config::Model::Manual::ModelCreationIntroduction>
+
+=item *
+
+L<cme>,
+
+=item *
+
 L<Config::Model>,
+
+=item *
+
+L<Config::Model::Itself>,
+
+=item *
+
 L<Config::Model::Node>,
+
+=item *
+
 L<Config::Model::Instance>,
+
+=item *
+
 L<Config::Model::HashId>,
+
+=item *
+
 L<Config::Model::ListId>,
+
+=item *
+
 L<Config::Model::WarpedNode>,
+
+=item *
+
 L<Config::Model::Value>
+
+=back
 
 =cut
