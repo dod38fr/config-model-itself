@@ -22,9 +22,9 @@ has model_object => (is =>'ro', isa =>'Config::Model::Node', required => 1) ;
 has model_dir    => (is =>'ro', isa =>'Str', required => 1 ) ;
 has force_write  => (is =>'ro', isa => 'Bool', default => 0) ;
 
-has modifed_classes => (
-    is =>'rw', 
-    isa =>'HashRef[Bool]', 
+has modified_classes => (
+    is =>'rw',
+    isa =>'HashRef[Bool]',
     traits => ['Hash'],
     default => sub { {} } ,
     handles => {
@@ -44,11 +44,11 @@ sub BUILD {
         return unless $p =~ /^class/ ;
         return if $self->class_was_changed($args{index}) ;
         $logger->info("class $args{index} was modified");
-        
+
         $self->add_modified_class($args{index}) ;
     } ;
     $self->model_object->instance -> on_change_cb($cb) ;
-    
+
 }
 
 
@@ -62,7 +62,7 @@ sub read_all {
     my $self = shift ;
     my %args = @_ ;
 
-    my $model = delete $args{root_model} 
+    my $model = delete $args{root_model}
       || croak __PACKAGE__," read_all: undefined root_model";
     my $force_load = delete $args{force_load} || 0 ;
     my $legacy = delete $args{legacy} ;
@@ -76,11 +76,11 @@ sub read_all {
 
     my $root_model_file = $model ;
     $root_model_file =~ s!::!/!g ;
-    
+
     my @files ;
-    my $wanted = sub { 
+    my $wanted = sub {
         my $n = $File::Find::name ;
-        push @files, $n if (-f $_ and not /~$/ 
+        push @files, $n if (-f $_ and not /~$/
                             and $n !~ /CVS/
                             and $n !~ m!.(svn|orig|pod)$!
                             and $n =~ m!$dir/$root_model_file!
@@ -89,7 +89,7 @@ sub read_all {
     find ($wanted, $dir ) ;
 
     my $i = $self->model_object->instance ;
-    
+
     my %read_models ;
     my %pod_data ;
     my %class_file_map ;
@@ -124,7 +124,7 @@ sub read_all {
                 foreach my $elt_name (keys %{$new_model->{element}}) {
                     my $moved_data = delete $new_model->{$item}{$elt_name}  ;
                     next unless defined $moved_data ;
-                    $new_model->{element}{$elt_name}{$item} = $moved_data ; 
+                    $new_model->{element}{$elt_name}{$item} = $moved_data ;
                 }
                 delete $new_model->{$item} ;
             }
@@ -137,13 +137,13 @@ sub read_all {
                 my $list  = delete $new_model -> {$what.'_list'} ;
                 my $h     = delete $new_model -> {$what} ;
                 $new_model -> {$what} = [] ;
-                map { 
-                    push @{$new_model->{$what}}, $_, $h->{$_} 
+                map {
+                    push @{$new_model->{$what}}, $_, $h->{$_}
                 } @$list ;
             }
 
             # remove hash key with undefined values
-            map { delete $new_model->{$_} unless defined $new_model->{$_} 
+            map { delete $new_model->{$_} unless defined $new_model->{$_}
                                           and $new_model->{$_} ne ''
               } keys %$new_model ;
             $read_models{$model_name} = $new_model ;
@@ -170,7 +170,7 @@ sub read_all {
     for my $file (@files) {
         $logger->info("loading annotations from file $file");
         my $fh = IO::File->new($file) || die "Can't open $file: $!" ;
-        my @lines = $fh->getlines ;  
+        my @lines = $fh->getlines ;
         $fh->close;
         $model_obj->load_pod_annotation(join('',@lines)) ;
 
@@ -199,11 +199,11 @@ sub get_perl_data_model{
     my $class_name = $args{class_name}
       || croak __PACKAGE__," read: undefined class name";
 
-    my $class_element = $model_obj->fetch_element('class') ; 
+    my $class_element = $model_obj->fetch_element('class') ;
 
     # skip if class was deleted during edition
     return unless $class_element->defined($class_name) ;
-    
+
     my $class_elt = $class_element -> fetch_with_id($class_name) ;
 
     my $model = $class_elt->dump_as_data ;
@@ -234,8 +234,8 @@ sub write_all {
     }
 
     # get list of all classes loaded by the editor
-    my %loaded_classes 
-      = map { ($_ => 1); } 
+    my %loaded_classes
+      = map { ($_ => 1); }
         $model_obj->fetch_element('class')->fetch_all_indexes ;
 
     # remove classes that are listed in map
@@ -246,9 +246,9 @@ sub write_all {
     }
 
     # add remaining classes in map
-    my %new_map =  map { 
-        my $f = $_; 
-        $f =~ s!::!/!g; 
+    my %new_map =  map {
+        my $f = $_;
+        $f =~ s!::!/!g;
         ("$f.pl" => [ $_ ]) ;
     } keys %loaded_classes ;
 
@@ -260,21 +260,21 @@ sub write_all {
         my @data ;
         my @notes ;
         my $file_needs_write = 0;
-        
+
         # check if any a class of a file was modified
         foreach my $class_name (@{$map_to_write{$file}}) {
             $file_needs_write++ if $self->force_write or $self->class_was_changed($class_name) ;
             $logger->info("file $file class $class_name needs write ",$file_needs_write);
         }
-        
-        next unless $file_needs_write ;    
+
+        next unless $file_needs_write ;
 
         foreach my $class_name (@{$map_to_write{$file}}) {
             $logger->info("writing class $class_name");
-            my $model 
+            my $model
               = $self-> get_perl_data_model(class_name => $class_name) ;
             push @data, $model if defined $model and keys %$model;
-            
+
             my $node = $self->{model_object}->grab("class:".$class_name) ;
             push @notes, $node->dump_annotations_as_pod ;
             # remove class name from above list
@@ -285,16 +285,16 @@ sub write_all {
 
         write_model_file ("$dir/$file", $self->{header}{$file}, \@notes, \@data);
     }
-    
+
     $self->model_object->instance->clear_changes ;
 }
 
 sub write_model_snippet {
     my $self = shift ;
     my %args = @_ ;
-    my $snippet_dir = delete $args{snippet_dir} 
+    my $snippet_dir = delete $args{snippet_dir}
       || croak __PACKAGE__," write_model_snippet: undefined snippet_dir";
-    my $model_file = delete $args{model_file} 
+    my $model_file = delete $args{model_file}
       || croak __PACKAGE__," write_model_snippet: undefined model_file";
     croak "write_model_snippet: unexpected parameters ",join(' ', keys %args) if %args ;
 
@@ -305,7 +305,7 @@ sub write_model_snippet {
     while (@raw_data) {
         my ( $class , $data ) = splice @raw_data,0,2 ;
         $data ->{name} = $class ;
- 
+
         # does not distinguish between notes from underlying model or snipper notes ...
         my @notes = $self->model_object->grab("class:$class")->dump_annotations_as_pod ;
         my $class_dir = $class.'.d';
@@ -319,17 +319,17 @@ sub write_model_snippet {
 sub read_model_snippet {
     my $self = shift ;
     my %args = @_ ;
-    my $snippet_dir = delete $args{snippet_dir} 
+    my $snippet_dir = delete $args{snippet_dir}
       || croak __PACKAGE__," write_model_snippet: undefined snippet_dir";
-    my $model_file = delete $args{model_file} 
+    my $model_file = delete $args{model_file}
       || croak __PACKAGE__," read_model_snippet: undefined model_file";
 
     croak "read_model_snippet: unexpected parameters ",join(' ', keys %args) if %args ;
 
     my @files ;
-    my $wanted = sub { 
+    my $wanted = sub {
         my $n = $File::Find::name ;
-        push @files, $n if (-f $_ and not /~$/ 
+        push @files, $n if (-f $_ and not /~$/
                             and $n !~ /CVS/
                             and $n !~ m!.(svn|orig|pod)$!
                             and $n =~ m!\.d/$model_file!
@@ -341,7 +341,7 @@ sub read_model_snippet {
 
     foreach my $load_file (@files) {
         $logger->info("trying to read snippet $load_file");
-    
+
         my $snippet = do $load_file ;
 
         unless ($snippet) {
@@ -360,7 +360,7 @@ sub read_model_snippet {
         # load annotations
         $logger->info("loading annotations from snippet file $load_file");
         my $fh = IO::File->new($load_file) || die "Can't open $load_file: $!" ;
-        my @lines = $fh->getlines ;  
+        my @lines = $fh->getlines ;
         $fh->close;
         $self->model_object->load_pod_annotation(join('',@lines)) ;
     }
@@ -480,7 +480,7 @@ sub get_dot_diagram {
             $elt_list .= "- $elt_name ($type$of)\\n";
         }
 
-        $dot .= $d_class 
+        $dot .= $d_class
              .  qq! [shape=box label="$class_name\\n$elt_list"];\n!
              .  $use . "\n";
 
@@ -620,7 +620,7 @@ L<Config::Model::Node> class.
 =head1 read_all (  root_model => ... , [ force_load => 1 ] )
 
 Load all the model files contained in C<model_dir> and all its
-subdirectories. C<root_model> is used to filter the classes read. 
+subdirectories. C<root_model> is used to filter the classes read.
 
 Use C<force_load> if you are trying to load a model containing errors.
 
