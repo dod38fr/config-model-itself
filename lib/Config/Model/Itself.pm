@@ -12,6 +12,7 @@ use File::Find ;
 use File::Path ;
 use File::Basename ;
 use Data::Compare ;
+use Path::Tiny;
 
 my $logger = Log::Log4perl::get_logger("Backend::Itself");
 
@@ -58,13 +59,52 @@ sub add_modified_class {
 }
 
 
+sub read_app_files {
+    my $self = shift;
+    my $force_load = shift || 0;
+
+    my %apps;
+    foreach my $dir ( path($self->model_dir)->children(qr/\.d$/) ) {
+
+        foreach my $file ( $dir->children() ) {
+            next if $file =~ m!/README!;
+            next if $file =~ /(~|\.bak|\.orig)$/;
+
+            # bad categories are filtered by the model
+            my %data = ( category => $dir->basename('.d') );
+            $logger->info("reading file ".$file);
+
+            foreach ($file->lines({ chomp => 1})) {
+                s/^\s+//;
+                s/\s+$//;
+                s/#.*//;
+                my ( $k, $v ) = split /\s*=\s*/;
+                next unless $v;
+                $data{$k} = $v;
+            }
+
+            my $appli = $file->basename;
+            $apps{$appli} = $data{model} ;
+
+            $self->model_object->load_data(
+                data => { application => { $appli => \%data } },
+                check => $force_load ? 'no' : 'yes'
+            ) ;
+        }
+    }
+
+    return \%apps;
+}
+
 sub read_all {
     my $self = shift ;
     my %args = @_ ;
 
-    my $model = delete $args{root_model}
-      || croak __PACKAGE__," read_all: undefined root_model";
     my $force_load = delete $args{force_load} || 0 ;
+    my $apps = $self-> read_app_files($force_load);
+
+    my $root_model_arg = delete $args{root_model} || '';
+    my $model = $apps->{$root_model_arg} || $root_model_arg ;
     my $legacy = delete $args{legacy} ;
 
     croak "read_all: unexpected parameters ",join(' ', keys %args) if %args ;
@@ -218,6 +258,32 @@ sub get_perl_data_model{
     return $model ;
 }
 
+sub write_app_files {
+    my $self = shift;
+
+    my $app_dir = path($self->model_dir);
+    my $app_obj = $self->model_object->fetch_element('application');
+
+    foreach my $app_name ( $app_obj->fetch_all_indexes ) {
+        my $app = $app_obj->fetch_with_id($app_name);
+        my $cat_dir_name = $app->fetch_element_value( name =>'category' ).'.d';
+        $app_dir->child($cat_dir_name)->mkpath();
+        my $app_file = $app_dir->child($cat_dir_name)->child($app->index_value) ;
+
+        my @lines ;
+        foreach my $name ( $app->children ) {
+            next if $name eq 'category'; # saved as directory above
+
+            my $v = $app->fetch_element_value($name); # need to spit out 0 ?
+            next unless defined $v;
+            push @lines, "$name = $v\n";
+
+        }
+        $logger->info("writing file ".$app_file);
+        $app_file->spew(@lines);
+    }
+
+}
 
 sub write_all {
     my $self = shift ;
@@ -226,6 +292,8 @@ sub write_all {
     my $dir = $self->model_dir ;
 
     croak "write_all: unexpected parameters ",join(' ', keys %args) if %args ;
+
+    $self->write_app_files;
 
     my $map = $self->{map} ;
 
