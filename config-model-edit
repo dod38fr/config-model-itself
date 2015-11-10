@@ -97,6 +97,8 @@ pod2usage(-verbose => 2) if $man;
 
 Config::Model::Exception::Any->Trace(1) if $trace ;
 
+say 'This command is deprecated, please use "cme meta edit"';
+
 die "Unspecified root configuration model (option -model)\n"
   unless defined $root_model ;
 
@@ -248,7 +250,7 @@ __END__
 
 =head1 NAME
 
-config-model-edit -  Graphical model editor for Config::Model
+config-model-edit - Deprecated use cme meta edit
 
 =head1 SYNOPSIS
 
