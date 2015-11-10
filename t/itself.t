@@ -17,18 +17,29 @@ no warnings qw(once);
 
 use strict;
 
-my $arg = $ARGV[0] || '' ;
+my $arg = shift || '';
+my ( $log, $show ) = (0) x 2;
 
-my $trace = ($arg =~ /t/) ? 1 : 0 ;
-$::verbose          = 1 if $arg =~ /v/;
-$::debug            = 1 if $arg =~ /d/;
+my $trace = $arg =~ /t/ ? 1 : 0;
+$log  = 1 if $arg =~ /l/;
+$show = 1 if $arg =~ /s/;
+
+my $home = $ENV{HOME} || "";
+my $log4perl_user_conf_file = "$home/.log4config-model";
+
+if ( $log and -e $log4perl_user_conf_file ) {
+    Log::Log4perl::init($log4perl_user_conf_file);
+}
+else {
+    Log::Log4perl->easy_init( $log ? $WARN : $ERROR );
+}
+
 Config::Model::Exception::Any->Trace(1) if $arg =~ /e/;
-
-Log::Log4perl->easy_init($arg =~ /l/ ? $DEBUG: $ERROR);
 
 my $wr_test = 'wr_test' ;
 my $wr_conf1 = "$wr_test/wr_conf1";
 my $wr_model1 = "$wr_test/wr_model1";
+my $wr_model2 = "$wr_test/wr_model2";
 
 sub wr_cds {
     my ($file,$cds) = @_ ;
@@ -48,7 +59,7 @@ ok(1,"compiled");
 rmtree($wr_test) if -d $wr_test ;
 
 # "modern" API of File::Path does not work with perl 5.8.8
-mkpath( [$wr_conf1, $wr_model1, "$wr_conf1/etc/ssh/"] , 0, 0755) ;
+mkpath( [$wr_conf1, $wr_model1, $wr_model2, "$wr_conf1/etc/ssh/"] , 0, 0755) ;
 dircopy('data',$wr_model1) || die "cannot copy model data:$!" ;
 
 # copy test model
@@ -192,6 +203,14 @@ is_deeply([split /\n/,$cds2],\@cds_orig,"Compared the 2 full dumps") ;
 
 my $pdata2 = $meta_root2 -> dump_as_data ;
 print Dumper $pdata2 if $trace ;
+
+my $rw_obj2 = Config::Model::Itself -> new(
+    model_object => $meta_root2,
+    model_dir => $wr_model2,
+    force_write => 1,
+) ;
+
+$rw_obj2 -> write_all();
 
 # create 3rd instance 
 
