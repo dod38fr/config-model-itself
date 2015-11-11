@@ -13,14 +13,18 @@ use File::Path ;
 use File::Basename ;
 use Data::Compare ;
 use Path::Tiny;
+use Mouse::Util::TypeConstraints;
 
 my $logger = Log::Log4perl::get_logger("Backend::Itself");
 
+subtype 'ModelPathTiny' => as 'Object' => where { $_->isa('Path::Tiny') };
+
+coerce 'ModelPathTiny'  => from 'Str'  => via {path($_)} ;
 
 # find all .pl file in model_dir and load them...
 
 has model_object => (is =>'ro', isa =>'Config::Model::Node', required => 1) ;
-has model_dir    => (is =>'ro', isa =>'Str', required => 1 ) ;
+has model_dir    => (is =>'ro', isa => 'ModelPathTiny', required => 1, coerce => 1 ) ;
 has force_write  => (is =>'ro', isa => 'Bool', default => 0) ;
 
 has modified_classes => (
@@ -64,7 +68,7 @@ sub read_app_files {
     my $force_load = shift || 0;
 
     my %apps;
-    foreach my $dir ( path($self->model_dir)->children(qr/\.d$/) ) {
+    foreach my $dir ( $self->model_dir->children(qr/\.d$/) ) {
 
         foreach my $file ( $dir->children() ) {
             next if $file =~ m!/README!;
@@ -109,24 +113,19 @@ sub read_all {
 
     croak "read_all: unexpected parameters ",join(' ', keys %args) if %args ;
 
-    my $dir = $self->model_dir ;
-    unless (-d $dir ) {
-        croak __PACKAGE__," read_all: unknown model dir $dir";
-    }
+    my $dir = $self->model_dir;
+    $dir->mkpath ;
 
     my $root_model_file = $model ;
     $root_model_file =~ s!::!/!g ;
 
     my @files ;
     my $wanted = sub {
-        my $n = $File::Find::name ;
-        push @files, $n if (-f $_ and not /~$/
-                            and $n !~ /CVS/
-                            and $n !~ m!.(svn|orig|pod)$!
-                            and $n =~ m!$dir/$root_model_file!
+        push @files, $_ if ( $_->is_file and /\.pl$/
+                            and m!$dir/$root_model_file!
                            ) ;
     } ;
-    find ($wanted, $dir ) ;
+    $dir->visit($wanted, { recurse => 1} ) ;
 
     my $i = $self->model_object->instance ;
 
@@ -261,7 +260,7 @@ sub get_perl_data_model{
 sub write_app_files {
     my $self = shift;
 
-    my $app_dir = path($self->model_dir);
+    my $app_dir = $self->model_dir;
     my $app_obj = $self->model_object->fetch_element('application');
 
     foreach my $app_name ( $app_obj->fetch_all_indexes ) {
@@ -297,9 +296,7 @@ sub write_all {
 
     my $map = $self->{map} ;
 
-    unless (-d $dir ) {
-        mkpath($dir,0, 0755) || die "Can't mkpath $dir:$!";
-    }
+    $dir->mkpath;
 
     # get list of all classes loaded by the editor
     my %loaded_classes
@@ -351,7 +348,7 @@ sub write_all {
 
         next unless @data ; # don't write empty model
 
-        write_model_file ("$dir/$file", $self->{header}{$file}, \@notes, \@data);
+        write_model_file ($dir->child($file), $self->{header}{$file}, \@notes, \@data);
     }
 
     $self->model_object->instance->clear_changes ;
@@ -629,20 +626,19 @@ __END__
  # structure containing the model to be edited
  my $rw_obj = Config::Model::Itself -> new(
     model_object => $meta_root,
-    model_dir => '/path/to/model_files' ,
+    model_dir => '/path/to/model_files', # can be a Path::Tiny object
  ) ;
 
  # now load the model to be edited
  $rw_obj -> read_all( ) ;
 
  # For Curses UI prepare a call-back to write model
- my $wr_back = sub { $rw_obj->write_all();
+ my $wr_back = sub { $rw_obj->write_all(); }
 
  # create Curses user interface
- my $dialog = Config::Model::CursesUI-> new
-      (
-       store => $wr_back,
-      ) ;
+ my $dialog = Config::Model::CursesUI-> new (
+      store => $wr_back,
+ ) ;
 
  # start Curses dialog to edit the mode
  $dialog->start( $meta_model )  ;
@@ -681,7 +677,8 @@ dedicated to read and write a set of model files.
 
 Creates a new read/write handler. This handler is dedicated to the
 C<model_object> passed with the constructor. This parameter must be a
-L<Config::Model::Node> class.
+L<Config::Model::Node> class. C<model_dir> is either a C<Path::Tiny> object
+or a string.
 
 =head2 Methods
 
@@ -735,6 +732,6 @@ dashed lines. The name of the element is attached to the dashed line.
 
 =head1 SEE ALSO
 
-L<Config::Model>, L<Config::Model::Node>,
+L<Config::Model>, L<Config::Model::Node>, L<Path::Tiny>
 
 =cut
