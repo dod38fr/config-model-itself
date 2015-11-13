@@ -42,7 +42,7 @@ sub Populate {
     my $model_name   = delete $args->{-model_name} ;
     my $root_dir     = delete $args->{-root_dir} ; # used to test the edited model
 
-    $args->{'-title'} ||= "config-model-edit $model_name" ;
+    $args->{'-title'} ||= "cme meta edit $model_name" ;
 
     $cw->SUPER::Populate($args) ;
 
