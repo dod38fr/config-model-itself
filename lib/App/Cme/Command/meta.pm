@@ -130,7 +130,7 @@ sub load_meta_model {
 
     my $meta_inst = $meta_model->instance(
         root_class_name => 'Itself::Model',
-        instance_name   => $root_model . ' model',
+        instance_name   => 'meta',
         check           => $opt->{'force-load'} ? 'no' : 'yes',
     );
 
@@ -176,8 +176,8 @@ sub load_meta_root {
             my $wr_dir = shift || $model_dir ;
             $rw_obj->write_all( );
         } ;
-
-    return ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub);
+    # TODO: remove root_model from list and use $cw_obj->root_model
+    return ($rw_obj, $model_dir, $meta_root, $write_sub);
 }
 
 sub load_meta_plugin {
@@ -211,7 +211,7 @@ sub load_meta_plugin {
 
     $meta_inst->initial_load_stop ;
 
-    $self->load_optional_data($args, $opt, $root_model, $meta_root) ;
+    $self->load_optional_data($args, $opt, $meta_root) ;
 
     my $write_sub = sub {
             $rw_obj->write_model_snippet(
@@ -220,7 +220,7 @@ sub load_meta_plugin {
             );
         } ;
 
-    return ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub);
+    return ($rw_obj, $model_dir, $meta_root, $write_sub);
 }
 
 sub execute {
@@ -229,9 +229,6 @@ sub execute {
     # how to specify root-model when starting from scratch ?
     # ask question and fill application file ?
 
-    my $root_model = $opt->{_root_model};
-    say "Running ",$opt->{_meta_command}, " on $root_model";
-
     my $cmd_sub = $meta_cmd{$opt->{_meta_command}};
 
     $self->$cmd_sub($opt, $args);
@@ -239,14 +236,14 @@ sub execute {
 
 sub save {
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_root($opt, $args) ;
+    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     &$write_sub;
 }
 
 sub gen_dot {
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_root($opt, $args) ;
+    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     my $out = shift @$args || "model.dot";
     say "Creating dot file $out";
@@ -255,10 +252,10 @@ sub gen_dot {
 
 sub dump_cds {
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_root($opt, $args) ;
+    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     my $dump_file = shift @$args || 'model.cds';
-    say "Dumping $root_model in $dump_file";
+    say "Dumping ".$rw_obj->root_model." in $dump_file";
 
     my $dump_string = $meta_root->dump_tree( mode => $opt->{dumptype} || 'custom' ) ;
 
@@ -267,12 +264,12 @@ sub dump_cds {
 
 sub dump_yaml{
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = $self->load_meta_model($opt, $args) ;
+    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_model($opt, $args) ;
 
     require YAML::Tiny;
     import YAML::Tiny qw/Dump/;
     my $dump_file = shift @$args || 'model.yml';
-    say "Dumping $root_model in $dump_file";
+    say "Dumping ".$rw_obj->root_model." in $dump_file";
 
     my $dump_string = Dump($meta_root->dump_as_data(ordered_hash_as_list => 0)) ;
 
@@ -293,8 +290,9 @@ sub edit {
 }
 
 sub _edit {
-    my ($self, $opt, $args, $rw_obj, $model_dir, $meta_root, $root_model, $write_sub) = @_;
+    my ($self, $opt, $args, $rw_obj, $model_dir, $meta_root, $write_sub) = @_;
 
+    my $root_model = $rw_obj->root_model;
     my $mw = MainWindow-> new;
 
     $mw->withdraw ;

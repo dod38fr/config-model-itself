@@ -26,6 +26,7 @@ coerce 'ModelPathTiny'  => from 'Str'  => via {path($_)} ;
 has model_object => (is =>'ro', isa =>'Config::Model::Node', required => 1) ;
 has model_dir    => (is =>'ro', isa => 'ModelPathTiny', required => 1, coerce => 1 ) ;
 has force_write  => (is =>'ro', isa => 'Bool', default => 0) ;
+has root_model   => (is =>'ro', isa => 'str');
 
 has modified_classes => (
     is =>'rw',
@@ -67,8 +68,10 @@ sub read_app_files {
     my $self = shift;
     my $force_load = shift || 0;
 
+    my $app_dir = $self->model_dir->parent;
     my %apps;
-    foreach my $dir ( $self->model_dir->children(qr/\.d$/) ) {
+    $logger->info("reading app file in ".$app_dir);
+    foreach my $dir ( $app_dir->children(qr/\.d$/) ) {
 
         foreach my $file ( $dir->children() ) {
             next if $file =~ m!/README!;
@@ -133,6 +136,7 @@ sub read_all {
     my %pod_data ;
     my %class_file_map ;
 
+    my @all_models;
     for my $file (@files) {
         $logger->info("loading config file $file");
 
@@ -143,6 +147,7 @@ sub read_all {
         # @models order is important to write configuration class back in the same
         # order as the declaration
         my @models = $tmp_model -> load ( 'Tmp' , $file ) ;
+        push @all_models, @models;
 
         my $rel_file = $file ;
         $rel_file =~ s/^$dir\/?//;
@@ -189,6 +194,8 @@ sub read_all {
         }
 
     }
+
+    $self->{root_model} = $model || (sort @all_models)[0];
 
     # Create all classes listed in %read_models to avoid problems with
     # include statement while calling load_data
