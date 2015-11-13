@@ -38,8 +38,17 @@ sub validate_args {
         die "Unexpected meta sub command: '$mc'. Expected ".join(' ', sort keys %meta_cmd)."\n";
     }
 
-    $opt->{'try_application_as_model'} = 1;
-    $self->process_args($opt,$args);
+    my ( $categories, $appli_info, $appli_map ) = Config::Model::Lister::available_models;
+    my $application = shift @$args;
+
+    if ($application) {
+        $opt->{_root_model} = $appli_map->{$application} || $application;
+    }
+
+    Config::Model::Exception::Any->Trace(1) if $opt->{trace};
+
+    $opt->{_application} = $application ;
+
 }
 
 sub opt_spec {
