@@ -24,7 +24,7 @@ coerce 'ModelPathTiny'  => from 'Str'  => via {path($_)} ;
 # find all .pl file in model_dir and load them...
 
 has model_object => (is =>'ro', isa =>'Config::Model::Node', required => 1) ;
-has model_dir    => (is =>'ro', isa => 'ModelPathTiny', required => 1, coerce => 1 ) ;
+has cm_lib_dir    => (is =>'ro', isa => 'ModelPathTiny', required => 1, coerce => 1 ) ;
 has force_write  => (is =>'ro', isa => 'Bool', default => 0) ;
 has root_model   => (is =>'ro', isa => 'str');
 
@@ -40,6 +40,19 @@ has modified_classes => (
         classes_to_write => 'keys' ,
     }
 ) ;
+
+has model_dir => (
+    is => 'ro',
+    isa => 'ModelPathTiny',
+    lazy_build => 1,
+);
+
+sub _build_model_dir {
+    my $self = shift;
+    my $md = $self->cm_lib_dir->child('models');
+    $md->mkpath;
+    return $md;
+}
 
 sub BUILD {
     my $self = shift;

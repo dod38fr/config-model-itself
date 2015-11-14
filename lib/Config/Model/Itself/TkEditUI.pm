@@ -38,7 +38,7 @@ sub ClassInit {
 sub Populate { 
     my ($cw, $args) = @_;
 
-    my $model_dir    = delete $args->{-model_dir} ;
+    my $model_dir    = (delete $args->{-cm_lib_dir})."/models" ;
     my $model_name   = delete $args->{-model_name} ;
     my $root_dir     = delete $args->{-root_dir} ; # used to test the edited model
 

@@ -72,7 +72,7 @@ my $meta_snippet_root = $meta_snippet_inst -> config_root ;
 
 my $snippet_rw_obj = Config::Model::Itself -> new(
     model_object => $meta_snippet_root,
-    model_dir => 'data',
+    cm_lib_dir => 'data',
 ) ;
 
 $meta_snippet_inst->layered_start ;
@@ -155,7 +155,7 @@ ok($meta_snippet_inst2,"Read Itself::Model and created instance for model snippe
 my $meta_snippet_root2 = $meta_snippet_inst2 -> config_root ;
 
 my $snippet_rw_obj2 = Config::Model::Itself -> new(
-    model_dir => 'data',
+    cm_lib_dir => 'data',
     model_object => $meta_snippet_root2,
 ) ;
 

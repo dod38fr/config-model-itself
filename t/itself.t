@@ -72,7 +72,7 @@ my $wanted = sub {
 find ({ wanted =>$wanted, no_chdir=>1} ,'data') ;
 
 
-my $model = Config::Model->new(legacy => 'ignore',model_dir => 'data' ) ;
+my $model = Config::Model->new(legacy => 'ignore',model_dir => 'data/models' ) ;
 ok(1,"loaded Master model") ;
 
 # check that Master Model can be loaded by Config::Model
@@ -109,7 +109,7 @@ my $meta_root = $meta_inst -> config_root ;
 
 my $rw_obj = Config::Model::Itself -> new(
     model_object => $meta_root,
-    model_dir => $wr_model1,
+    cm_lib_dir => $wr_model1,
 ) ;
 
 my $map = $rw_obj -> read_all( 
@@ -206,7 +206,7 @@ print Dumper $pdata2 if $trace ;
 
 my $rw_obj2 = Config::Model::Itself -> new(
     model_object => $meta_root2,
-    model_dir => $wr_model2,
+    cm_lib_dir => $wr_model2,
     force_write => 1,
 ) ;
 
@@ -234,7 +234,7 @@ ok($dump,"Checked dump of one class");
 
 $rw_obj->write_all( ) ;
 
-my $model4 = Config::Model->new(legacy => 'ignore',model_dir => $wr_model1) ;
+my $model4 = Config::Model->new(legacy => 'ignore',model_dir => "$wr_model1/models") ;
 #$model4 -> load ('X_base_class', 'wr_test/MasterModel/X_base_class.pl') ;
 #ok(1,"loaded X_base_class") ;
 #$model4 -> load ('MasterModel' , 'wr_test/MasterModel.pl') ;

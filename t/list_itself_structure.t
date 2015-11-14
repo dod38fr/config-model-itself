@@ -1,3 +1,4 @@
+# -*- cperl -*-
 use ExtUtils::testlib;
 use Test::More tests => 4;
 use Config::Model;
@@ -36,9 +37,9 @@ ok($meta_inst,"Read Itself::Model and created instance") ;
 
 my $meta_root = $meta_inst -> config_root ;
 
-my $model_dir = 'lib/Config/Model/models';
+my $model_dir = 'lib/Config/Model';
 my $rw_obj    = Config::Model::Itself->new(
-    model_dir    => $model_dir,
+    cm_lib_dir   => $model_dir,
     model_object => $meta_root
 );
 

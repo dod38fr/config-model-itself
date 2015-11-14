@@ -60,7 +60,7 @@ my $meta_root = $meta_inst -> config_root ;
 
 my $rw_obj = Config::Model::Itself -> new(
     model_object => $meta_root,
-    model_dir => $wr_model1,
+    cm_lib_dir => $wr_model1,
     force_write => 1, # can put 0 when Config::MOdel 1.214 is used
 ) ;
 
@@ -98,10 +98,10 @@ my $meta_inst2 = $meta_model -> instance (
 ) ;
 my $meta_root2 = $meta_inst2->config_root ;
 $meta_inst2->initial_load_stop ;
-              
+
 ok($meta_root2,"Read Itself::Model and created instance2") ;
 my $rw_obj2 = Config::Model::Itself -> new(
-    model_dir => $wr_model1 ,
+    cm_lib_dir => $wr_model1 ,
     model_object => $meta_root2
 ) ;
 $rw_obj2->read_all(  root_model => 'Master' ) ;

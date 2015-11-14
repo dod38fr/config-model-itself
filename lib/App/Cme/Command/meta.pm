@@ -57,7 +57,7 @@ sub opt_spec {
     return (
 		[
             "dir=s"         => "directory where to read and write a model",
-            {default => 'lib/Config/Model/models'}
+            {default => 'lib/Config/Model'}
         ],
         [
             "dumptype=s" => "dump every values (full), only preset values "
@@ -136,28 +136,27 @@ sub load_meta_model {
 
     my $meta_root = $meta_inst -> config_root ;
 
-    my $system_model_dir = $INC{'Config/Model.pm'} ;
-    $system_model_dir =~ s/\.pm//;
-    $system_model_dir .= '/models' ;
+    my $system_cm_lib_dir = $INC{'Config/Model.pm'} ;
+    $system_cm_lib_dir =~ s/\.pm//;
 
-    return ($meta_inst, $meta_root, $model_dir, $system_model_dir);
+    return ($meta_inst, $meta_root, $model_dir, $system_cm_lib_dir);
 }
 
 sub load_meta_root {
     my ($self, $opt, $args) = @_;
 
-    my ($meta_inst, $meta_root, $model_dir, $system_model_dir) = $self->load_meta_model($opt,$args);
+    my ($meta_inst, $meta_root, $model_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
 
     my $root_model = $opt->{_root_model};
-    my $meta_model_dir = $opt->{system} ? $system_model_dir
+    my $meta_cm_lib_dir = $opt->{system} ? $system_cm_lib_dir
                        :                  $model_dir->canonpath ;
 
-    say "Reading model from $meta_model_dir" if $opt->system();
+    say "Reading model from $meta_cm_lib_dir" if $opt->system();
 
     # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
-        model_dir    => $meta_model_dir,
+        cm_lib_dir   => $meta_cm_lib_dir,
     ) ;
 
     $meta_inst->initial_load_start ;
@@ -176,23 +175,22 @@ sub load_meta_root {
             my $wr_dir = shift || $model_dir ;
             $rw_obj->write_all( );
         } ;
-    # TODO: remove root_model from list and use $cw_obj->root_model
     return ($rw_obj, $model_dir, $meta_root, $write_sub);
 }
 
 sub load_meta_plugin {
     my ($self, $opt, $args) = @_;
 
-    my ($meta_inst, $meta_root, $model_dir, $system_model_dir) = $self->load_meta_model($opt,$args);
+    my ($meta_inst, $meta_root, $model_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
 
     my $root_model = $opt->{_root_model};
-    my $meta_model_dir = $system_model_dir ;
+    my $meta_cm_lib_dir = $system_cm_lib_dir ;
     my $plugin_file = shift @$args or die "missing plugin file";
 
     # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
-        model_dir    => $meta_model_dir,
+        cm_lib_dir   => $meta_cm_lib_dir,
     ) ;
 
     $meta_inst->initial_load_start ;
@@ -327,9 +325,9 @@ __END__
 =head1 SYNOPSIS
 
   # edit meta model
-  cme meta [ options ] edit Sshd
+  cme meta [ options ] edit [ model_class ]
 
-  # plugin mode
+  # model plugin mode
   cme meta [options] plugin Debian::Dpkg dpkg-snippet.pl
 
 =head1 DESCRIPTION
@@ -350,7 +348,7 @@ sub commands are detailed below.
 C<cme meta edit> is the most useful sub command. It will read and
 write model file from C<./lib/Config/Model/models> directory.
 
-Only configuration models matching the 4th parameter will be loaded. I.e.
+Only configuration models matching the optional 4th parameter will be loaded. I.e.
 
   cme meta edit Xorg
 

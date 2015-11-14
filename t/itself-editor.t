@@ -70,7 +70,7 @@ rmtree($wr_test) if -d $wr_test ;
 mkpath([$wr_conf1, $wr_model1, "$wr_conf1/etc/ssh/"], 0, 0755) ;
 dircopy('data',$wr_model1) || die "cannot copy model data:$!" ;
 
-my $model = Config::Model->new(legacy => 'ignore',model_dir => $wr_model1 ) ;
+my $model = Config::Model->new(legacy => 'ignore',model_dir => "$wr_model1/models" ) ;
 ok(1,"loaded Master model") ;
 
 # check that Master Model can be loaded by Config::Model
@@ -100,7 +100,7 @@ my $meta_root = $meta_inst -> config_root ;
 
 my $rw_obj = Config::Model::Itself -> new(
     model_object => $meta_root,
-    model_dir => $wr_model1,
+    cm_lib_dir => $wr_model1,
 ) ;
 
 
@@ -129,7 +129,7 @@ SKIP: {
 
     my $cmu = $mw->ConfigModelEditUI (-root => $meta_root,
                                       -root_dir => $wr_conf1,
-                                      -model_dir => $wr_model1 ,
+                                      -cm_lib_dir => $wr_model1 ,
                                       -store_sub => $write_sub,
                                       -model_name => 'MasterModel',
                                   ) ;
