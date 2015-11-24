@@ -127,6 +127,8 @@ sub read_all {
     my $model = $apps->{$root_model_arg} || $root_model_arg ;
     my $legacy = delete $args{legacy} ;
 
+    my $read_from = delete $args{read_from};
+
     croak "read_all: unexpected parameters ",join(' ', keys %args) if %args ;
 
     my $dir = $self->model_dir;

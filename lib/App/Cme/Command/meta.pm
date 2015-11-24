@@ -149,22 +149,21 @@ sub load_meta_root {
     my ($meta_inst, $meta_root, $model_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
 
     my $root_model = $opt->{_root_model};
-    my $meta_cm_lib_dir = $opt->{system} ? $system_cm_lib_dir
-                       :                  $model_dir->canonpath ;
 
-    say "Reading model from $meta_cm_lib_dir" if $opt->system();
+    say "Reading model from $system_cm_lib_dir" if $opt->system();
 
     # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
-        cm_lib_dir   => $meta_cm_lib_dir,
-    ) ;
+        cm_lib_dir   => $model_dir->canonpath
+    );
 
     $meta_inst->initial_load_start ;
 
     $rw_obj->read_all(
         force_load => $opt->{'force-load'},
         root_model => $root_model,
+        $opt->{system} ? (read_from => $system_cm_lib_dir) : ()
         # legacy     => 'ignore',
     );
 
