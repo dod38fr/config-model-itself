@@ -21,6 +21,7 @@ use Config::Model::Itself::TkEditUI ;
 use Path::Tiny ;
 
 my %meta_cmd = (
+    check => \&check,
     dump => \&dump_cds,
     'dump-yaml' => \&dump_yaml,
     'gen-dot' => \&gen_dot,
@@ -248,6 +249,26 @@ sub gen_dot {
     path($out) -> spew( $rw_obj->get_dot_diagram );
 }
 
+sub check {
+    my ($self, $opt, $args) = @_;
+
+    say "loading model" unless $opt->{quiet};
+    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
+
+    Config::Model::ObjTreeScanner->new( leaf_cb => sub { } )->scan_node( undef, $meta_root );
+
+    say "checking data" unless $opt->{quiet};
+    $meta_root->dump_tree( mode => 'full' );
+    say "check done" unless $opt->{quiet};
+
+    my $ouch = $meta_root->instance->has_warning;
+
+    if ( $opt->{strict} and $ouch ) {
+        die "Found $ouch warnings in strict mode\n";
+    }
+
+}
+
 sub dump_cds {
     my ($self, $opt, $args) = @_;
     my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
@@ -327,6 +348,9 @@ __END__
   # edit meta model
   cme meta [ options ] edit [ model_class ]
 
+  # check meta model
+  cme meta [ options ] check [ model_class ]
+
   # model plugin mode
   cme meta [options] plugin Debian::Dpkg dpkg-snippet.pl
 
@@ -356,6 +380,11 @@ will load models C<Xorg> (file C<Xorg.pl>) and all other C<Xorg::*> like
 C<Xorg::Screen> (file C<Xorg/Screen.pl>).
 
 Besides C<edit>, the following sub commands are available:
+
+=head2 check
+
+C<cme meta check> reads the model files from
+C<./lib/Config/Model/models> directory and checks their validity.
 
 =head2 plugin
 
@@ -487,8 +516,8 @@ named C<Config::Model::DogFooding>).
 This explains why the GUI shown by C<cme meta edit> looks like the GUI
 shown by C<cme edit>: the same GUI generator is used>.
 
-If you're new to L<Config::Model>, I'd advise not to peek under this
-hood lest you'll loose your sanity.
+If you're new to L<Config::Model>, I'd advise not to peek under
+C<Config::Model::Itself> hood lest you'll loose your sanity.
 
 =head1 AUTHOR
 
