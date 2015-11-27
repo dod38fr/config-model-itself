@@ -80,19 +80,23 @@ sub add_modified_class {
 sub read_app_files {
     my $self = shift;
     my $force_load = shift || 0;
+    my $read_from =  shift ;
+    my $application = shift ;
 
-    my $app_dir = $self->model_dir->parent;
+    my $app_dir = $read_from || $self->model_dir->parent;
     my %apps;
-    $logger->info("reading app file in ".$app_dir);
+    $logger->info("reading app files from ".$app_dir);
     foreach my $dir ( $app_dir->children(qr/\.d$/) ) {
 
+        $logger->info("reading app dir ".$dir);
         foreach my $file ( $dir->children() ) {
             next if $file =~ m!/README!;
             next if $file =~ /(~|\.bak|\.orig)$/;
+            next if $application and $file->basename ne $application;
 
             # bad categories are filtered by the model
             my %data = ( category => $dir->basename('.d') );
-            $logger->info("reading file ".$file);
+            $logger->info("reading app file ".$file);
 
             foreach ($file->lines({ chomp => 1})) {
                 s/^\s+//;
@@ -121,13 +125,20 @@ sub read_all {
     my %args = @_ ;
 
     my $force_load = delete $args{force_load} || 0 ;
-    my $apps = $self-> read_app_files($force_load);
+    my $read_from ;
+    my $model_dir ;
+    if ($args{read_from}) {
+        $read_from = path (delete $args{read_from});
+        die "Cannot read from unknown dir ".$read_from unless $read_from->is_dir;
+        $model_dir = $read_from->child('models');
+        die "Cannot read from unknown dir ".$model_dir unless $model_dir->is_dir;
+    }
+
+    my $apps = $self-> read_app_files($force_load, $read_from, delete $args{application});
 
     my $root_model_arg = delete $args{root_model} || '';
     my $model = $apps->{$root_model_arg} || $root_model_arg ;
     my $legacy = delete $args{legacy} ;
-
-    my $read_from = delete $args{read_from};
 
     croak "read_all: unexpected parameters ",join(' ', keys %args) if %args ;
 
@@ -136,6 +147,8 @@ sub read_all {
 
     my $root_model_file = $model ;
     $root_model_file =~ s!::!/!g ;
+    my $read_dir = $model_dir || $dir;
+    $logger->info("searching model files in ".$read_dir);
 
     my @files ;
     my $wanted = sub {
@@ -143,7 +156,7 @@ sub read_all {
                             and m!$dir/$root_model_file!
                            ) ;
     } ;
-    $dir->visit($wanted, { recurse => 1} ) ;
+    $read_dir->visit($wanted, { recurse => 1} ) ;
 
     my $i = $self->model_object->instance ;
 
@@ -165,7 +178,7 @@ sub read_all {
         push @all_models, @models;
 
         my $rel_file = $file ;
-        $rel_file =~ s/^$dir\/?//;
+        $rel_file =~ s/^$read_dir\/?//;
         die "wrong reg_exp" if $file eq $rel_file ;
         $class_file_map{$rel_file} = \@models ;
 

@@ -160,12 +160,17 @@ sub load_meta_root {
 
     $meta_inst->initial_load_start ;
 
-    $rw_obj->read_all(
+    my @read_args = (
         force_load => $opt->{'force-load'},
         root_model => $root_model,
-        $opt->{system} ? (read_from => $system_cm_lib_dir) : ()
         # legacy     => 'ignore',
     );
+    if ($opt->system()) {
+        push @read_args,
+            application => $opt->{_application},
+            read_from => $system_cm_lib_dir ;
+    }
+    $rw_obj->read_all(@read_args);
 
     $meta_inst->initial_load_stop ;
 
