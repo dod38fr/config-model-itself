@@ -153,7 +153,7 @@ sub read_all {
     my @files ;
     my $wanted = sub {
         push @files, $_ if ( $_->is_file and /\.pl$/
-                            and m!$dir/$root_model_file!
+                            and m!$read_dir/$root_model_file\b!
                            ) ;
     } ;
     $read_dir->visit($wanted, { recurse => 1} ) ;
