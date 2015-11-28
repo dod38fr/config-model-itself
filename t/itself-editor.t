@@ -161,7 +161,7 @@ SKIP: {
             my $next_sub = $oldsub ;
             my $s = sub {
                 my $res = &$t;
-                ok($res,"Step ".$step++." $k done");
+                ok($res,"Tk UI step ".$step++." $k done");
                 $mw->after($delay, $next_sub) if defined $next_sub;
             };
             $oldsub = $s ;
