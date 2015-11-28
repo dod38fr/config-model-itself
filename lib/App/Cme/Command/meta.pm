@@ -121,10 +121,10 @@ sub load_meta_model {
     my ($self, $opt, $args) = @_;
 
     my $root_model = $opt->{_root_model};
-    my $model_dir = path(split m!/!, $opt->{dir}) ;
+    my $cm_lib_dir = path(split m!/!, $opt->{dir}) ; # replace with cm_lib_dir ???
 
-    if (! $model_dir->is_dir) {
-        $model_dir->mkpath(0, 0755) || die "can't create $model_dir:$!";
+    if (! $cm_lib_dir->is_dir) {
+        $cm_lib_dir->mkpath(0, 0755) || die "can't create $cm_lib_dir:$!";
     }
 
     my $meta_model = $self->{meta_model} = Config::Model -> new();
@@ -140,13 +140,13 @@ sub load_meta_model {
     my $system_cm_lib_dir = $INC{'Config/Model.pm'} ;
     $system_cm_lib_dir =~ s/\.pm//;
 
-    return ($meta_inst, $meta_root, $model_dir, $system_cm_lib_dir);
+    return ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir);
 }
 
 sub load_meta_root {
     my ($self, $opt, $args) = @_;
 
-    my ($meta_inst, $meta_root, $model_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
+    my ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
 
     my $root_model = $opt->{_root_model};
 
@@ -155,7 +155,7 @@ sub load_meta_root {
     # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
-        cm_lib_dir   => $model_dir->canonpath
+        cm_lib_dir   => $cm_lib_dir->canonpath
     );
 
     $meta_inst->initial_load_start ;
@@ -172,16 +172,16 @@ sub load_meta_root {
     $self->load_optional_data($args, $opt, $root_model, $meta_root) ;
 
     my $write_sub = sub {
-            my $wr_dir = shift || $model_dir ;
+            my $wr_dir = shift || $cm_lib_dir ;
             $rw_obj->write_all( );
         } ;
-    return ($rw_obj, $model_dir, $meta_root, $write_sub);
+    return ($rw_obj, $cm_lib_dir, $meta_root, $write_sub);
 }
 
 sub load_meta_plugin {
     my ($self, $opt, $args) = @_;
 
-    my ($meta_inst, $meta_root, $model_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
+    my ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
 
     my $root_model = $opt->{_root_model};
     my $meta_cm_lib_dir = $system_cm_lib_dir ;
@@ -205,7 +205,7 @@ sub load_meta_plugin {
     $meta_inst->layered_stop;
 
     # load any existing plugin file
-    $rw_obj->read_model_snippet(snippet_dir => $model_dir, model_file => $plugin_file) ;
+    $rw_obj->read_model_snippet(snippet_dir => $cm_lib_dir, model_file => $plugin_file) ;
 
     $meta_inst->initial_load_stop ;
 
@@ -213,12 +213,12 @@ sub load_meta_plugin {
 
     my $write_sub = sub {
             $rw_obj->write_model_snippet(
-                snippet_dir => $model_dir,
+                snippet_dir => $cm_lib_dir,
                 model_file => $opt->{'plugin_file'}
             );
         } ;
 
-    return ($rw_obj, $model_dir, $meta_root, $write_sub);
+    return ($rw_obj, $cm_lib_dir, $meta_root, $write_sub);
 }
 
 sub execute {
@@ -234,14 +234,14 @@ sub execute {
 
 sub save {
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
+    my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     &$write_sub;
 }
 
 sub gen_dot {
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
+    my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     my $out = shift @$args || "model.dot";
     say "Creating dot file $out";
@@ -252,7 +252,7 @@ sub check {
     my ($self, $opt, $args) = @_;
 
     say "loading model" unless $opt->{quiet};
-    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
+    my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     Config::Model::ObjTreeScanner->new( leaf_cb => sub { } )->scan_node( undef, $meta_root );
 
@@ -270,7 +270,7 @@ sub check {
 
 sub dump_cds {
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
+    my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     my $dump_file = shift @$args || 'model.cds';
     say "Dumping ".$rw_obj->root_model." in $dump_file";
@@ -282,7 +282,7 @@ sub dump_cds {
 
 sub dump_yaml{
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $model_dir, $meta_root, $write_sub) = $self->load_meta_model($opt, $args) ;
+    my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_model($opt, $args) ;
 
     require YAML::Tiny;
     import YAML::Tiny qw/Dump/;
@@ -308,7 +308,7 @@ sub edit {
 }
 
 sub _edit {
-    my ($self, $opt, $args, $rw_obj, $model_dir, $meta_root, $write_sub) = @_;
+    my ($self, $opt, $args, $rw_obj, $cm_lib_dir, $meta_root, $write_sub) = @_;
 
     my $root_model = $rw_obj->root_model;
     my $mw = MainWindow-> new;
@@ -321,6 +321,7 @@ sub _edit {
         -root       => $meta_root,
         -store_sub  => $write_sub,
         -model_name => $root_model,
+        -cm_lib_dir => $cm_lib_dir
     );
 
     my $open_item = $opt->{'open-item'};

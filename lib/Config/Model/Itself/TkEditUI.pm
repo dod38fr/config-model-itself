@@ -38,7 +38,7 @@ sub ClassInit {
 sub Populate { 
     my ($cw, $args) = @_;
 
-    my $model_dir    = (delete $args->{-cm_lib_dir})."/models" ;
+    my $cm_lib_dir    = (delete $args->{-cm_lib_dir})."/models" ;
     my $model_name   = delete $args->{-model_name} ;
     my $root_dir     = delete $args->{-root_dir} ; # used to test the edited model
 
@@ -51,7 +51,7 @@ sub Populate {
 
     my $model_menu = $cw->{my_menu}->cascade(-label => 'Model',
 					     -menuitems => $items) ;
-    $cw->{model_dir} = $model_dir ;
+    $cw->{cm_lib_dir} = $cm_lib_dir ;
     $cw->{model_name} = $model_name ;
     $cw->{root_dir} = $root_dir ;
 }
@@ -88,7 +88,7 @@ sub _launch_test {
     $testw->destroy if defined $testw and Tk::Exists($testw);
 
     # need to read test model from where it was written...
-    my $model = Config::Model -> new(model_dir => $cw->{model_dir}) ;
+    my $model = Config::Model -> new(model_dir => $cw->{cm_lib_dir}) ;
 
     # keep a reference on this object, otherwise it will vanish at the end of this block.
     $cw->{test_model} =  $model ;
