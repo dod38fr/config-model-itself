@@ -330,7 +330,7 @@ sub _edit {
     );
 
     my $open_item = $opt->{'open-item'};
-    if (not $meta_root->fetch_element('class')->fetch_size) {
+    if ($root_model and not $meta_root->fetch_element('class')->fetch_size) {
         $open_item ||=  qq(class:"$root_model" );
     }
     else {
