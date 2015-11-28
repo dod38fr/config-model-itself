@@ -1,8 +1,9 @@
 
-Config::Model::Itself - Model editor for Config::Model 
 
-This module provides a graphical editor to edit configuration model
-for Config:Model. 
+## What is Config::Model::Itself ##
+
+Config::Model::Itself provides a graphical editor to edit configuration model
+for Config::Model. 
 
 This modules also provides a model for Config::Model (hence the Itself
 name, you can also think of it as a meta-model).  The editor will use
@@ -26,35 +27,37 @@ Hence the possibity to verify, modify configuration data provided by
 Config::Model can also be applied on configuration models. Using the
 same user interface.
 
-The model editor is launched by "cme meta edit"
+## How to run the editor ##
+
+The model editor is launched by `cme meta edit`
 
 Since the model editor and the configuration data editor are based on
 the same graphical module, you will use similar UIs to edit
-configuration data (for instance OpenSsh configuration data from
-sshd_config) and OpenSsh model (if you need to add new parameters in
+configuration data (for instance [OpenSsh](http://search.cpan.org/dist/Config-Model-OpenSsh/)
+configuration data from sshd_config) and OpenSsh model (if you need to add new parameters in
 OpenSsh model)
 
-Once this module is installed, you can run "cme meta edit" in an empty
+Once this module is installed, you can run `cme meta edit` in an empty
 directory to create you own model.
 
 You can also start from an existing model. Clone from github a model
-(like config-model-openssh), jump in the cloned directory and run
-"cme meta edit"
+(like [config-model-openssh](https://github.com/dod38fr/config-model-openssh)),
+jump in the cloned directory and run `cme meta edit`
 
 You can also peek in an installed model. For instance, if you have installed
 Config::Model::OpenSsh, you can run
 
-  # cme meta edit sshd -system
 
+    cme meta edit sshd -system
+  
 Note that "save" menu will save the model in current directory.
 
----------------------------------------------------------------------
-INSTALLATION
+## Installation
 
 On debian/ubuntu:
 
-  apt-get install libconfig-model-itself-perl
+    apt-get install libconfig-model-itself-perl
 
 Otherwise:
 
-  cpanm Config::Model::Itself
+    cpanm Config::Model::Itself
