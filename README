@@ -26,7 +26,7 @@ Hence the possibity to verify, modify configuration data provided by
 Config::Model can also be applied on configuration models. Using the
 same user interface.
 
-The model editor program is config-model-edit.
+The model editor is launched by "cme meta edit"
 
 Since the model editor and the configuration data editor are based on
 the same graphical module, you will use similar UIs to edit
@@ -34,33 +34,27 @@ configuration data (for instance OpenSsh configuration data from
 sshd_config) and OpenSsh model (if you need to add new parameters in
 OpenSsh model)
 
-Once this module is installed, you can run:
+Once this module is installed, you can run "cme meta edit" in an empty
+directory to create you own model.
 
-  # config-model-edit -model <model_name>
+You can also start from an existing model. Clone from github a model
+(like config-model-openssh), jump in the cloned directory and run
+"cme meta edit"
 
-For instance, if you have installed Config::Model::OpenSsh, you can run
+You can also peek in an installed model. For instance, if you have installed
+Config::Model::OpenSsh, you can run
 
-  # config-model-edit -model OpenSsh
+  # cme meta edit sshd -system
 
-If you save OpenSsh configuration model, it will create a lib directory and
-write the modified model there.
-
-
---------------------------------------------------------------------
-
-AUTHOR
-    Copyright (c) 2007-2009 Dominique Dumont.
-
-    This file is part of Config-Model-Itself.
+Note that "save" menu will save the model in current directory.
 
 ---------------------------------------------------------------------
 INSTALLATION
 
-   	tar zxvf <dist_file>.tar.gz 
-   	cd <dist_directory>
-   	perl Build.PL
-	./Build test
+On debian/ubuntu:
 
-If you want to install this software without packaging, type also:
+  apt-get install libconfig-model-itself-perl
 
-        ./Build install
+Otherwise:
+
+  cpanm Config::Model::Itself
