@@ -39,21 +39,22 @@ sub Populate {
     my ($cw, $args) = @_;
 
     my $cm_lib_dir    = (delete $args->{-cm_lib_dir})."/models" ;
-    my $model_name   = delete $args->{-model_name} ;
+    my $model_name   = delete $args->{-model_name} || '';
     my $root_dir     = delete $args->{-root_dir} ; # used to test the edited model
 
     $args->{'-title'} ||= "cme meta edit $model_name" ;
 
     $cw->SUPER::Populate($args) ;
 
-    my $items = [[ qw/command test -command/, sub{ $cw->test_model }],
-		] ;
+    my $items = [[ qw/command test -command/, sub{ $cw->test_model }] ] ;
 
     my $model_menu = $cw->{my_menu}->cascade(-label => 'Model',
 					     -menuitems => $items) ;
     $cw->{cm_lib_dir} = $cm_lib_dir ;
     $cw->{model_name} = $model_name ;
     $cw->{root_dir} = $root_dir ;
+
+    $cw->show_message("Add a name in Class to create your model") unless $model_name;
 }
 
 sub test_model {
