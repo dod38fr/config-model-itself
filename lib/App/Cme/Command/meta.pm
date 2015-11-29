@@ -10,7 +10,7 @@ use App::Cme -command ;
 
 use base qw/App::Cme::Common/;
 
-use Config::Model;
+use Config::Model 2.075;
 
 use Config::Model::Itself ;
 use YAML::Tiny;
