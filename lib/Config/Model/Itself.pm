@@ -295,7 +295,7 @@ sub get_perl_data_model{
 sub write_app_files {
     my $self = shift;
 
-    my $app_dir = $self->model_dir;
+    my $app_dir = $self->cm_lib_dir;
     my $app_obj = $self->model_object->fetch_element('application');
 
     foreach my $app_name ( $app_obj->fetch_all_indexes ) {
