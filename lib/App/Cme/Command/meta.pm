@@ -42,7 +42,14 @@ sub validate_args {
     my ( $categories, $appli_info, $appli_map ) = Config::Model::Lister::available_models;
     my $application = shift @$args;
 
-    if ($application) {
+    if ($mc eq 'plugin') {
+        unless ($application) {
+            die "Missing application name after 'plugin' command";
+        }
+        $opt->{_root_model} = $appli_map->{$application}
+            || die "Unknown application $application";
+    }
+    elsif ($application) {
         $opt->{_root_model} = $appli_map->{$application} || $application;
     }
 
@@ -187,12 +194,13 @@ sub load_meta_root {
 sub load_meta_plugin {
     my ($self, $opt, $args) = @_;
 
-    my ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
+    my ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir) = $self->load_meta_model($opt, $args);
 
     my $root_model = $opt->{_root_model};
     my $meta_cm_lib_dir = $system_cm_lib_dir ;
-    my $plugin_file = shift @$args or die "missing plugin file";
+    my $plugin_file = shift @$args or die "missing plugin file name after application name.";
 
+    say "Preparing plugin for model $root_model";
     # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
@@ -215,12 +223,12 @@ sub load_meta_plugin {
 
     $meta_inst->initial_load_stop ;
 
-    $self->load_optional_data($args, $opt, $meta_root) ;
+    $self->load_optional_data($args, $opt, $root_model, $meta_root) ;
 
     my $write_sub = sub {
             $rw_obj->write_model_snippet(
                 snippet_dir => $cm_lib_dir,
-                model_file => $opt->{'plugin_file'}
+                model_file => $plugin_file
             );
         } ;
 
