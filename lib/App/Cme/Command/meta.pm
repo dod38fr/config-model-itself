@@ -242,6 +242,7 @@ sub save {
     my ($self, $opt, $args) = @_;
     my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
+    say "Saving ",$rw_obj->root_model. ' model'. ($opt->dir ? ' in '.$opt->dir : '');
     &$write_sub;
 }
 
