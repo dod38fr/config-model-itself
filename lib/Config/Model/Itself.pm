@@ -401,7 +401,7 @@ sub write_model_snippet {
     my $model = $self->model_object->dump_as_data ;
     # print (Dumper( $model)) ;
 
-    my @raw_data = @{$model->{class}} ;
+    my @raw_data = @{$model->{class} || []} ;
     while (@raw_data) {
         my ( $class , $data ) = splice @raw_data,0,2 ;
         $data ->{name} = $class ;
