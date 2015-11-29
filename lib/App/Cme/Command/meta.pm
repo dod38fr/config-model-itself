@@ -70,7 +70,7 @@ sub opt_spec {
         [ "load-yaml=s"   => "load model from YAML file" ],
         [ "load=s"        => "load model from cds file (Config::Model serialisation file)"],
         [ "system!"       => "read model from system files" ],
-        [ "test-and-quit!" => "quit after 1 second. Used for tests" ],
+        [ "test-and-quit=s" => "Used for tests" ],
         $class->cme_global_options()
     );
 }
@@ -342,8 +342,17 @@ sub _edit {
     my $obj = $meta_root->grab($open_item) ;
     $cmu->after(10, sub { $cmu->force_element_display($obj) });
 
-    if ( $opt->test_and_quit ) {
-         $cmu->after( 1000 , sub { $cmu->quit });
+    if (my $taq = $opt->test_and_quit ) {
+        $cmu->after( 1000 , sub {
+            if ($taq =~ /s/) {
+                say "Test mode: save and quit";
+               $cmu->save( sub {$cmu -> quit;});
+            }
+            else {
+                say "Test mode: quit only";
+                $cmu->quit;
+            }
+        });
     }
     &MainLoop ; # Tk's
 
