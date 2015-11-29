@@ -52,6 +52,12 @@ Config::Model::OpenSsh, you can run
   
 Note that "save" menu will save the model in current directory.
 
+For more details, see:
+
+* [cme](http://search.cpan.org/dist/App-Cme/bin/cme)
+* [App::Cme::Command::meta](http://search.cpan.org/dist/Config-Model-Itself/lib/App/Command/Cme/meta.pod)
+* [model creation](http://search.cpan.org/dist/Config-Model/lib/Config/Model/Manual/ModelCreationIntroduction.pod)
+
 ## Installation
 
 On debian/ubuntu:
