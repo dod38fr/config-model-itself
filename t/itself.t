@@ -48,8 +48,6 @@ sub wr_cds {
     close CDS ;
 }
 
-plan tests => 19 ; # avoid double print of plan when exec is run
-
 my $meta_model = Config::Model -> new ( ) ;# model_dir => '.' );
 
 Config::Model::Exception::Any->Trace(1) if $arg =~ /e/;
@@ -258,3 +256,5 @@ is(scalar @elt4,scalar @elt1,"Check number of elements of root4") ;
 # require Tk::ObjScanner; Tk::ObjScanner::scan_object($meta_model) ;
 
 memory_cycle_ok($model);
+
+done_testing;
