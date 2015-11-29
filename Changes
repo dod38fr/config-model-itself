@@ -1,5 +1,24 @@
 {{$NEXT}}
 
+2.001 2015-11-29
+
+  Major feature enhancement:
+
+  This modules provides a new sub command for cme: the "meta" sub
+  command. By default "cme meta edit" opens a graphical editor and
+  loads the model found in current directory. "cme meta" also provides
+  sub commands to check a model or to create a dot diagram showing a
+  model structure. "cme meta" comes with bash completion. See
+  App::Cme::Command::meta for more details.
+
+  Other changes:
+
+    + new App::Cmd dependency
+    * requires Config::Model 2.075
+    * config-model-edit is now deprecated in favor of "cme meta edit"
+    * updated README in changed it to README.md
+    * "cme edit" now support app files (e.g. files in lib/Config/Model/*.d )
+
 1.245 2015-07-19
 
   Bug fixes in config-model-edit:
