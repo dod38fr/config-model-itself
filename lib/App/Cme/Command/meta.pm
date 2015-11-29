@@ -288,7 +288,7 @@ sub dump_cds {
 
 sub dump_yaml{
     my ($self, $opt, $args) = @_;
-    my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_model($opt, $args) ;
+    my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
     require YAML::Tiny;
     import YAML::Tiny qw/Dump/;
