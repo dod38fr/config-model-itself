@@ -13,6 +13,7 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy);
 
 use App::Cmd::Tester;
 use App::Cme ;
+use Tk;
 
 my $arg = shift || '';
 my ( $log, $show ) = (0) x 2;
@@ -25,31 +26,39 @@ Config::Model::Exception::Any->Trace(1) if $arg =~ /e/;
 # Tk widgets created one after the other interacts badly and the save
 # callback of -save-and-quit option is not called after the first test.
 
-my $wr_test = path('wr_test/plugin-ui') ;
+SKIP: {
+    my $mw = eval { MainWindow-> new ; };
 
-$wr_test->remove_tree if $wr_test->is_dir;
+    # cannot create Tk window
+    skip "Cannot create Tk window",1 if $@;
+    $mw->destroy ;
 
-$wr_test->mkpath;
+    my $wr_test = path('wr_test/plugin-ui') ;
 
-{
-    # test plugin
-    my $plug_data = q!class:"Fstab::CommonOptions" element:async mandatory=1 !;
-    my $plug = $wr_test->child('plug.cds');
-    $plug->spew($plug_data);
+    $wr_test->remove_tree if $wr_test->is_dir;
 
-    my $result = test_app(
-        'App::Cme' => [
-            qw/meta plugin fstab my-plugin.pl/,
-            '-test-and-quit' => 's',
-            '-load' => $plug->stringify,
-            '-dir' => $wr_test->stringify,
-        ]
-    ) ;
+    $wr_test->mkpath;
 
-    like($result->stdout , qr/Preparing plugin for model Fstab/, "edit plugin and quit");
-    like($result->stdout , qr/Test mode: save and quit/, "edit plugin is in test mode");
-    my $plug_out = $wr_test->child('Fstab/CommonOptions.d/my-plugin.pl');
-    file_contents_like $plug_out,  qr/'mandatory' => '1'/, "check content of $plug_out";
+    {
+        # test plugin
+        my $plug_data = q!class:"Fstab::CommonOptions" element:async mandatory=1 !;
+        my $plug = $wr_test->child('plug.cds');
+        $plug->spew($plug_data);
+
+        my $result = test_app(
+            'App::Cme' => [
+                qw/meta plugin fstab my-plugin.pl/,
+                '-test-and-quit' => 's',
+                '-load' => $plug->stringify,
+                '-dir' => $wr_test->stringify,
+            ]
+        ) ;
+
+        like($result->stdout , qr/Preparing plugin for model Fstab/, "edit plugin and quit");
+        like($result->stdout , qr/Test mode: save and quit/, "edit plugin is in test mode");
+        my $plug_out = $wr_test->child('Fstab/CommonOptions.d/my-plugin.pl');
+        file_contents_like $plug_out,  qr/'mandatory' => '1'/, "check content of $plug_out";
+    }
 }
 
 done_testing;
