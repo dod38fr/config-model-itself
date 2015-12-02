@@ -176,5 +176,6 @@ SKIP: {
 
 }
 
+memory_cycle_ok($model,"memory cycles");
 
-memory_cycle_ok($model);
+
