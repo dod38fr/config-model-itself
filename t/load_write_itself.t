@@ -32,15 +32,6 @@ my $wr_test = "wr_test" ;
 rmtree($wr_test) if -d $wr_test ;
 mkdir($wr_test) ;
 
-# copy test model
-my $wanted = sub { 
-    return if /data$|~$/ ;
-    s!data/!! ;
-    -d $File::Find::name && mkpath( ["$wr_test/$_"], 0, 0755) ;
-    -f $File::Find::name && copy($File::Find::name,"$wr_test/$_") ;
-};
-find ({ wanted =>$wanted, no_chdir=>1} ,'data') ;
-
 my $inst = $meta_model->instance (root_class_name   => 'Itself::Model', 
 				  instance_name     => 'itself_instance',
 				  root_dir          => $wr_test,
@@ -51,7 +42,7 @@ my $root = $inst -> config_root ;
 
 # copy itself model
 my $model_dir = 'lib/Config/Model';
-$wanted = sub { 
+my $wanted = sub {
     -d $File::Find::name && mkpath( ["$wr_test/$_"], 0, 0755) ;
     -f $File::Find::name && copy($File::Find::name,"$wr_test/$_") ;
 };
