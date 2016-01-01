@@ -46,7 +46,9 @@ my $wanted = sub {
     -d $File::Find::name && mkpath( ["$wr_test/$_"], 0, 0755) ;
     -f $File::Find::name && copy($File::Find::name,"$wr_test/$_") ;
 };
-find ({ wanted =>$wanted, no_chdir=>1} , $model_dir ) ;
+# start copy *below* models.
+# See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=809294
+find ({ wanted => $wanted, no_chdir => 1} , $model_dir.'/models' ) ;
 
 my $rw_obj    = Config::Model::Itself->new(
     cm_lib_dir  => "$wr_test/$model_dir",
