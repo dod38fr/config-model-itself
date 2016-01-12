@@ -53,7 +53,7 @@ my @choices = $backend->get_choice ;
 ok( (scalar grep { $_ eq 'Yaml'} @choices), "Yaml plugin backend was found") ;
 
 my $help = $backend->get_help('Yaml') ;
-like($help,qr/provided by Config::Model::Backend::Yaml/,
+like($help,qr/provided by L<Config::Model::Backend::Yaml>/,
    "Found Yaml NAME section from pod") ;
 
 $help = $backend->get_help('cds_file') ;

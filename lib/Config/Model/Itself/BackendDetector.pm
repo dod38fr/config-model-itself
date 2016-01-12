@@ -62,7 +62,7 @@ sub set_help {
 		my $c = $head1->content();
 		$c =~ s/.*?-\s*//;
 		$c =~ s/\n//g;
-		$help->{$n} = $c . " provided by $perl_name"."::".$n;
+		$help->{$n} = $c . " provided by L<$perl_name>";
 		last;
 	    }
 	}
