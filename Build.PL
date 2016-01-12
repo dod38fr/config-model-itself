@@ -37,7 +37,8 @@ my $class = Module::Build->subclass(
 sub ACTION_build {
     my $self = shift;
     # below requires Config::Model 2.028
-    system ($^X, qw!-S cme gen-class-pod Itself::Class!) ;
+    system ($^X, '-MConfig::Model::Utils::GenClassPod', '-e','gen_class_pod();') == 0
+                    or die "gen-class-pod failed: $?";
     $self->SUPER::ACTION_build;
 }
 SUBCLASS
