@@ -61,6 +61,7 @@ sub BUILD {
         my %args = @_ ;
         my $p = $args{path} || '' ;
         return unless $p =~ /^class/ ;
+        return unless $args{index}; # may be empty when class order is changed
         return if $self->class_was_changed($args{index}) ;
         $logger->info("class $args{index} was modified");
 
