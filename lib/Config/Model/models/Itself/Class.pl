@@ -451,7 +451,7 @@
                 value_type => 'reference' ,
                 refer_to => '- - element' ,
                 description => 'specify where to insert accepted element. This will'
-                 . ' change the behavior but will help generating more consistent '
+                 . ' not change the behavior but will help generating more consistent '
                  . ' user interfaces'
              }
 
