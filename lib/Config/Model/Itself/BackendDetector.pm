@@ -30,7 +30,7 @@ sub setup_enum_choice {
         my $path = "$inc/Config/Model/Backend" ;
         find ($wanted, $path ) if -d $path;
     }
-    
+
     $self->SUPER::setup_enum_choice(sort keys %choices) ;
 }
 
@@ -46,26 +46,26 @@ sub set_help {
 
     my $wanted = sub { 
         my $n = $File::Find::name ;
-	
+
         return unless (-f $n and $n !~ /Any\.pm$/) ;
         my $file = $n ;
-	$n =~ s/\.pm$//;
-	$n =~ s!/!::!g ;
-	my $perl_name = $n ;
-	$n =~ s!.*Backend::!! ;
-	$perl_name =~ s!.*Config!Config! ;
+        $n =~ s/\.pm$//;
+        $n =~ s!/!::!g ;
+        my $perl_name = $n ;
+        $n =~ s!.*Backend::!! ;
+        $perl_name =~ s!.*Config!Config! ;
 
-	my $pom = $parser->parse_file($file)|| die $parser->error();
+        my $pom = $parser->parse_file($file)|| die $parser->error();
 
-	foreach my $head1 ($pom->head1()) {
-	    if ($head1->title() eq 'NAME') {
-		my $c = $head1->content();
-		$c =~ s/.*?-\s*//;
-		$c =~ s/\n//g;
-		$help->{$n} = $c . " provided by L<$perl_name>";
-		last;
-	    }
-	}
+        foreach my $head1 ($pom->head1()) {
+            if ($head1->title() eq 'NAME') {
+                my $c = $head1->content();
+                $c =~ s/.*?-\s*//;
+                $c =~ s/\n//g;
+                $help->{$n} = $c . " provided by L<$perl_name>";
+                last;
+            }
+        }
     };
 
     find ($wanted, $path ) ;
