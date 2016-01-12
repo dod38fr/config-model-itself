@@ -189,20 +189,21 @@
                 type         => 'leaf',
                 class        => 'Config::Model::Itself::BackendDetector',
                 value_type   => 'enum',
-                choice       => [qw/cds_file perl_file ini_file custom/],
+                choice       => [qw/cds_file perl_file custom/],
+                replace   => {
+                    perl => 'perl_file',
+                    ini  => 'IniFile',
+                    ini_file  => 'IniFile',
+                    cds  => 'cds_file',
+                },
                 migrate_from => {
                     formula   => '$old',
                     variables => { old => '- syntax' },
-                    replace   => {
-                        perl => 'perl_file',
-                        ini  => 'ini_file',
-                        cds  => 'cds_file',
-                    },
                 },
                 description => 'specifies the backend to store permanently configuration data.',
                 help => {
                     cds_file => "file with config data string. This is Config::Model own serialisation format, designed to be compact and readable. Configuration filename is made with instance name",
-                    ini_file =>
+                    IniFile =>
 "Ini file format. Beware that the structure of your model must match the limitations of the INI file format, i.e only a 2 levels hierarchy. Configuration filename is made with instance name",
                     perl_file =>
 "file with a perl data structure. Configuration filename is made with instance name",
@@ -245,7 +246,7 @@
                     .'See L<Config::Model::Backend::IniFile/"Arbitrary class name">',
                 warp => {
                     follow => '- backend',
-                    rules  => [ ini_file => { level => 'normal', } ],
+                    rules  => [ IniFile => { level => 'normal', } ],
                 }
             },
 
@@ -257,7 +258,7 @@
                      .'INI class [foo] in element Foo, specify { foo => "Foo" } ',
                 warp => {
                     follow => '- backend',
-                    rules  => [ ini_file => { level => 'normal', } ],
+                    rules  => [ IniFile => { level => 'normal', } ],
                 },
                 cargo => { 
                     type => 'leaf',
@@ -272,7 +273,7 @@
                 description => 'Regexp to split the value read from ini file. Usually "\s+" or "[,\s]"',
                 warp => {
                     follow => '- backend',
-                    rules  => [ ini_file => { level => 'normal', } ],
+                    rules  => [ IniFile => { level => 'normal', } ],
                 }
             },
 
@@ -282,7 +283,7 @@
                 level      => 'hidden',
                 warp => {
                     follow => '- backend',
-                    rules  => [ ini_file => { level => 'normal', } ],
+                    rules  => [ IniFile => { level => 'normal', } ],
                 }
             },
 
@@ -305,7 +306,7 @@
                 description => "force section to be lowercase",
                 warp => {
                     follow => '- backend',
-                    rules  => [ ini_file => { level => 'normal', } ],
+                    rules  => [ IniFile => { level => 'normal', } ],
                 }
             },
             force_lc_key => {
@@ -316,7 +317,7 @@
                 description => "force key names to be lowercase",
                 warp => {
                     follow => '- backend',
-                    rules  => [ ini_file => { level => 'normal', } ],
+                    rules  => [ IniFile => { level => 'normal', } ],
                 }
             },
             force_lc_value => {
@@ -327,7 +328,7 @@
                 description => "force values to be lowercase",
                 warp => {
                     follow => '- backend',
-                    rules  => [ ini_file => { level => 'normal', } ],
+                    rules  => [ IniFile => { level => 'normal', } ],
                 }
             },
 
@@ -351,7 +352,7 @@
                 upstream_default => '#',
                 warp             => {
                     follow => '- backend',
-                    rules  => [ ini_file => { level => 'normal', } ],
+                    rules  => [ IniFile => { level => 'normal', } ],
                 }
             },
         ],
