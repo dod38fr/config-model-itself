@@ -265,22 +265,21 @@
                 },
             },
 
-            'split_list_value' => {
+            ['split_list_value','split_check_list_value'] => {
                 type       => 'leaf',
                 value_type => 'uniline',
                 level      => 'hidden',
-                description => 'Regexp to split values stored in list element. Usually "\s+" or "[,\s]"',
+                description => 'Regexp to split the value read from ini file. Usually "\s+" or "[,\s]"',
                 warp => {
                     follow => '- backend',
                     rules  => [ ini_file => { level => 'normal', } ],
                 }
             },
 
-            'join_list_value' => {
+            ['join_list_value', 'join_check_list_value'] => {
                 type       => 'leaf',
                 value_type => 'uniline',
                 level      => 'hidden',
-                description => 'string to join values from list element. Usually " " or ", "',
                 warp => {
                     follow => '- backend',
                     rules  => [ ini_file => { level => 'normal', } ],
@@ -355,6 +354,10 @@
                     rules  => [ ini_file => { level => 'normal', } ],
                 }
             },
+        ],
+        description => [
+            join_list_value => 'string to join list values before writing the entry in ini file. Usually " " or ", "',
+            join_check_list_value => 'string to join checked items names before writing the entry in the ini file. Usually " " or ", "',
         ],
 
     ],
