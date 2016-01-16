@@ -37,7 +37,7 @@ has modified_classes => (
         clear_classes => 'clear',
         set_class => 'set',
         class_was_changed => 'get' ,
-        classes_to_write => 'keys' ,
+        class_known => 'exists',
     }
 ) ;
 
@@ -71,12 +71,21 @@ sub BUILD {
 
 }
 
+sub add_tracked_class {
+    my $self = shift;
+    $self->set_class(shift,0) ;
+}
 
 sub add_modified_class {
     my $self = shift;
     $self->set_class(shift,1) ;
 }
 
+sub class_needs_write {
+    my $self = shift;
+    my $name =  shift;
+    return ($self->force_write or not $self->class_known($name) or $self->class_was_changed($name)) ;
+}
 
 sub read_app_files {
     my $self = shift;
@@ -188,6 +197,9 @@ sub read_all {
             # no need to dclone model as Config::Model object is temporary
             my $raw_model =  $tmp_model -> get_raw_model( $model_name ) ;
             my $new_model =  $tmp_model -> get_model( $model_name ) ;
+
+            # track read class to identify later classes added by user
+            $self->add_tracked_class($model_name);
 
             # some modifications may be done to cope with older model styles. If a modif
             # was done, mark the class as changed so it will be saved later
@@ -364,7 +376,7 @@ sub write_all {
 
         # check if any a class of a file was modified
         foreach my $class_name (@{$map_to_write{$file}}) {
-            $file_needs_write++ if $self->force_write or $self->class_was_changed($class_name) ;
+            $file_needs_write++ if $self->class_needs_write($class_name);
             $logger->info("file $file class $class_name needs write ",$file_needs_write);
         }
 
