@@ -38,7 +38,13 @@
                 value_type => 'boolean',
                 description => "set when there's no default path for the configuration file."
                 . "user will have to specify a configuration file with C<--file> option."
-            }
+            },
+            config_dir => {
+                type => 'leaf',
+                value_type => 'uniline',
+                description => "set configuration directory where config file is read from "
+                . "or written to. This value does not override a directory specified in the model."
+            },
         ],
     }
 ] ;
