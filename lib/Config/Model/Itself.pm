@@ -742,33 +742,19 @@ __PACKAGE__->meta->make_immutable;
 __END__
 
 
-
 =pod
 
 =head1 SYNOPSIS
 
- my $meta_model = Config::Model -> new ( ) ;
-
- # load Config::Model model
- my $meta_inst = $meta_model->instance (
-    root_class_name => 'Itself::Model' ,
-    instance_name   => 'meta_model' ,
- );
-
- my $meta_root = $meta_inst -> config_root ;
-
  # Itself constructor returns an object to read or write the data
  # structure containing the model to be edited
- my $rw_obj = Config::Model::Itself -> new(
-    model_object => $meta_root,
-    model_dir => '/path/to/model_files', # can be a Path::Tiny object
- ) ;
+ my $meta_model = Config::Model::Itself -> new( ) ;
 
  # now load the model to be edited
- $rw_obj -> read_all( ) ;
+ $meta_model -> read_all( ) ;
 
  # For Curses UI prepare a call-back to write model
- my $wr_back = sub { $rw_obj->write_all(); }
+ my $wr_back = sub { $meta_model->write_all(); }
 
  # create Curses user interface
  my $dialog = Config::Model::CursesUI-> new (
@@ -776,7 +762,7 @@ __END__
  ) ;
 
  # start Curses dialog to edit the mode
- $dialog->start( $meta_model )  ;
+ $dialog->start( $meta_model->config_root )  ;
 
  # that's it. When user quits curses interface, Curses will call
  # $wr_back sub ref to write the modified model.
@@ -808,16 +794,23 @@ dedicated to read and write a set of model files.
 
 =head1 Constructor
 
-=head2 new ( model_object => ... , model_dir => ... )
+=head2 new ( [ cm_lib_dir => ... ] )
 
-Creates a new read/write handler. This handler is dedicated to the
-C<model_object> passed with the constructor. This parameter must be a
-L<Config::Model::Node> class. C<model_dir> is either a C<Path::Tiny> object
-or a string.
+Creates a new read/write handler. If no model_object is passed, the required
+objects are created. C<cm_lib_dir> specifies where are the model files (defaults to
+C<./lib/Config/Model>.
+
+C<cm_lib_dir> is either a C<Path::Tiny> object or a string.
+
+By default, this constructor will create all necessary
+C<Config::Model*> objects.  If needed, you can pass already created
+object with options C<config_model> (L<Config::Model> object),
+C<meta_instance> (L<Config::Model::Instance> object) or C<meta_root>
+(L<Config::Model::Node> object).
 
 =head2 Methods
 
-=head1 read_all (  root_model => ... , [ force_load => 1 ] )
+=head1 read_all ( [ root_model => ... ], [ force_load => 1 ] )
 
 Load all the model files contained in C<model_dir> and all its
 subdirectories. C<root_model> is used to filter the classes read.
@@ -849,14 +842,14 @@ debugging your configuration model.
 
 =head2 get_dot_diagram
 
-Returns a graphviz dot file that represents the strcuture of the
+Returns a graphviz dot file that represents the structure of the
 configuration model:
 
 =over
 
 =item *
 
-C<include> are represented by solid lines
+C<include> relations are represented by solid lines
 
 =item *
 
