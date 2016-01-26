@@ -23,8 +23,95 @@ coerce 'ModelPathTiny'  => from 'Str'  => via {path($_)} ;
 
 # find all .pl file in model_dir and load them...
 
-has model_object => (is =>'ro', isa =>'Config::Model::Node', required => 1) ;
-has cm_lib_dir    => (is =>'ro', isa => 'ModelPathTiny', required => 1, coerce => 1 ) ;
+around BUILDARGS => sub {
+    my $orig  = shift;
+    my $class = shift;
+    my %args  = @_;
+
+    my $legacy = delete $args{model_object};
+    if ($legacy) {
+        $args{config_model} = $legacy->instance->config_model;
+        $args{meta_instance} = $legacy->instance;
+        $args{meta_root} = $legacy;
+    }
+    return $class->$orig( %args );
+};
+
+has 'config_model' => (
+    is => 'ro',
+    isa => 'Config::Model',
+    lazy_build => 1,
+) ;
+
+
+sub _build_config_model {
+    my $self = shift;
+    # don't trigger builders below
+    if ($self->{meta_root}) {
+        return $self->meta_root->instance->config_model;
+    }
+    elsif ($self->{meta_instance}) {
+        return $self->meta_instance->config_model;
+    }
+    else {
+        return Config::Model -> new ( ) ;
+    }
+}
+
+has check        => (is =>'ro', isa => 'Bool', default => 1) ;
+
+has 'meta_instance' => (
+    is =>'ro',
+    isa =>'Config::Model::Instance',
+    lazy_build => 1,
+) ;
+
+sub _build_meta_instance {
+    my $self = shift;
+
+    # don't trigger builders below
+    if ($self->{meta_root}) {
+        return $self->meta_root->instance;
+    }
+    else {
+        # load Config::Model model
+        return $self->config_model->instance (
+            root_class_name => 'Itself::Model' ,
+            instance_name   => 'meta_model' ,
+            check => $self->check,
+        );
+    }
+
+}
+
+has meta_root => (
+    is =>'ro',
+    isa =>'Config::Model::Node',
+    lazy_build => 1,
+) ;
+
+sub _build_meta_root {
+    my $self = shift;
+
+    return $self->meta_instance -> config_root ;
+}
+
+has cm_lib_dir   => (
+    is =>'ro',
+    isa => 'ModelPathTiny',
+    lazy_build => 1,
+    coerce => 1
+) ;
+
+sub _build_cm_lib_dir {
+    my $self = shift;
+    my $p =  path('lib/Config/Model');
+    if (! $p->is_dir) {
+        $p->mkpath(0, 0755) || die "can't create $p:$!";
+    }
+    return $p;
+}
+
 has force_write  => (is =>'ro', isa => 'Bool', default => 0) ;
 has root_model   => (is =>'ro', isa => 'str');
 
@@ -67,7 +154,7 @@ sub BUILD {
 
         $self->add_modified_class($args{index}) ;
     } ;
-    $self->model_object->instance -> on_change_cb($cb) ;
+    $self->meta_instance -> on_change_cb($cb) ;
 
 }
 
@@ -120,7 +207,7 @@ sub read_app_files {
             my $appli = $file->basename;
             $apps{$appli} = $data{model} ;
 
-            $self->model_object->load_data(
+            $self->meta_root->load_data(
                 data => { application => { $appli => \%data } },
                 check => $force_load ? 'no' : 'yes'
             ) ;
@@ -168,7 +255,7 @@ sub read_all {
     } ;
     $read_dir->visit($wanted, { recurse => 1} ) ;
 
-    my $i = $self->model_object->instance ;
+    my $i = $self->meta_instance ;
 
     my %read_models ;
     my %pod_data ;
@@ -240,15 +327,15 @@ sub read_all {
 
     # Create all classes listed in %read_models to avoid problems with
     # include statement while calling load_data
-    my $model_obj = $self->model_object ;
-    my $class_element = $model_obj->fetch_element('class') ;
+    my $root_obj = $self->meta_root ;
+    my $class_element = $root_obj->fetch_element('class') ;
     map { $class_element->fetch_with_id($_) } sort keys %read_models ;
 
     #require Tk::ObjScanner; Tk::ObjScanner::scan_object(\%read_models) ;
 
     $logger->info("loading all extracted data in Config::Model::Itself");
     # load with a array ref to avoid warnings about missing order
-    $model_obj->load_data(
+    $root_obj->load_data(
         data => {class => [ %read_models ] },
         check => $force_load ? 'no' : 'yes'
     ) ;
@@ -259,7 +346,7 @@ sub read_all {
         my $fh = IO::File->new($file) || die "Can't open $file: $!" ;
         my @lines = $fh->getlines ;
         $fh->close;
-        $model_obj->load_pod_annotation(join('',@lines)) ;
+        $root_obj->load_pod_annotation(join('',@lines)) ;
 
         my @headers ;
         foreach my $l (@lines) {
@@ -282,11 +369,11 @@ sub read_all {
 sub get_perl_data_model{
     my $self = shift ;
     my %args = @_ ;
-    my $model_obj = $self->{model_object};
+    my $root_obj = $self->{meta_root};
     my $class_name = $args{class_name}
       || croak __PACKAGE__," read: undefined class name";
 
-    my $class_element = $model_obj->fetch_element('class') ;
+    my $class_element = $root_obj->fetch_element('class') ;
 
     # skip if class was deleted during edition
     return unless $class_element->defined($class_name) ;
@@ -309,7 +396,7 @@ sub write_app_files {
     my $self = shift;
 
     my $app_dir = $self->cm_lib_dir;
-    my $app_obj = $self->model_object->fetch_element('application');
+    my $app_obj = $self->meta_root->fetch_element('application');
 
     foreach my $app_name ( $app_obj->fetch_all_indexes ) {
         my $app = $app_obj->fetch_with_id($app_name);
@@ -335,7 +422,7 @@ sub write_app_files {
 sub write_all {
     my $self = shift ;
     my %args = @_ ;
-    my $model_obj = $self->model_object ;
+    my $root_obj = $self->meta_root ;
     my $dir = $self->model_dir ;
 
     croak "write_all: unexpected parameters ",join(' ', keys %args) if %args ;
@@ -349,7 +436,7 @@ sub write_all {
     # get list of all classes loaded by the editor
     my %loaded_classes
       = map { ($_ => 1); }
-        $model_obj->fetch_element('class')->fetch_all_indexes ;
+        $root_obj->fetch_element('class')->fetch_all_indexes ;
 
     # remove classes that are listed in map
     foreach my $file (keys %$map) {
@@ -388,7 +475,7 @@ sub write_all {
               = $self-> get_perl_data_model(class_name => $class_name) ;
             push @data, $model if defined $model and keys %$model;
 
-            my $node = $self->{model_object}->grab("class:".$class_name) ;
+            my $node = $self->{meta_root}->grab("class:".$class_name) ;
             push @notes, $node->dump_annotations_as_pod ;
             # remove class name from above list
             delete $loaded_classes{$class_name} ;
@@ -399,7 +486,7 @@ sub write_all {
         write_model_file ($dir->child($file), $self->{header}{$file}, \@notes, \@data);
     }
 
-    $self->model_object->instance->clear_changes ;
+    $self->meta_instance->clear_changes ;
 }
 
 sub write_model_snippet {
@@ -411,7 +498,7 @@ sub write_model_snippet {
       || croak __PACKAGE__," write_model_snippet: undefined model_file";
     croak "write_model_snippet: unexpected parameters ",join(' ', keys %args) if %args ;
 
-    my $model = $self->model_object->dump_as_data ;
+    my $model = $self->meta_root->dump_as_data ;
     # print (Dumper( $model)) ;
 
     my @raw_data = @{$model->{class} || []} ;
@@ -420,13 +507,13 @@ sub write_model_snippet {
         $data ->{name} = $class ;
 
         # does not distinguish between notes from underlying model or snipper notes ...
-        my @notes = $self->model_object->grab("class:$class")->dump_annotations_as_pod ;
+        my @notes = $self->meta_root->grab("class:$class")->dump_annotations_as_pod ;
         my $class_dir = $class.'.d';
         $class_dir =~ s!::!/!g;
         write_model_file ("$snippet_dir/$class_dir/$model_file", [], \@notes, [ $data ]);
     }
 
-    $self->model_object->instance->clear_changes ;
+    $self->meta_instance->clear_changes ;
 }
 
 sub read_model_snippet {
@@ -450,7 +537,7 @@ sub read_model_snippet {
     } ;
     find ($wanted, $snippet_dir ) ;
 
-    my $class_element = $self->model_object->fetch_element('class') ;
+    my $class_element = $self->meta_root->fetch_element('class') ;
 
     foreach my $load_file (@files) {
         $logger->info("trying to read snippet $load_file");
@@ -475,7 +562,7 @@ sub read_model_snippet {
         my $fh = IO::File->new($load_file) || die "Can't open $load_file: $!" ;
         my @lines = $fh->getlines ;
         $fh->close;
-        $self->model_object->load_pod_annotation(join('',@lines)) ;
+        $self->meta_root->load_pod_annotation(join('',@lines)) ;
     }
 }
 
@@ -524,7 +611,7 @@ sub list_class_element {
     my $pad  =  shift || '' ;
 
     my $res = '';
-    my $meta_class = $self->{model_object}->fetch_element('class') ;
+    my $meta_class = $self->{meta_root}->fetch_element('class') ;
     foreach my $class_name ($meta_class->fetch_all_indexes ) {
         $res .= $self->list_one_class_element($class_name) ;
     }
@@ -537,7 +624,7 @@ sub list_one_class_element {
     my $pad  =  shift || '' ;
 
     my $res = $pad."Class: $class_name\n";
-    my $meta_class = $self->{model_object}->fetch_element('class')
+    my $meta_class = $self->{meta_root}->fetch_element('class')
        -> fetch_with_id($class_name) ;
 
     my @elts = $meta_class->fetch_element('element')->fetch_all_indexes ;
@@ -567,7 +654,7 @@ sub get_dot_diagram {
     my $self = shift ;
     my $dot = "digraph model {\n" ;
 
-    my $meta_class = $self->{model_object}->fetch_element('class') ;
+    my $meta_class = $self->{meta_root}->fetch_element('class') ;
     foreach my $class_name ($meta_class->fetch_all_indexes ) {
         my $d_class = $class_name ;
         $d_class =~ s/::/__/g;
@@ -575,7 +662,7 @@ sub get_dot_diagram {
         my $elt_list = '';
         my $use = '';
 
-        my $class_obj =  $self->{model_object}->grab(qq!class:"$class_name"!);
+        my $class_obj =  $self->{meta_root}->grab(qq!class:"$class_name"!);
         my @elts =  $class_obj ->grab(qq!element!) ->fetch_all_indexes ;
         foreach my $elt_name ( @elts ) {
             my $of = '';
