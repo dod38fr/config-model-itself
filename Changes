@@ -1,5 +1,24 @@
 {{$NEXT}}
 
+2.003 2016-01-27
+
+  New features:
+    * added config_dir parameter to application
+    * Replace ini_file backend with IniFile
+    * Added split/join checklist param to ini backend
+      (requires Config::Model 2.076)
+
+  Improved usability:
+    * simplified creation of Itself object.
+    * Build.PL: avoid dependency on cme to generate doc
+
+  Bug fixes:
+    * Config classes created with 'cme meta edit' are now saved
+    * meta: warn if save failed in test_and_quit mode
+    * Avoid a crash creatnig a config class
+    * fix test failure under debian ci
+      (helps with Debian #809294 and fix github #1)
+
 2.002 2015-12-02
 
   Test enhancements:
