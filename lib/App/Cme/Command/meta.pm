@@ -351,19 +351,24 @@ sub _edit {
     $cmu->after(10, sub { $cmu->force_element_display($obj) });
 
     if (my $taq = $opt->test_and_quit ) {
-        $cmu->after( 1000 , sub {
+        my $bail_out = sub {
+            warn "save failed: $_[0]\n" if @_;
+            $cmu -> quit;
+        } ;
+
+        $cmu->after( 2000 , sub {
             if ($taq =~ /s/) {
                 say "Test mode: save and quit";
-               $cmu->save( sub {$cmu -> quit;});
+               $cmu->save( $bail_out );
             }
             else {
                 say "Test mode: quit only";
-                $cmu->quit;
+                &$bail_out
             }
         });
     }
     &MainLoop ; # Tk's
-
+    say "Exited GUI";
 }
 
 1;
