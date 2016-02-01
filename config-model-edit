@@ -331,7 +331,7 @@ before saving the model. See menu C<< File -> check >> in the GUI.
 
 =item -dot-diagram
 
-Returns a dot file that represent the stucture of the configuration
+Returns a dot file that represent the structure of the configuration
 model. C<include> are represented by solid lines. Class usage
 (i.e. C<config_class_name> parameter) is represented by dashed
 lines. The name of the element is attached to the dashed line.

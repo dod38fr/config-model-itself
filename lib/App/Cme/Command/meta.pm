@@ -434,7 +434,7 @@ For instance:
 
 =head2 gen-dot [ file.dot ]
 
-Create a dot file that represent the stucture of the configuration
+Create a dot file that represent the structure of the configuration
 model. By default, the generated dot file is C<model.dot>
 
  $ cme meta gen-dot Itself itself.dot
