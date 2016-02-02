@@ -38,6 +38,10 @@
                             mandatory => 1,
                         }
                     ]
+                },
+                help => {
+                    integer => 'positive or negative integer',
+                    uniline => 'string with no embedded newline',
                 }
             },
 
