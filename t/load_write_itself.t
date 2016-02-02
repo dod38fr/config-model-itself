@@ -9,6 +9,7 @@ use File::Path ;
 use File::Find ;
 use File::Copy ;
 
+use Text::Diff;
 use warnings;
 no warnings qw(once);
 
@@ -74,7 +75,7 @@ ok(1,"Created and loaded 2nd instance") ;
 
 my $cds2 = $root2 ->dump_tree (full_dump => 1) ;
 
-is($cds2,$cds,"Compared the 2 full dumps") ; 
+is(my_diff(\$cds,\$cds2),'',"Compared the 2 full dumps") ;
 
 my $pdata2 = $root2 -> dump_as_data ;
 print Dumper $pdata2 if $trace ;
@@ -90,9 +91,12 @@ ok(1,"Created and loaded 3nd instance with perl data") ;
 
 my $cds3 = $root3 ->dump_tree (full_dump => 1) ;
 
-is($cds3,$cds,"Compared the 3rd full dump with first one") ; 
+is( my_diff(\$cds, \$cds3),'',"Compared the 3rd full dump with first one") ; 
 
 $rw_obj->write_all(  ) ;
 
 # require Tk::ObjScanner; Tk::ObjScanner::scan_object($meta_model) ;
 
+sub my_diff {
+    return diff( @_ , { STYLE => "Unified" } );
+}
