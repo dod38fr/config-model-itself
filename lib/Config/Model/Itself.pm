@@ -858,6 +858,13 @@ dashed lines. The name of the element is attached to the dashed line.
 
 =back
 
+=head1 BUGS
+
+Test menu entries are created from the content of C<application> model
+parameter.  Unfortunately, there's no way to build the menu
+dynamically. So user cme must be restarted to change the menu if the
+application list is changed.
+
 =head1 SEE ALSO
 
 L<Config::Model>, L<Config::Model::Node>, L<Path::Tiny>

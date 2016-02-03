@@ -21,6 +21,7 @@ package Config::Model::Itself::TkEditUI ;
 use strict;
 use warnings ;
 use Carp ;
+use 5.10.0;
 
 use base qw/Config::Model::TkUI/;
 
@@ -46,10 +47,11 @@ sub Populate {
 
     $cw->SUPER::Populate($args) ;
 
-    my $items = [[ qw/command test -command/, sub{ $cw->test_model }] ] ;
+    my $model_menu = $cw->{my_menu}->cascade(
+        -label => 'Model',
+        -menuitems => $cw->build_menu() ,
+    ) ;
 
-    my $model_menu = $cw->{my_menu}->cascade(-label => 'Model',
-					     -menuitems => $items) ;
     $cw->{cm_lib_dir} = $cm_lib_dir ;
     $cw->{model_name} = $model_name ;
     $cw->{root_dir} = $root_dir ;
@@ -57,8 +59,28 @@ sub Populate {
     $cw->show_message("Add a name in Class to create your model") unless $model_name;
 }
 
+sub build_menu {
+    my $cw = shift ;
+
+    # search for config_dir override
+    my $root = $cw->{root};
+    my $items = [];
+    my %app;
+
+    my $found_app = 0;
+    foreach my $app ($root->fetch_element('application')->fetch_all_indexes) {
+        push @$items, [ command => "test $app", '-command' => sub{ $cw->test_model($app) }];
+        $app{$app} = $root->grab_value("application:$app config_dir");
+    }
+
+    push @$items, [ qw/command test -command/, sub{ $cw->test_model }] unless @$items ;
+
+    return $items;
+}
+
 sub test_model {
     my $cw = shift ;
+    my $app = shift;
 
     if ( $cw->{root}->instance->needs_save ) {
         my $answer = $cw->Dialog(
@@ -69,21 +91,22 @@ sub test_model {
         )->Show;
 
         if ( $answer eq 'yes' ) {
-            $cw->save( sub {$cw->_launch_test;});
+            $cw->save( sub {$cw->_launch_test($app);});
         }
         elsif ( $answer eq 'no' ) {
-            $cw->_launch_test;
+            $cw->_launch_test($app);
         }
         elsif ( $answer =~ /show/ ) {
             $cw->show_changes( sub { $cw->test_model } );
         }
     }
     else {
-        $cw->_launch_test;
+        $cw->_launch_test($app);
     }
 }
 sub _launch_test {
     my $cw = shift ;
+    my $app = shift;
 
     my $testw =  $cw -> {test_widget} ;
     $testw->destroy if defined $testw and Tk::Exists($testw);
@@ -94,13 +117,14 @@ sub _launch_test {
     # keep a reference on this object, otherwise it will vanish at the end of this block.
     $cw->{test_model} =  $model ;
 
-    my $name = $cw->{model_name};
-    my $inst = $model->instance (root_class_name => $name,
-				 instance_name => "test $name model",
-				 root_dir => $cw->{root_dir} ,
-				);
+    my %args = ( root_dir => $cw->{root_dir} );
 
-    my $root = $inst -> config_root ;
+    $args{root_class_name} = $app ? $cw->{root}->grab_value("application:$app model") : $cw->{model_name};
+    $args{instance_name} = $app ? "test $app" : $cw->{model_name};
+
+    $args{config_dir} = $cw->{root}->grab_value("application:$app config_dir") if $app;
+
+    my $root = $model->instance ( %args )-> config_root ;
 
     $cw -> {test_widget} = $cw->ConfigModelUI (-root => $root, -quit => 'soft') ;
 }
