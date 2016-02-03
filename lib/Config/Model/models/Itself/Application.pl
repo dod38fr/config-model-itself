@@ -9,7 +9,7 @@
                 refer_to => '! class',
                 type => 'leaf',
                 value_type => 'reference',
-                description => 'Top class required to configuration this application',
+                description => 'Top class required to configure this application',
             },
             category => {
                 choice => [
@@ -19,6 +19,7 @@
                 ],
                 type => 'leaf',
                 value_type => 'enum',
+                description => 'Can be "system", "user" or "application"',
                 help => {
                     system => 'Configuration file is owned by root and usually located in C</etc>',
                     user => 'Configuration files is owned by user and usually located in C<~/.*>',
