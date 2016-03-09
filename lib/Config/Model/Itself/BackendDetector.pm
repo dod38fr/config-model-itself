@@ -1,5 +1,9 @@
 package Config::Model::Itself::BackendDetector ;
 
+# since this package is mostly targeted for dev environments
+# let the detector detect models under development
+use lib 'lib';
+
 use Pod::POM ;
 use File::Find ;
 
