@@ -366,6 +366,18 @@
                     rules  => [ IniFile => { level => 'normal', } ],
                 }
             },
+
+            'auto_delete' => {
+                type             => 'leaf',
+                value_type       => 'boolean',
+                level            => 'normal',
+                upstream_default => 0,
+                summary          => 'Delete empty configuration file',
+                description      => 'Delete configuration files when no information is left in there.'
+                . ' This may happen when data is removed by user. This is mostly useful when the '
+                . ' configuration of an application is made of several files.',
+            },
+
         ],
         description => [
             join_list_value => 'string to join list values before writing the entry in ini file. Usually " " or ", "',
