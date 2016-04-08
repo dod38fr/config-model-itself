@@ -122,7 +122,10 @@ sub _launch_test {
     $args{root_class_name} = $app ? $cw->{root}->grab_value("application:$app model") : $cw->{model_name};
     $args{instance_name} = $app ? "test $app" : $cw->{model_name};
 
-    $args{config_dir} = $cw->{root}->grab_value("application:$app config_dir") if $app;
+    if ($app) {
+        $args{application} = $app;
+        $args{config_dir} = $cw->{root}->grab_value("application:$app config_dir");
+    }
 
     my $root = $model->instance ( %args )-> config_root ;
 
