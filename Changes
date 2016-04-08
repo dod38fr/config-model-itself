@@ -15,7 +15,7 @@
   Bug fixes:
     * Config classes created with 'cme meta edit' are now saved
     * meta: warn if save failed in test_and_quit mode
-    * Avoid a crash creatnig a config class
+    * Avoid a crash creating a config class
     * fix test failure under debian ci
       (helps with Debian #809294 and fix github #1)
 
