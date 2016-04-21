@@ -26,14 +26,14 @@
                 type       => 'leaf',
                 level      => 'hidden',
                 value_type => 'enum',
+                choice => [
+                    qw/boolean enum integer reference
+                       number uniline string file dir/
+                ],
                 'warp'     => {
                     follow  => { 't' => '- type' },
                     'rules' => [
                         '$t eq "leaf"' => {
-                            choice => [
-                                qw/boolean enum integer reference
-                                  number uniline string file dir/
-                            ],
                             level     => 'normal',
                             mandatory => 1,
                         }
