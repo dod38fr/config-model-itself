@@ -1,5 +1,18 @@
 {{$NEXT}}
 
+2.004 2016-04-21
+
+  New features:
+    * added auto_delete parameter for read/write backend
+      this requires Config::Model 2.083
+
+  Doc updates in model:
+    * updated Class doc
+    * added help for value_type
+
+  Bug fixes:
+    * detect backend in local dev environment.
+
 2.003 2016-01-27
 
   New features:
