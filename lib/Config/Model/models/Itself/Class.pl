@@ -138,16 +138,26 @@
     ],
 
     [
-        name => 'Itself::ConfigWR::FileSpec',
+        name => 'Itself::ConfigWR::DefaultLayer',
 
         'element'     => [
             'config_dir' => {
                 type         => 'leaf',
                 value_type   => 'uniline',
                 level        => 'normal',
-                description  => 'path to configuration file. This path can be an absolute path '
-                .'or a relative path to where cme will be run. The path can also gein with "~/" '
-                .'for a path relative to user\'s home directory'
+            },
+
+            os_config_dir => {
+                type => 'hash',
+                index_type => 'string',
+                cargo      => {
+                    type       => 'leaf',
+                    value_type => 'uniline',
+                },
+                summary => 'configuration file directory for specific OS',
+                description => 'Specify and alternate location of a configuration directory depending '
+                    .q!on the OS (as returned by C<$^O> or C<$Config{'osname'}>, see L<perlport/PLATFORMS>) !
+                    .q!Common values for C<$^O> are 'linux', 'MSWin32', 'darwin'!
             },
             'file' => {
                 type       => 'leaf',
@@ -163,28 +173,8 @@
     ],
 
     [
-        name => 'Itself::ConfigWR::OsFileSpec',
-        include => "Itself::ConfigWR::FileSpec",
-
-        'element'     => [
-            os => {
-                type => 'hash',
-                index_type => 'string',
-                cargo      => {
-                    type       => 'node',
-                    config_class_name => 'Itself::ConfigWR::FileSpec'
-                },
-                summary => 'configuration file specification for specific OS',
-                description => 'Specify and alternate path of a configuration file depending '
-                    .q!on the OS (as returned by C<$^O> or C<$Config{'osname'}>, see L<perlport/PLATFORMS>) !
-                    .q!Common values for C<$^O> are 'linux', 'MSWin32', 'darwin'!
-            },
-        ]
-    ],
-
-    [
         name => "Itself::ConfigWR",
-        include => "Itself::ConfigWR::OsFileSpec",
+        include => "Itself::ConfigWR::DefaultLayer",
         include_after => 'backend',
 
         'element' => [
@@ -227,7 +217,7 @@
 
             default_layer => {
                 type => 'node',
-                config_class_name => 'Itself::ConfigWR::OsFileSpec',
+                config_class_name => 'Itself::ConfigWR::DefaultLayer',
                 summary => q!How to find default values in a global config file!,
                 description => q!Specifies where to find a global configuration file that !
                     .q!specifies default values. For instance, this is used by OpenSSH to !
