@@ -77,20 +77,17 @@
           description => 'enter detailed help information regarding this element',
          },
 
-      # all but warped_node
-      'warp' 
-      => { type => 'warped_node' , # ?
-           level => 'hidden',
-           follow => { elt_type => '- type' } ,
-           rules  => [
-                      '$elt_type ne "node"' =>
-                      {
-                       level => 'normal',
-                       config_class_name => 'Itself::WarpValue',
-                      }
-                     ] ,
-           description => "change the properties (i.e. default value or its value_type) dynamically according to the value of another Value object locate elsewhere in the configuration tree. "
-         },
+      # all but node or warped_node
+      'warp' => {
+          type => 'warped_node',
+          level => 'hidden',
+          follow => { elt_type => '- type' },
+          config_class_name => 'Itself::WarpValue',
+          rules  => [
+              '$elt_type ne "node"' => { level => 'normal' }
+          ] ,
+          description => "change the properties (i.e. default value or its value_type) dynamically according to the value of another Value object located elsewhere in the configuration tree. "
+      },
 
       'rules' => {
                   type => 'hash',
