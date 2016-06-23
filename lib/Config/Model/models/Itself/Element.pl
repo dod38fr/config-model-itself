@@ -84,7 +84,7 @@
           follow => { elt_type => '- type' },
           config_class_name => 'Itself::WarpValue',
           rules  => [
-              '$elt_type ne "node"' => { level => 'normal' }
+              '$elt_type !~ /node/' => { level => 'normal' }
           ] ,
           description => "change the properties (i.e. default value or its value_type) dynamically according to the value of another Value object located elsewhere in the configuration tree. "
       },
