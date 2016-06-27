@@ -37,14 +37,13 @@
 
             # node element (may be within a hash or list)
 
-            # all but warped_node
             'warp' => {
                 type   => 'warped_node',              # ?
                 level  => 'hidden',
                 follow => { elt_type => '- type' },
 
                 rules => [
-                    '$elt_type ne "warped_node"' => {
+                    '$elt_type ne "node"' => {
                         level             => 'normal',
                         config_class_name => 'Itself::CargoWarpValue',
                     }
