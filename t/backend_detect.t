@@ -52,6 +52,9 @@ my @choices = $backend->get_choice ;
 
 ok( (scalar grep { $_ eq 'Yaml'} @choices), "Yaml plugin backend was found") ;
 
+# test break when using directly Config::Model repo because get_help
+# retrieves info from NAME section which is added at build time by
+# Pod::Weaver
 my $help = $backend->get_help('Yaml') ;
 like($help,qr/provided by L<Config::Model::Backend::Yaml>/,
    "Found Yaml NAME section from pod") ;
