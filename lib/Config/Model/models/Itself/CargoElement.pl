@@ -40,14 +40,16 @@
             'warp' => {
                 type   => 'warped_node',              # ?
                 level  => 'hidden',
-                follow => { elt_type => '- type' },
 
-                rules => [
-                    '$elt_type ne "node"' => {
-                        level             => 'normal',
-                        config_class_name => 'Itself::CargoWarpValue',
-                    }
-                ],
+                warp => {
+                    follow => { elt_type => '- type' },
+                    rules => [
+                        '$elt_type ne "node"' => {
+                            level             => 'normal',
+                            config_class_name => 'Itself::CargoWarpValue',
+                        }
+                    ],
+                },
                 description =>
                     "change the properties (i.e. default value or its value_type) "
                   . "dynamically according to the value of another Value object locate "
@@ -69,10 +71,12 @@
                 },
                 cargo => {
                     type    => 'warped_node',
-                    follow  => '- type',
-                    'rules' => {
-                        'warped_node' => {
-                            config_class_name => 'Itself::WarpableCargoElement',
+                    warp => {
+                        follow  => '- type',
+                        'rules' => {
+                            'warped_node' => {
+                                config_class_name => 'Itself::WarpableCargoElement',
+                            }
                         }
                     }
                 },

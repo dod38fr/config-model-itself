@@ -130,17 +130,19 @@
 
             'computed_refer_to' => {
                 type   => 'warped_node',
-                follow => {
-                    t  => '- type',
-                    vt => '- value_type',
-                },
                 level      => 'hidden',
-                'rules'    => [
-                    '$t  eq "check_list" or $vt eq "reference"' => {
-                        level             => 'normal',
-                        config_class_name => 'Itself::ComputedValue',
+                warp => {
+                    follow => {
+                        t  => '- type',
+                        vt => '- value_type',
                     },
-                ],
+                    'rules'    => [
+                        '$t  eq "check_list" or $vt eq "reference"' => {
+                            level             => 'normal',
+                            config_class_name => 'Itself::ComputedValue',
+                        },
+                    ],
+                },
                 description =>
                   "points to an array or hash element in the configuration "
                   . "tree using a path computed with value from several other "
@@ -169,13 +171,15 @@
                 type       => 'warped_node',
                 level      => 'hidden',
 
-                follow  => { t => '- type', },
-                'rules' => [
-                    '$t  eq "leaf"' => {
-                        level             => 'normal',
-                        config_class_name => 'Itself::ComputedValue',
-                    },
-                ],
+                warp => {
+                    follow  => { t => '- type', },
+                    'rules' => [
+                        '$t  eq "leaf"' => {
+                            level             => 'normal',
+                            config_class_name => 'Itself::ComputedValue',
+                        },
+                    ],
+                },
                 description =>
                   "compute the default value according to a formula and value "
                   . "from other elements in the configuration tree.",
@@ -185,13 +189,15 @@
                 type       => 'warped_node',
                 level      => 'hidden',
 
-                follow  => { t => '- type', },
-                'rules' => [
-                    '$t  eq "leaf"' => {
-                        level             => 'normal',
-                        config_class_name => 'Itself::MigratedValue',
-                    },
-                ],
+                warp => {
+                    follow  => { t => '- type', },
+                    'rules' => [
+                        '$t  eq "leaf"' => {
+                            level             => 'normal',
+                            config_class_name => 'Itself::MigratedValue',
+                        },
+                    ],
+                },
                 description =>
                     "Specify an upgrade path from an old value and compute "
                   . "the value to store in the new element.",

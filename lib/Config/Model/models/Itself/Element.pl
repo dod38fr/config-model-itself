@@ -81,11 +81,13 @@
       'warp' => {
           type => 'warped_node',
           level => 'hidden',
-          follow => { elt_type => '- type' },
           config_class_name => 'Itself::WarpValue',
-          rules  => [
-              '$elt_type ne "node"' => { level => 'normal' }
-          ] ,
+          warp => {
+              follow => { elt_type => '- type' },
+              rules  => [
+                  '$elt_type ne "node"' => { level => 'normal' }
+              ]
+          },
           description => "change the properties (i.e. default value or its value_type) dynamically according to the value of another Value object located elsewhere in the configuration tree. "
       },
 
@@ -100,15 +102,17 @@
                              => { 'warped_node' => {level => 'normal',}
                                 }
                           },
-                  cargo => { type => 'warped_node',
-                             follow => '- type',
-                             'rules'
-                             => { 'warped_node' 
-                                  => {
-                                      config_class_name => 'Itself::WarpOnlyElement' ,
-                                     }
-                                }
-                           },
+                  cargo => {
+                      type => 'warped_node',
+                      warp => {
+                          follow => '- type',
+                          'rules' => {
+                              'warped_node' => {
+                                  config_class_name => 'Itself::WarpOnlyElement' ,
+                              }
+                          }
+                      }
+                  },
                   description => "Each key of a hash is a boolean expression using variables declared in the 'follow' parameters. The value of the hash specifies the effects on the node",
                  },
       # hash or list
@@ -128,19 +132,20 @@
            description => 'Specify the type of allowed index for the hash. "String" means no restriction.',
          },
 
-      'cargo' 
-      => { type => 'warped_node',
-           level => 'hidden',
-           follow => { 't' => '- type' },
-           'rules' => [ '$t eq "list" or $t eq "hash"' 
-                        => {
-                            level => 'normal',
-                            config_class_name => 'Itself::CargoElement',
-                           },
-                      ],
-           description => 'Specify the properties of the configuration element configuration in this hash or list',
-         },
-
-     ],
+      'cargo' => {
+          type => 'warped_node',
+          level => 'hidden',
+          warp => {
+              follow => { 't' => '- type' },
+              'rules' => [
+                  '$t eq "list" or $t eq "hash"' => {
+                      level => 'normal',
+                      config_class_name => 'Itself::CargoElement',
+                  },
+              ],
+          },
+          description => 'Specify the properties of the configuration element configuration in this hash or list',
+      }
+  ],
  ],
 ];
