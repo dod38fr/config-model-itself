@@ -55,13 +55,15 @@
             },
             warp2 => {
                 type              => 'warped_node',
-                follow            => '! tree_macro',
                 config_class_name => 'MasterModel::SubSlave',
                 morph             => 1,
-                rules             => [
-                    mXY => { config_class_name => 'MasterModel::SubSlave2' },
-                    XZ  => { config_class_name => 'MasterModel::SubSlave2' }
-                ]
+                warp => {
+                    follow            => '! tree_macro',
+                    rules             => [
+                        mXY => { config_class_name => 'MasterModel::SubSlave2' },
+                        XZ  => { config_class_name => 'MasterModel::SubSlave2' }
+                    ]
+                }
             },
             Y => {
                 type       => 'leaf',
@@ -168,15 +170,16 @@
             },
             warp_el => {
                 type              => 'warped_node',
-                follow            => '! tree_macro',
                 config_class_name => 'MasterModel::SlaveY',
                 morph             => 1,
-                rules             => [
-
-                    #XY => { config_class_name => 'MasterModel::SlaveY'},
-                    mXY => { config_class_name => 'MasterModel::SlaveY' },
-                    XZ  => { config_class_name => 'MasterModel::SlaveZ' }
-                ]
+                warp => {
+                    follow            => '! tree_macro',
+                    rules             => [
+                        #XY => { config_class_name => 'MasterModel::SlaveY'},
+                        mXY => { config_class_name => 'MasterModel::SlaveY' },
+                        XZ  => { config_class_name => 'MasterModel::SlaveZ' }
+                    ]
+                }
             },
 
             'tolerant_node' => {
