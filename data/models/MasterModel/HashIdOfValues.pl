@@ -45,19 +45,19 @@ my @element = (
                 type       => 'hash',
                 index_type => 'string',
                 @element,
-                follow => '- hash_with_several_auto_created_id',
+                follow_keys_from => '- hash_with_several_auto_created_id',
             },
             hash_with_allow => {
                 type       => 'hash',
                 index_type => 'string',
                 @element,
-                allow => [qw/foo bar baz/],
+                allow_keys => [qw/foo bar baz/],
             },
             hash_with_allow_from => {
                 type       => 'hash',
                 index_type => 'string',
                 @element,
-                allow_from => '- hash_with_several_auto_created_id',
+                allow_keys_from => '- hash_with_several_auto_created_id',
             },
             ordered_hash => {
                 type       => 'hash',
