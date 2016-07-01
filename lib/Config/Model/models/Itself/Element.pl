@@ -91,30 +91,6 @@
           description => "change the properties (i.e. default value or its value_type) dynamically according to the value of another Value object located elsewhere in the configuration tree. "
       },
 
-      'rules' => {
-                  type => 'hash',
-                  ordered => 1,
-                  level      => 'hidden' ,
-                  index_type => 'string',
-                  warp => {
-                           follow => '- type',
-                           'rules'
-                             => { 'warped_node' => {level => 'normal',}
-                                }
-                          },
-                  cargo => {
-                      type => 'warped_node',
-                      warp => {
-                          follow => '- type',
-                          'rules' => {
-                              'warped_node' => {
-                                  config_class_name => 'Itself::WarpOnlyElement' ,
-                              }
-                          }
-                      }
-                  },
-                  description => "Each key of a hash is a boolean expression using variables declared in the 'follow' parameters. The value of the hash specifies the effects on the node",
-                 },
       # hash or list
       'index_type' 
       => { type => 'leaf',

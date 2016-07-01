@@ -57,38 +57,6 @@
 
             },
 
-            # warped_node: warp parameter for warped_node. They must be
-            # warped out when type is not a warped_node
-
-            'rules' => {
-                type       => 'hash',
-                ordered    => 1,
-                level      => 'hidden',
-                index_type => 'string',
-                warp       => {
-                    follow  => '- type',
-                    'rules' => { 'warped_node' => { level => 'normal', } }
-                },
-                cargo => {
-                    type    => 'warped_node',
-                    warp => {
-                        follow  => '- type',
-                        'rules' => {
-                            'warped_node' => {
-                                config_class_name => 'Itself::WarpableCargoElement',
-                            }
-                        }
-                    }
-                },
-                description =>
-                    "Each key of a hash is a boolean expression using variables declared "
-                    . "in the 'follow' parameters. The value of the hash specifies the effects on the node",
-            },
-
-            # end warp elements for warped_node
-
-            # leaf element
-
         ],
 
     ],

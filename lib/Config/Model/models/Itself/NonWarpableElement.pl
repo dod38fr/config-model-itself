@@ -61,29 +61,6 @@
                 }
             },
 
-            # node element (may be within a hash or list)
-
-            # warped_node: warp parameter for warped_node. They must be
-            # warped out when type is not a warped_node
-            'follow' => {
-                type       => 'hash',
-                index_type => 'string',
-                level      => 'hidden',
-                'warp'     => {
-                    follow  => '- type',
-                    'rules' => { 'warped_node' => { level => 'normal', }, }
-                },
-                cargo => {
-                    type       => 'leaf',
-                    value_type => 'uniline'
-                },
-                description =>
-                  "Specifies the path to the value elements that drive the "
-                  . "change of this node. Each key of the has is a variable name used "
-                  . "in the 'rules' parameter. The value of the hash is a path in the "
-                  . "configuration tree",
-            },
-
             'morph' => {
                 type       => 'leaf',
                 level      => 'hidden',
