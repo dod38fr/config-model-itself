@@ -29,7 +29,7 @@
                     rules => [
                         '$elt_type ne "node"' => {
                             level             => 'normal',
-                            config_class_name => 'Itself::CargoWarpValue',
+                            config_class_name => 'Itself::WarpValue',
                         }
                     ],
                 },

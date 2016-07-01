@@ -18,10 +18,20 @@
 		   type => 'hash',
 		   ordered => 1,
 		   index_type => 'string',
-		   cargo => { type => 'node',
-			      config_class_name => 'Itself::WarpOnlyElement' ,
+		   cargo => {
+               type => 'warped_node',
+               warp => {
+                   rules => [
+                       '&get_type =~ /hash|list/' => {
+                           config_class_name => 'Itself::WarpableCargoElement'
+                       },
+                       '&get_type !~ /hash|list/' => {
+                           config_class_name => 'Itself::WarpOnlyElement' ,
+                       }
+                   ]
+               }
 			    },
-		   description => 'Specify several test (as formula using the variables defined in "follow" element) to try in sequences and their associated effects',
+		   description => 'Each key of the hash is a test (as formula using the variables defined in "follow" element) that are tried in sequences to apply its associated effects',
 		  },
       ],
   ],
