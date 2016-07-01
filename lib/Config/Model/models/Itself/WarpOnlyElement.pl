@@ -8,14 +8,6 @@
    'element' 
    => [
 
-       'experience' 
-       => {
-	   type => 'leaf',
-       status => 'deprecated',
-	   value_type => 'enum', 
-	   choice => [qw/master advanced beginner/] ,
-	  },
-
        'level' 
        => {
 	   type => 'leaf',
