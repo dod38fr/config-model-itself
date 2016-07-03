@@ -1,5 +1,17 @@
 {{$NEXT}}
 
+2.005 2016-07-03
+
+  Made change to fix tests brought by the changes done
+  in Config::Model::WarpedNode parameters:
+    * depends on Config::Model 2.087
+    * fix deprecated warped_node params in Itself model
+    * fix model for new WarpedNode
+
+  Other changes:
+    * removed long deprecated 'experience' parameter
+    * added CONTRIBUTING.md file
+
 2.004 2016-04-21
 
   New features:
