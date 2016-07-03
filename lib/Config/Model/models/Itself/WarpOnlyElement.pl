@@ -35,7 +35,6 @@
 
    'description' 
    => [
-       experience => 'Deprecated. Will be removed from models',
        level => 'Used to highlight important parameter or to hide others. Hidden parameter are mostly used to hide features that are unavailable at start time. They can be made available later using warp mechanism',
       ],
   ],
