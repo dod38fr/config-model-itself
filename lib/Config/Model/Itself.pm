@@ -542,6 +542,8 @@ sub read_model_snippet {
     foreach my $load_file (@files) {
         $logger->info("trying to read snippet $load_file");
 
+        $load_file = "./$load_file" if $load_file !~ m!^/! and -e $load_file;
+
         my $snippet = do $load_file ;
 
         unless ($snippet) {
