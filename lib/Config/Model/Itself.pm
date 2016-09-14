@@ -1,7 +1,7 @@
 package Config::Model::Itself ;
 
 use Mouse ;
-use Config::Model 2.087;
+use Config::Model 2.091;
 use 5.010;
 
 use IO::File ;
