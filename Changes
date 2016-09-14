@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+2.006 2016-09-14
+
+  Bug fix following removal of '.' from @INC
+    * fix load of model snippet when '.' is not in @INC
+      (Closes Debian #837682)
+    * requires Config::Model 2.091
+
 2.005 2016-07-03
 
   Made change to fix tests brought by the changes done
