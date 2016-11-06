@@ -350,7 +350,10 @@
                 type             => 'leaf',
                 value_type       => 'uniline',
                 level            => 'hidden',
-                description      => 'comment starts with this character',
+                description      => 'list of characters that start a comment. When more that one character'
+                .' is used. the first one is used to write back comment. For instance,'
+                .' value "#;" indicate that a comments can start with "#" or ";" and that all comments'
+                .' are written back with "#".',
                 upstream_default => '#',
                 warp             => {
                     follow => '- backend',
