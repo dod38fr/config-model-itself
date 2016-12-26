@@ -62,8 +62,15 @@ For more details, see:
 
 On debian/ubuntu:
 
-    apt-get install libconfig-model-itself-perl
+    apt-get install cme libconfig-model-itself-perl libconfig-model-tkui-perl
 
 Otherwise:
 
     cpanm Config::Model::Itself
+    cpanm App::Cme
+    cpanm Config::Model::TkUI
+    
+## Build from git
+
+See [build from git instructions](README-build-from-git.md)
+
