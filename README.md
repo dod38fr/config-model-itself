@@ -1,4 +1,5 @@
 
+[![](https://travis-ci.org/dod38fr/config-model-itself.svg?branch=master)](https://travis-ci.org/dod38fr/config-model-itself)
 
 ## What is Config::Model::Itself ##
 
