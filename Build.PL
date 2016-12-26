@@ -53,7 +53,6 @@ my $build = $class->new
 
 ##{ $plugin->get_prereqs ##}
 
-   script_files  => [ 'config-model-edit' ],
    add_to_cleanup => [qw/wr_test/] ,
   );
 
