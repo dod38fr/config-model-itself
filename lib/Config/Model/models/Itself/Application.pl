@@ -11,6 +11,16 @@
                 value_type => 'reference',
                 description => 'Top class required to configure this application',
             },
+            synopsis => {
+                type => 'leaf',
+                value_type => 'uniline',
+                description => "one line description of the application."
+            },
+            link_to_doc => {
+                type => 'leaf',
+                value_type => 'uniline',
+                description => "Documentation URL."
+            },
             category => {
                 choice => [
                     'system',
