@@ -15,7 +15,8 @@
                     use_as_upstream_default => 1,
                 },
                 level => 'normal',
-                description => "Allow user to override computed value",
+                description => "Allow user to override computed value"
+                    .'For more details, see L<doc|Config::Model::ValueComputer.pm/"compute override"> ',,
             },
 
             use_as_upstream_default => {
