@@ -85,7 +85,7 @@ sub opt_spec {
 sub usage_desc {
   my ($self) = @_;
   my $desc = $self->SUPER::usage_desc; # "%c COMMAND %o"
-  return "$desc [ edit | gendot | dump | yaml ] your_model_class ";
+  return "$desc [ ".join(' | ', sort keys %meta_cmd)." ] your_model_class ";
 }
 
 sub description {
