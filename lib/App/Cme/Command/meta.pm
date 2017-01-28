@@ -148,7 +148,7 @@ sub load_meta_model {
     my $system_cm_lib_dir = $INC{'Config/Model.pm'} ;
     $system_cm_lib_dir =~ s/\.pm//;
 
-    return ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir);
+    return ($meta_inst, $meta_root, $cm_lib_dir, path($system_cm_lib_dir));
 }
 
 sub load_meta_root {
@@ -208,7 +208,7 @@ sub load_meta_plugin {
     # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
-        cm_lib_dir   => $meta_cm_lib_dir,
+        cm_lib_dir   => $meta_cm_lib_dir->canonpath,
     ) ;
 
     $meta_inst->initial_load_start ;
