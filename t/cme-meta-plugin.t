@@ -47,16 +47,16 @@ SKIP: {
 
         my $result = test_app(
             'App::Cme' => [
-                qw/meta plugin fstab my-plugin.pl/,
+                qw/meta plugin fstab my-plugin/,
                 '-test-and-quit' => 's',
                 '-load' => $plug->stringify,
                 '-dir' => $wr_test->stringify,
             ]
         ) ;
 
-        like($result->stdout , qr/Preparing plugin for model Fstab/, "edit plugin and quit");
+        like($result->stdout , qr/Preparing plugin my-plugin for model Fstab/, "edit plugin and quit");
         like($result->stdout , qr/Test mode: save and quit/, "edit plugin is in test mode");
-        my $plug_out = $wr_test->child('Fstab/CommonOptions.d/my-plugin.pl');
+        my $plug_out = $wr_test->child('models/Fstab.d/my-plugin/Fstab/CommonOptions.pl');
         file_contents_like $plug_out,  qr/'mandatory' => '1'/, "check content of $plug_out";
     }
 }

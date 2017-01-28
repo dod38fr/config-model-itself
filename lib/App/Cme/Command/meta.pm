@@ -197,10 +197,14 @@ sub load_meta_plugin {
     my ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir) = $self->load_meta_model($opt, $args);
 
     my $root_model = $opt->{_root_model};
-    my $meta_cm_lib_dir = $system_cm_lib_dir ;
-    my $plugin_file = shift @$args or die "missing plugin file name after application name.";
+    my $meta_cm_lib_dir = $opt->{dev} ? $cm_lib_dir : $system_cm_lib_dir ;
+    my $plugin_name = shift @$args or die "missing plugin file name after application name.";
 
-    say "Preparing plugin for model $root_model";
+    if ($plugin_name =~ s/\.pl$//) {
+        warn "removed '.pl' deprecated suffix from plugin name\n";
+    }
+
+    say "Preparing plugin $plugin_name for model $root_model";
     # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
@@ -219,16 +223,20 @@ sub load_meta_plugin {
     $meta_inst->layered_stop;
 
     # load any existing plugin file
-    $rw_obj->read_model_snippet(snippet_dir => $cm_lib_dir, model_file => $plugin_file) ;
+    $rw_obj->read_model_plugin(
+        plugin_dir => $cm_lib_dir.'/models/',
+        plugin_name => $plugin_name
+    ) ;
 
     $meta_inst->initial_load_stop ;
 
     $self->load_optional_data($args, $opt, $root_model, $meta_root) ;
-
+    my $root_model_dir = $root_model ;
+    $root_model_dir =~ s!::!/!g;
     my $write_sub = sub {
-            $rw_obj->write_model_snippet(
-                snippet_dir => $cm_lib_dir,
-                model_file => $plugin_file
+            $rw_obj->write_model_plugin(
+                plugin_dir => "$cm_lib_dir/models/$root_model_dir.d",
+                plugin_name => $plugin_name
             );
         } ;
 
@@ -384,7 +392,7 @@ __END__
   cme meta [ options ] check [ model_class ]
 
   # model plugin mode
-  cme meta [options] plugin Debian::Dpkg dpkg-snippet.pl
+  cme meta [options] plugin application plugin_name
 
 =head1 DESCRIPTION
 
@@ -421,16 +429,19 @@ C<./lib/Config/Model/models> directory and checks their validity.
 =head2 plugin
 
 This sub command is used to create model plugins. A model plugin is an
-addendum to an existing model. The resulting file will be saved in a
+addendum to an existing model. The resulting file is saved in a
 C<.d> directory besides the original file to be taken into account.
 
 For instance:
 
- $ cme meta plugin Debian::Dpkg my-plugin.pl
- # perform additions to Debian::Dpkg and Debian::Dpkg::Control::Source and save
- $ find lib -name my-plugin.pl
- lib/Config/Model/models/Debian/Dpkg.d/my-plugin.pl
- lib/Config/Model/models/Debian/Dpkg/Control/Source.d/my-plugin.pl
+ $ cme meta plugin dpkg my-plugin
+ # perform additions to Dpkg and Dpkg::Control and save
+ $ find lib/Config/Model/models/Dpkg.d -type f
+ lib/Config/Model/models/Debian/Dpkg.d/my-plugin/Dpkg.pl
+ lib/Config/Model/models/Debian/Dpkg.d/my-plugin/Dpkg/Control.pl
+
+Use C<-dev> option if you need to add plugins to a model located in
+current directory.
 
 =head2 gen-dot [ file.dot ]
 
@@ -546,10 +557,10 @@ model. (which explains the "Itself" name. This module could also be
 named C<Config::Model::DogFooding>).
 
 This explains why the GUI shown by C<cme meta edit> looks like the GUI
-shown by C<cme edit>: the same GUI generator is used>.
+shown by C<cme edit>: the same GUI generator is used.
 
 If you're new to L<Config::Model>, I'd advise not to peek under
-C<Config::Model::Itself> hood lest you'll loose your sanity.
+C<Config::Model::Itself> hood lest you loose your sanity.
 
 =head1 AUTHOR
 

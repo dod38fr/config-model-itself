@@ -489,14 +489,14 @@ sub write_all {
     $self->meta_instance->clear_changes ;
 }
 
-sub write_model_snippet {
+sub write_model_plugin {
     my $self = shift ;
     my %args = @_ ;
-    my $snippet_dir = delete $args{snippet_dir}
-      || croak __PACKAGE__," write_model_snippet: undefined snippet_dir";
-    my $model_file = delete $args{model_file}
-      || croak __PACKAGE__," write_model_snippet: undefined model_file";
-    croak "write_model_snippet: unexpected parameters ",join(' ', keys %args) if %args ;
+    my $plugin_dir = delete $args{plugin_dir}
+      || croak __PACKAGE__," write_model_plugin: undefined plugin_dir";
+    my $plugin_name = delete $args{plugin_name}
+        || croak __PACKAGE__," write_model_plugin: undefined plugin_name";
+    croak "write_model_plugin: unexpected parameters ",join(' ', keys %args) if %args ;
 
     my $model = $self->meta_root->dump_as_data ;
     # print (Dumper( $model)) ;
@@ -508,23 +508,23 @@ sub write_model_snippet {
 
         # does not distinguish between notes from underlying model or snipper notes ...
         my @notes = $self->meta_root->grab("class:$class")->dump_annotations_as_pod ;
-        my $class_dir = $class.'.d';
-        $class_dir =~ s!::!/!g;
-        write_model_file ("$snippet_dir/$class_dir/$model_file", [], \@notes, [ $data ]);
+        my $plugin_file = $class.'.pl';
+        $plugin_file =~ s!::!/!g;
+        write_model_file ("$plugin_dir/$plugin_name/$plugin_file", [], \@notes, [ $data ]);
     }
 
     $self->meta_instance->clear_changes ;
 }
 
-sub read_model_snippet {
+sub read_model_plugin {
     my $self = shift ;
     my %args = @_ ;
-    my $snippet_dir = delete $args{snippet_dir}
-      || croak __PACKAGE__," write_model_snippet: undefined snippet_dir";
-    my $model_file = delete $args{model_file}
-      || croak __PACKAGE__," read_model_snippet: undefined model_file";
+    my $plugin_dir = delete $args{plugin_dir}
+      || croak __PACKAGE__," write_model_plugin: undefined plugin_dir";
+    my $plugin_name = delete $args{plugin_name}
+      || croak __PACKAGE__," read_model_plugin: undefined plugin_name";
 
-    croak "read_model_snippet: unexpected parameters ",join(' ', keys %args) if %args ;
+    croak "read_model_plugin: unexpected parameters ",join(' ', keys %args) if %args ;
 
     my @files ;
     my $wanted = sub {
@@ -532,35 +532,35 @@ sub read_model_snippet {
         push @files, $n if (-f $_ and not /~$/
                             and $n !~ /CVS/
                             and $n !~ m!.(svn|orig|pod)$!
-                            and $n =~ m!\.d/$model_file!
+                            and $n =~ m!\.d/$plugin_name!
                            ) ;
     } ;
-    find ($wanted, $snippet_dir ) ;
+    find ($wanted, $plugin_dir ) ;
 
     my $class_element = $self->meta_root->fetch_element('class') ;
 
     foreach my $load_file (@files) {
-        $logger->info("trying to read snippet $load_file");
+        $logger->info("trying to read plugin $load_file");
 
         $load_file = "./$load_file" if $load_file !~ m!^/! and -e $load_file;
 
-        my $snippet = do $load_file ;
+        my $plugin = do $load_file ;
 
-        unless ($snippet) {
+        unless ($plugin) {
             if ($@) {die "couldn't parse $load_file: $@"; }
-            elsif (not defined $snippet) {die  "couldn't do $load_file: $!"}
+            elsif (not defined $plugin) {die  "couldn't do $load_file: $!"}
             else { die  "couldn't run $load_file" ;}
         }
 
-        # there should be only only class in each snippet file
-        foreach my $model (@$snippet) {
+        # there should be only only class in each plugin file
+        foreach my $model (@$plugin) {
             my $class_name = delete $model->{name} ;
             # load with a array ref to avoid warnings about missing order
             $class_element->fetch_with_id($class_name)->load_data( $model ) ;
         }
 
         # load annotations
-        $logger->info("loading annotations from snippet file $load_file");
+        $logger->info("loading annotations from plugin file $load_file");
         my $fh = IO::File->new($load_file) || die "Can't open $load_file: $!" ;
         my @lines = $fh->getlines ;
         $fh->close;
@@ -775,12 +775,12 @@ Config::Itself module and its model files provide a model of Config:Model
 (hence the Itself name).
 
 Let's step back a little to explain. Any configuration data is, in
-essence, structured data. This data could be stored in an XML file. A
+essence, structured data. A
 configuration model is a way to describe the structure and relation of
 all items of a configuration data set.
 
 This configuration model is also expressed as structured data. This
-structure data is structured and follow a set of rules which are
+structure data follows a set of rules which are
 described for humans in L<Config::Model>.
 
 The structure and rules documented in L<Config::Model> are also
@@ -788,7 +788,7 @@ expressed in a model in the files provided with
 C<Config::Model::Itself>.
 
 Hence the possibity to verify, modify configuration data provided by
-Config::Model can also be applied on configuration models. Using the
+L<Config::Model> can also be applied on configuration models. Using the
 same user interface.
 
 From a Perl point of view, Config::Model::Itself provides a class
@@ -826,16 +826,17 @@ C<read_all> returns a hash ref containing ( class_name => file_name , ...)
 Will write back configuration model in the specified directory. The
 structure of the read directory is respected.
 
-=head2 write_model_snippet( snippet_dir => foo, model_file => bar.pl )
+=head2 write_model_plugin( plugin_dir => foo, plugin_name => bar )
 
-Write snippet models in separate C<.d> directory. E.g. a snippet for class
-C<Foo::Bar> will be written in C<Foo/Bar.d/bar.pl> file. This file is to be used
+Write plugin models in the  passed C<plugin_dir> directory. The written file is path is
+made of plugin name and class names. E.g. a plugin named C<bar> for class
+C<Foo::Bar> is written in C<bar/Foo/Bar.pl> file. This file is to be used
 by L<augment_config_class|Config::Model/"augment_config_class (name => '...', class_data )">
 
-=head2 read_model_snippet( snippet_dir => foo, model_file => bar.pl )
+=head2 read_model_plugin( plugin_dir => foo, plugin_name => bar.pl )
 
-To read model snippets, this methid will search recursively C<$snippet_dir> and load
-all C<bar.pl> files found in there.
+This method searched recursively C<$plugin_dir/$plugin_name> and load
+all C<*.pl> files found there.
 
 =head2 list_class_element
 
