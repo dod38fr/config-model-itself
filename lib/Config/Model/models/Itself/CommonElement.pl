@@ -64,13 +64,13 @@ my %assert_payload = (
                 type       => 'leaf',
                 value_type => 'string',
                 description =>
-'Warning message to show user. "$_" will contain the bad value. Example "value $_ is bad". Leave blank or undef to use generated message',
+'Warning message to show user. "$_" contains the bad value. Example "value $_ is bad". Leave blank or undef to use generated message',
             },
             fix => {
                 type       => 'leaf',
                 value_type => 'string',
                 description =>
-'Perl instructions to fix the value. These instructions may be triggered by user. $_ will contain the value to fix.  $_ will be stored as the new value once the instructions are done. C<$self> will contain the value object. Use with care.',
+'Perl instructions to fix the value. These instructions may be triggered by user. $_ contains the value to fix.  $_ is stored as the new value once the instructions are done. C<$self> contains the value object. Use with care.',
             },
         ],
     ],
@@ -83,7 +83,7 @@ my %assert_payload = (
                 type       => 'leaf',
                 value_type => 'string',
                 description =>
-'Perl instructions to test the value. $_ will contain the value to test. C<$self> will contain the value object. Use with care.',
+'Perl instructions to test the value. $_ contains the value to test. C<$self> contains the value object. Use with care.',
             },
         ],
     ],
@@ -232,9 +232,9 @@ my %assert_payload = (
             'default' => {
                 type       => 'leaf',
                 level      => 'hidden',
-                value_type => 'uniline',
-                description =>
-'Specify default value. This default value will be written in the configuration data',
+                value_type => 'string',
+                description => 'Specify default value. This default value is written '
+                    .'in the configuration data',
                 warp => {
                     follow  => { 't'            => '?type' },
                     'rules' => [ '$t eq "leaf"' => { level => 'normal', } ]
@@ -244,7 +244,7 @@ my %assert_payload = (
             'upstream_default' => {
                 type       => 'leaf',
                 level      => 'hidden',
-                value_type => 'uniline',
+                value_type => 'string',
                 description =>
 'Another way to specify a default value. But this default value is considered as "built_in" the application and is not written in the configuration data (unless modified)',
                 warp => {
@@ -275,10 +275,10 @@ my %assert_payload = (
                 level      => 'hidden',
                 description =>
                     'Perl regular expression to assert the validity of the value. To check the '
-                    . q!whole value, use C<^> and C<$>. For instance C<^foo|bar$> will allow !
+                    . q!whole value, use C<^> and C<$>. For instance C<^foo|bar$> allows !
                     . q!C<foo> or C<bar> but not C<foobar>. To be case insentive, !
                     . q!use the C<(?i)> extended pattern. For instance, the regexp !
-                    . q!C<^(?i)foo|bar$> will also allow the values !
+                    . q!C<^(?i)foo|bar$> also allows the values !
                     . q!C<Foo> and C<Bar>.!,
                 @warp_in_uniline_or_string,
             },
@@ -286,8 +286,8 @@ my %assert_payload = (
             'assert' => {
                 %assert_payload,
                 description =>
-                  'Raise an error if the test code snippet does returns false. Note this snippet will '
-                  . 'also be run on undefined value, which may not be what you want.',
+                  'Raise an error if the test code snippet does returns false. Note this snippet is '
+                  . 'also run on undefined value, which may not be what you want.',
             },
 
             'warn_if' => {

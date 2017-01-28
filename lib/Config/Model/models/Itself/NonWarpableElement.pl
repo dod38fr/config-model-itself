@@ -76,8 +76,8 @@
                 },
                 description =>
                   "When set, a recurse copy of the value from the old object "
-                  . "to the new object will be attemped. When a copy is not possible, "
-                  . "undef values will be assigned.",
+                  . "to the new object is attemped. Old values are dropped when "
+                  ." a copy is not possible (usually because of mismatching types) "
             },
 
             # end warp elements for warped_node

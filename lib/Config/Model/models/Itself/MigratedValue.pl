@@ -43,13 +43,13 @@
                 value_type => 'boolean',
                 upstream_default   => 0,
                 description => 'Set to 1 if you need to perform more complex operations than substition, '
-                    .'like extraction with regular expressions. This will force an eval by Perl when '
-                    .'computing the formula. The result of the eval will be used as the computed value.'
+                    .'like extraction with regular expressions. This forces an eval by Perl when '
+                    .'computing the formula. The result of the eval is used as the computed value.'
             },
             undef_is => {
                 type => 'leaf',
                 value_type => 'uniline',
-                description => 'Specify a replacement for undefined variables. This will replace undef'
+                description => 'Specify a replacement for undefined variables. This replaces C<undef>'
                     .' values in the formula before migrating values. Use \'\' (2 single quotes) '
                     . 'if you want to specify an empty string.  '
                     .'For more details, see L<doc|Config::Model::ValueComputer.pm/"Undefined variables">',

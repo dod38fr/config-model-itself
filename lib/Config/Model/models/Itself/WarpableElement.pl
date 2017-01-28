@@ -139,8 +139,8 @@
         ],
 
         'description' => [
-            follow_keys_from => 'this hash will contain the same keys as the hash pointed by the path string',
-            allow_keys_from => 'this hash will allow keys from the keys of the hash pointed by the path string',
+            follow_keys_from => 'this hash contains the same keys as the hash pointed by the path string',
+            allow_keys_from => 'this hash allows keys from the keys of the hash pointed by the path string',
             ordered => 'keep track of the order of the elements of this hash',
             default_keys => 'default keys hashes.',
             auto_create_keys => 'always create a set of keys specified in this list',
