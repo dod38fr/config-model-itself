@@ -197,14 +197,17 @@ sub load_meta_plugin {
     my ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir) = $self->load_meta_model($opt, $args);
 
     my $root_model = $opt->{_root_model};
-    my $meta_cm_lib_dir = $opt->{dev} ? $cm_lib_dir : $system_cm_lib_dir ;
+    my $meta_cm_lib_dir = $opt->dev ? $cm_lib_dir : $system_cm_lib_dir ;
     my $plugin_name = shift @$args or die "missing plugin file name after application name.";
 
     if ($plugin_name =~ s/\.pl$//) {
         warn "removed '.pl' deprecated suffix from plugin name\n";
     }
 
-    say "Preparing plugin $plugin_name for model $root_model";
+    say "Preparing plugin $plugin_name for model $root_model found in $meta_cm_lib_dir";
+    say "Use -dev option to create a plugin for a local model (i.e. in $cm_lib_dir)"
+        unless $opt->dev;
+
     # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
