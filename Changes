@@ -1,5 +1,28 @@
 {{$NEXT}}
 
+2.007 2017-03-05
+
+  New features:
+    * add file_mode parameter to backend model
+    * Allow plugin injection in other class
+      (depends on Config::Model 2.098)
+    * add synopsis and link_to_doc parameter to the
+      model class that represent application
+
+  Build:
+    * update © years
+    * requires Path::Tiny >= 0.062
+
+  Bug fixes:
+    * cme meta: don't read plugin when loading model..
+    * remove obsolete config-model-edit command
+
+  Doc updates:
+    * show all commands in meta's description
+    * update compute value doc in model
+    * mention &index in backend file parameter
+    * update INI comment_delimiter doc
+
 2.006 2016-09-14
 
   Bug fix following removal of '.' from @INC
