@@ -56,6 +56,14 @@
                 description => "set configuration directory where config file is read from "
                 . "or written to. This value does not override a directory specified in the model."
             },
+            support_info => {
+                type => 'leaf',
+                value_type => 'uniline',
+                description => "Instructions to let user report a bug for this application. This URL is shown in "
+                    . 'the message of unknown element exception in the string "please submit a bug report '
+                    . '$support_info". Defaults to an url to Config::Model bug tracker',
+                upstream_default => 'to https://github.com/dod38fr/config-model/issues',
+            }
         ],
     }
 ] ;
