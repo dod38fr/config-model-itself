@@ -54,6 +54,8 @@ SKIP: {
             ]
         ) ;
 
+        say $result->stdout if $trace;
+
         like($result->stdout , qr/Preparing plugin my-plugin for model Fstab/, "edit plugin and quit");
         like($result->stdout , qr/Test mode: save and quit/, "edit plugin is in test mode");
         my $plug_out = $wr_test->child('models/Fstab.d/my-plugin/Fstab/CommonOptions.pl');
