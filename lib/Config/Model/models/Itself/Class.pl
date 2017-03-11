@@ -223,7 +223,7 @@
                 level      => 'normal',
                 summary     => 'configuration file mode',
                 description => 'specify the configuration file mode. C<file_mode> parameter can be used to set the '
-                    . 'mode of the written file. C<file_mode> value can be in any form suppported by L<Path::Tiny/chmod>.'
+                    . 'mode of the written file. C<file_mode> value can be in any form supported by L<Path::Tiny/chmod>.'
             },
 
             default_layer => {
