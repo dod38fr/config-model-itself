@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+2.008 2017-03-11
+
+  New features:
+    * add support_info in application model. Used by
+      Comfig::Model 2.100 to inform user how to report
+      a bug when a parameter is missing from a model
+
 2.007 2017-03-05
 
   New features:
