@@ -1,4 +1,4 @@
-# ABSTRACT: Edit the configuration of an application
+# ABSTRACT: Work on the configuration model of an application
 
 package App::Cme::Command::meta ;
 
