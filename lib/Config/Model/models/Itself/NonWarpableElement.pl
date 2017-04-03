@@ -226,6 +226,19 @@
                     . 'in the configuration tree only when the hash is created.',
             },
 
+            write_empty_value => {
+                type       => 'leaf',
+                level      => 'hidden',
+                value_type => 'boolean',
+                upstream_default => 0,
+                warp       => {
+                    follow  => { 't'            => '?type' },
+                    rules   => [ '$t eq "hash"' => { level => 'normal', } ]
+                },
+                description => 'By default, hash entries without data are not saved in configuration '
+                    . 'files. Set this parameter to 1 if a key must be saved in the configuration '
+                    . 'file even if the hash contains no value for that key.',
+            },
             # list element
 
         ],
