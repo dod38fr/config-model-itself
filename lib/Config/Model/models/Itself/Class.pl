@@ -290,6 +290,32 @@
                 }
             },
 
+            assign_char => {
+                type       => 'leaf',
+                value_type => 'uniline',
+                level      => 'hidden',
+                description => 'Character used to assign value in INI file. Default is C<=>. '
+                    .'See L<details|Config::Model::Backend::IniFile/"Handle key value files">',
+                upstream_default => '#',
+                warp => {
+                    follow => '- backend',
+                    rules  => [ IniFile => { level => 'normal', } ],
+                }
+            },
+
+            assign_with => {
+                type       => 'leaf',
+                value_type => 'uniline',
+                level      => 'hidden',
+                description => 'String used write assignment in INI file. Default is "C< = >". '
+                    .'See L<details|Config::Model::Backend::IniFile/"Handle key value files">',
+                upstream_default => '#',
+                warp => {
+                    follow => '- backend',
+                    rules  => [ IniFile => { level => 'normal', } ],
+                }
+            },
+
             ['join_list_value', 'join_check_list_value'] => {
                 type       => 'leaf',
                 value_type => 'uniline',
