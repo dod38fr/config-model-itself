@@ -1,5 +1,14 @@
 {{$NEXT}}
 
+2.009 2017-04-29
+
+  New features:
+    * add assign_char and assign_with parameter
+    * add support for hash write_empty_value option
+
+  Build:
+    * requires Config::Model >= 2.101
+
 2.008 2017-03-11
 
   New features:
