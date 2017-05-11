@@ -274,7 +274,7 @@ sub read_all {
 
         # @models order is important to write configuration class back in the same
         # order as the declaration
-        my @models = $tmp_model -> load ( 'Tmp' , $file ) ;
+        my @models = $tmp_model -> load ( 'Tmp' , $file->absolute ) ;
         push @all_models, @models;
 
         my $rel_file = $file ;
