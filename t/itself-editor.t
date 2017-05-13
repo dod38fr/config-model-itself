@@ -33,12 +33,6 @@ my $wr_test = 'wr_test' ;
 my $wr_conf1 = "$wr_test/wr_conf1";
 my $wr_model1 = "$wr_test/wr_model1";
 
-sub wr_cds {
-    my ($file,$cds) = @_ ;
-    open(CDS,"> $file") || die "can't open $file:$!" ;
-    print CDS $cds ;
-    close CDS ;
-}
 
 plan tests => 15 ;       # avoid double print of plan when exec is run
 
