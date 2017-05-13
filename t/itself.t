@@ -35,6 +35,9 @@ else {
 
 Config::Model::Exception::Any->Trace(1) if $arg =~ /e/;
 
+# do search for the models created in this test
+use lib "wr_test/lib";
+
 my $wr_test = path('wr_test') ;
 my $wr_conf1 = $wr_test->child("wr_conf1");
 my $wr_lib = $wr_test->child("lib");
@@ -59,7 +62,7 @@ dircopy('data',$wr_model1->stringify) || die "cannot copy model data:$!" ;
 
 my $model = Config::Model->new(
     legacy => 'ignore',
-    model_dir => $wr_model1->child("models")->stringify
+    model_dir => $wr_model1->child("models")->relative($wr_lib)->stringify
 ) ;
 ok(1,"loaded Master model") ;
 
@@ -216,7 +219,7 @@ $rw_obj->write_all( ) ;
 
 my $model4 = Config::Model->new(
     legacy => 'ignore',
-    model_dir => $wr_model1->child("models")->stringify
+    model_dir => $wr_model1->child("models")->relative($wr_lib)->stringify
 ) ;
 
 my $inst4 = $model4->instance (
