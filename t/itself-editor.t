@@ -33,7 +33,7 @@ my $wr_conf1 = $wr_test->child("wr_conf1");
 my $wr_model1 = $wr_test->child("lib/wr_model1");
 
 
-plan tests => 15 ;       # avoid double print of plan when exec is run
+plan tests => 15 ;
 
 my $log4perl_user_conf_file = $ENV{HOME}.'/.log4config-model' ;
 
