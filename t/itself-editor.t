@@ -8,8 +8,7 @@ use Data::Dumper ;
 use Config::Model::Itself ;
 
 use Tk ;
-use File::Path ;
-use File::Copy ;
+use Path::Tiny;
 use Config::Model::Itself::TkEditUI;
 use File::Copy::Recursive qw(fcopy rcopy dircopy);
 use Test::Memory::Cycle;
@@ -29,9 +28,9 @@ $show               = 1 if $arg =~ /[si]/;
 
 print "You can play with the widget if you run the test with 's' argument\n";
 
-my $wr_test = 'wr_test' ;
-my $wr_conf1 = "$wr_test/wr_conf1";
-my $wr_model1 = "$wr_test/wr_model1";
+my $wr_test = path('wr_test') ;
+my $wr_conf1 = $wr_test->child("wr_conf1");
+my $wr_model1 = $wr_test->child("lib/wr_model1");
 
 
 plan tests => 15 ;       # avoid double print of plan when exec is run
@@ -59,18 +58,22 @@ Config::Model::Exception::Any->Trace(1) if $arg =~ /e/;
 
 ok(1,"compiled");
 
-rmtree($wr_test) if -d $wr_test ;
+$wr_test->remove_tree if $wr_test->is_dir ;
 
-mkpath([$wr_conf1, $wr_model1, "$wr_conf1/etc/ssh/"], 0, 0755) ;
-dircopy('data',$wr_model1) || die "cannot copy model data:$!" ;
+$wr_conf1->mkpath;
+$wr_model1->mkpath;
+$wr_conf1->child("etc/ssh")->mkpath;
 
-my $model = Config::Model->new(legacy => 'ignore',model_dir => "$wr_model1/models" ) ;
+
+dircopy('data',$wr_model1->stringify) || die "cannot copy model data:$!" ;
+
+my $model = Config::Model->new(legacy => 'ignore',model_dir => $wr_model1->child("models")->stringify ) ;
 ok(1,"loaded Master model") ;
 
 # check that Master Model can be loaded by Config::Model
 my $inst1 = $model->instance (root_class_name   => 'MasterModel', 
                               instance_name     => 'test_orig',
-                              root_dir          => $wr_conf1,
+                              root_dir          => $wr_conf1->stringify,
                           );
 ok($inst1,"created master_model instance") ;
 
@@ -94,7 +97,7 @@ my $meta_root = $meta_inst -> config_root ;
 
 my $rw_obj = Config::Model::Itself -> new(
     model_object => $meta_root,
-    cm_lib_dir => $wr_model1,
+    cm_lib_dir => $wr_model1->stringify,
 ) ;
 
 
@@ -122,8 +125,8 @@ SKIP: {
     } ;
 
     my $cmu = $mw->ConfigModelEditUI (-root => $meta_root,
-                                      -root_dir => $wr_conf1,
-                                      -cm_lib_dir => $wr_model1 ,
+                                      -root_dir => $wr_conf1->stringify,
+                                      -cm_lib_dir => $wr_model1->stringify ,
                                       -store_sub => $write_sub,
                                       -model_name => 'MasterModel',
                                   ) ;
