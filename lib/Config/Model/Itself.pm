@@ -501,7 +501,7 @@ sub write_model_plugin {
         || croak __PACKAGE__," write_model_plugin: undefined plugin_name";
     croak "write_model_plugin: unexpected parameters ",join(' ', keys %args) if %args ;
 
-    my $model = $self->meta_root->dump_as_data ;
+    my $model = $self->meta_root->dump_as_data(mode => 'custom') ;
     # print (Dumper( $model)) ;
 
     my @raw_data = @{$model->{class} || []} ;
