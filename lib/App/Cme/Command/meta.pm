@@ -72,6 +72,7 @@ sub opt_spec {
             . "or only customized values (default)",
             {callbacks => { 'expected values' => sub { $_[0] =~ m/^full|preset|custom$/ ; }}}
         ],
+        [ "dev!"          => 'use model in ./lib to create a plugin'],
 		[ "open-item=s"   => "force the UI to open the specified node"],
 		[ "plugin-file=s" => "create a model plugin in this file" ],
         [ "load-yaml=s"   => "load model from YAML file" ],
