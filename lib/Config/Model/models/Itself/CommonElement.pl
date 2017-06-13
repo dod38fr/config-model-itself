@@ -145,7 +145,7 @@ my %assert_payload = (
                 level       => 'hidden',
                 description => 'Specify the possible values of an enum. This can also be used in a '
                     .'reference element so the possible enum value will be the combination of the '
-                    .'specified choice and the refered to values',
+                    .'specified choice and the referred to values',
                 warp        => {
                     follow => {
                         t  => '?type',
