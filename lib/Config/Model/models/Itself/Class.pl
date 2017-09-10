@@ -182,14 +182,6 @@
 
         'element' => [
 
-            'syntax' => {
-                type       => 'leaf',
-                value_type => 'enum',
-                choice     => [qw/cds perl ini custom/],
-                status     => 'deprecated',
-                description => 'Deprecated parameter that specified the file syntax to store permanently configuration data. Replaced by "backend"',
-            },
-
             'backend' => {
                 type         => 'leaf',
                 class        => 'Config::Model::Itself::BackendDetector',
@@ -200,10 +192,6 @@
                     ini  => 'IniFile',
                     ini_file  => 'IniFile',
                     cds  => 'cds_file',
-                },
-                migrate_from => {
-                    formula   => '$old',
-                    variables => { old => '- syntax' },
                 },
                 description => 'specifies the backend to store permanently configuration data.',
                 help => {
