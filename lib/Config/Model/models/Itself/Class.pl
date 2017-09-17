@@ -205,7 +205,15 @@
                }
             },
 
-           yaml_class => {
+            'auto_create' => {
+                type             => 'leaf',
+                value_type       => 'boolean',
+                level            => 'normal',
+                upstream_default => 0,
+                summary          => 'Creates configuration files as needed',
+            },
+
+            yaml_class => {
                 type             => 'leaf',
                 value_type       => 'uniline',
                 level            => 'hidden',
@@ -439,14 +447,6 @@
                     ],
                 }
             },
-
-            'auto_create' => {
-                type             => 'leaf',
-                value_type       => 'boolean',
-                level            => 'normal',
-                upstream_default => 0,
-                summary          => 'Creates configuration files as needed',
-            },
         ],
     ],
 
@@ -469,16 +469,6 @@
                     ],
                 }
             },
-
-            # move to ConfigRW when removing legacy allow_empty
-            'auto_create' => {
-                type             => 'leaf',
-                value_type       => 'boolean',
-                level            => 'normal',
-                upstream_default => 0,
-                summary          => 'Creates configuration files as needed',
-            },
-
         ],
     ],
     [
