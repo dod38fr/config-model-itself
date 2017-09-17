@@ -446,21 +446,7 @@
                 level            => 'normal',
                 upstream_default => 0,
                 summary          => 'Creates configuration files as needed',
-                migrate_from     => {
-                    formula   => '$old',
-                    variables => { old => '- allow_empty' },
-                },
             },
-
-            'allow_empty' => {
-                type             => 'leaf',
-                value_type       => 'boolean',
-                level            => 'normal',
-                status           => 'deprecated',
-                upstream_default => 0,
-                summary          => 'deprecated in favor of auto_create',
-            },
-
         ],
     ],
 
