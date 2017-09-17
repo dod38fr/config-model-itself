@@ -187,6 +187,11 @@
                 class        => 'Config::Model::Itself::BackendDetector',
                 value_type   => 'enum',
                 choice       => [qw/cds_file perl_file custom/],
+                warn_if_match => {
+                    '^custom$' => {
+                        msg => "custom backend are deprecated"
+                    }
+                },
                 replace   => {
                     perl => 'perl_file',
                     ini  => 'IniFile',
@@ -200,8 +205,7 @@
 "Ini file format. Beware that the structure of your model must match the limitations of the INI file format, i.e only a 2 levels hierarchy. Configuration filename is made with instance name",
                     perl_file =>
 "file with a perl data structure. Configuration filename is made with instance name",
-                    custom =>
-"Custom format. You must specify your own class and method to perform the read or write function. See Config::Model::AutoRead doc for more details",
+                    custom => "deprecated",
                }
             },
 
