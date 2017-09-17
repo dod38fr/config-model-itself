@@ -138,7 +138,7 @@
     ],
 
     [
-        name => 'Itself::ConfigWR::DefaultLayer',
+        name => 'Itself::ConfigReadWrite::DefaultLayer',
 
         'element'     => [
             'config_dir' => {
@@ -176,8 +176,8 @@
     ],
 
     [
-        name => "Itself::ConfigWR",
-        include => "Itself::ConfigWR::DefaultLayer",
+        name => "Itself::ConfigReadWrite",
+        include => "Itself::ConfigReadWrite::DefaultLayer",
         include_after => 'backend',
 
         'element' => [
@@ -239,7 +239,7 @@
 
             default_layer => {
                 type => 'node',
-                config_class_name => 'Itself::ConfigWR::DefaultLayer',
+                config_class_name => 'Itself::ConfigReadWrite::DefaultLayer',
                 summary => q!How to find default values in a global config file!,
                 description => q!Specifies where to find a global configuration file that !
                     .q!specifies default values. For instance, this is used by OpenSSH to !
@@ -430,7 +430,7 @@
 
     [
         name    => 'Itself::ConfigRead',
-        include => "Itself::ConfigWR",
+        include => "Itself::ConfigReadWrite",
 
         'element' => [
             'function' => {
@@ -452,7 +452,7 @@
 
     [
         name    => 'Itself::ConfigWrite',
-        include => "Itself::ConfigWR",
+        include => "Itself::ConfigReadWrite",
 
         'element' => [
             'function' => {
