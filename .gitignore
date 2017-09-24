@@ -6,5 +6,5 @@ lib/Config/Model/models/Itself/ConfigAccept.pod
 lib/Config/Model/models/Itself/ConfigRead.pod
 lib/Config/Model/models/Itself/ConfigWrite.pod
 lib/Config/Model/models/Itself/Element.pod
-lib/Config/Model/models/Itself/ConfigWR/DefaultLayer.pod
+lib/Config/Model/models/Itself/ConfigReadWrite/DefaultLayer.pod
 lib/Config/Model/models/Itself/WarpValue.pod
