@@ -28,7 +28,7 @@
 
         'element' => [
 
-            [qw/class_description license/] => {
+            [qw/class_description license gist/] => {
                 type       => 'leaf',
                 value_type => 'string',
             },
@@ -126,6 +126,12 @@
         ],
         'description' => [
             element => "Specify the elements names of this configuration class.",
+            gist => 'String used to construct a summary of the content of a node. This '
+                .'parameter is used by user interface to show users the gist of the '
+                .'content of this node. This parameter has no other effect. This string '
+                .'may contain element values in the form "C<{foo} or {bar}>". When '
+                .'constructing the gist, C<{foo}> is replaced by the value of element '
+                .'C<foo>. Likewise for C<{bar}>.',
             include => "Include the element description of another class into this class.",
             include_after => "insert the included elements after a specific element. "
             . "By default, included elements are placed before all other elements.",
