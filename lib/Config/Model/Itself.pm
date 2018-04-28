@@ -8,6 +8,7 @@ use IO::File ;
 use Log::Log4perl 1.11;
 use Carp ;
 use Data::Dumper ;
+use Scalar::Util qw/weaken/;
 use File::Find ;
 use File::Path ;
 use File::Basename ;
@@ -143,6 +144,9 @@ sub _build_model_dir {
 
 sub BUILD {
     my $self = shift;
+
+    # avoid memory cycle
+    weaken($self);
 
     my $cb = sub {
         my %args = @_ ;
