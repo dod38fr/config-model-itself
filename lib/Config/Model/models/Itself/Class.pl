@@ -451,6 +451,8 @@
         name    => 'Itself::ConfigRead',
         include => "Itself::ConfigReadWrite",
 
+        gist => '{backend}',
+
         'element' => [
             'function' => {
                 type       => 'leaf',
@@ -472,6 +474,8 @@
     [
         name    => 'Itself::ConfigWrite',
         include => "Itself::ConfigReadWrite",
+
+        gist => '{backend}',
 
         'element' => [
             'function' => {
