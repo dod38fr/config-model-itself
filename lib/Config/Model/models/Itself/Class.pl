@@ -53,7 +53,7 @@
                         code => 'not defined $_ or eval{Mouse::Util::load_class($_)}; not $@;',
                         msg  => 'Error while loading $_ class ',
                     },
-                    "2_class_inherit" => {
+                   "2_class_inherit" => {
                         code => 'not defined $_ or $_->isa("Config::Model::Node")',
                         msg  => 'class $_ must inherit Config::Model::Node',
                     }
