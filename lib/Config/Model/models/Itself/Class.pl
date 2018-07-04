@@ -457,6 +457,7 @@
             'function' => {
                 type       => 'leaf',
                 value_type => 'uniline',
+                status     => 'deprecated',
                 level      => 'hidden',
                 warp       => {
                     follow => '- backend',
@@ -482,6 +483,7 @@
                 type       => 'leaf',
                 value_type => 'uniline',
                 level      => 'hidden',
+                status     => 'deprecated',
                 warp       => {
                     follow => '- backend',
                     rules  => [
