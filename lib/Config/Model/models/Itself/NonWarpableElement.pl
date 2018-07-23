@@ -76,7 +76,7 @@
                 },
                 description =>
                   "When set, a recurse copy of the value from the old object "
-                  . "to the new object is attemped. Old values are dropped when "
+                  . "to the new object is attempted. Old values are dropped when "
                   ." a copy is not possible (usually because of mismatching types) "
             },
 
