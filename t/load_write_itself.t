@@ -12,6 +12,8 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy);
 use warnings;
 use strict;
 
+$File::Copy::Recursive::KeepMode = 0;
+
 my ($meta_model, $trace) = init_test();
 
 my $wr_test = setup_test_dir ;
