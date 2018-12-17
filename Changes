@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+2.016 2018-12-17
+
+  Test fixes:
+    * use IniFile backend instead of Yaml
+
 2.015 2018-12-15
 
   Model updates:
