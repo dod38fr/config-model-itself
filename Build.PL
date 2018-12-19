@@ -53,7 +53,7 @@ my $build = $class->new
 
 ##{ $plugin->get_prereqs ##}
 
-   add_to_cleanup => [qw/wr_test/] ,
+   add_to_cleanup => [qw/wr_test wr_root/] ,
   );
 
 
