@@ -13,7 +13,8 @@ use base qw/App::Cme::Common/;
 use Config::Model 2.075;
 
 use Config::Model::Itself ;
-use YAML::Tiny;
+use YAML::XS;
+$YAML::XS::LoadBlessed = 0;
 
 use Tk ;
 use Config::Model::TkUI ;
@@ -311,8 +312,6 @@ sub dump_yaml{
     my ($self, $opt, $args) = @_;
     my ($rw_obj, $cm_lib_dir, $meta_root, $write_sub) = $self->load_meta_root($opt, $args) ;
 
-    require YAML::Tiny;
-    import YAML::Tiny qw/Dump/;
     my $dump_file = shift @$args || 'model.yml';
     say "Dumping ".$rw_obj->root_model." in $dump_file";
 
