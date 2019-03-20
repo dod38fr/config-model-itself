@@ -475,6 +475,10 @@ other types of dump
 Dump configuration content in the specified file (or C<model.yml>) in
 YAML format.
 
+For instance:
+
+ $ cme meta dump-yaml Ssh::PortForward contrib/ssh-portforward.yml
+
 =head2 save
 
 Force a save of the model even if no edition was done. This option is
