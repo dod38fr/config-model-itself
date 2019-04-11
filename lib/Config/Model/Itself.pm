@@ -235,10 +235,7 @@ sub read_all {
         die "Cannot read from unknown dir ".$model_dir unless $model_dir->is_dir;
     }
 
-    my $apps = {};
-    if (my $app_name = delete $args{application}) {
-        $apps = $self-> read_app_files($force_load, $read_from, $app_name);
-    }
+    my $apps = $self-> read_app_files($force_load, $read_from, delete $args{application});
 
     my $root_model_arg = delete $args{root_model} || '';
     my $model = $apps->{$root_model_arg} || $root_model_arg ;
