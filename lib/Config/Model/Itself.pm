@@ -621,7 +621,7 @@ sub write_model_file {
 
     my $wr_dir = dirname($wr_file);
     unless ( -d $wr_dir ) {
-        mkpath( $wr_dir, 0, 0755 ) || die "Can't mkpath $wr_dir:$!";
+        mkpath( $wr_dir, 0, oct(755) ) || die "Can't mkpath $wr_dir:$!";
     }
 
     my $wr = IO::File->new( $wr_file, '>' )
