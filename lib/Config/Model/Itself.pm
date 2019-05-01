@@ -638,8 +638,9 @@ sub write_model_file {
     # munge pod text embedded in values to avoid spurious pod formatting
     $dump =~ s/\n=/\n'.'=/g;
 
-    $wr->print(@$comments) ;
-    $wr->print( $dump, ";\n\n" );
+    $wr->print( @$comments ) ;
+    $wr->print( "use strict;\nuse warnings;\n\n" );
+    $wr->print( "return $dump;\n\n" );
 
     $wr->print( join( "\n", @$notes ) );
 

@@ -58,7 +58,10 @@ $plugin_rw_obj->write_model_plugin(plugin_dir => $wr_plugin, plugin_name => $plu
 
 my %expected_plugin;
 $expected_plugin{MasterModel} = << "EOS" ;
-[
+use strict;
+use warnings;
+
+return [
   {
     'element' => [
       'a_string',
@@ -78,7 +81,10 @@ $expected_plugin{MasterModel} = << "EOS" ;
 EOS
 
 $expected_plugin{"MasterModel/X_base_class2"} = << "EOS" ;
-[
+use strict;
+use warnings;
+
+return [
   {
     'element' => [
       'X',
