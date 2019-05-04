@@ -103,9 +103,9 @@ sub read_data {
         @data = <STDIN> ;
     }
     else {
-        open(LOAD,$load_file) || die "cannot open load file $load_file:$!";
-        @data = <LOAD> ;
-        close LOAD;
+        open my $load, '<', $load_file || die "cannot open load file $load_file:$!";
+        @data = <$load> ;
+        close $load;
     }
 
     return wantarray ? @data : join('',@data);
