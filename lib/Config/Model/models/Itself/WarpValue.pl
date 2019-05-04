@@ -1,5 +1,7 @@
+use strict;
+use warnings;
 
-[
+return [
   [
    name => "Itself::WarpValue",
 

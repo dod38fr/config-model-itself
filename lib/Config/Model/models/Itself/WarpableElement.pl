@@ -16,7 +16,10 @@
 #    along with Config-Model-Itself; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
-[
+use strict;
+use warnings;
+
+return [
     [
         name => "Itself::WarpableElement",
 

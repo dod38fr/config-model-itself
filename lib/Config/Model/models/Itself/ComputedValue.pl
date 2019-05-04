@@ -1,4 +1,7 @@
-[
+use strict;
+use warnings;
+
+return [
     [
         name => "Itself::ComputedValue",
         include => "Itself::MigratedValue" ,

@@ -1,7 +1,3 @@
-# $Author: ddumont $
-# $Date: 2008-03-24 15:05:19 +0100 (Mon, 24 Mar 2008) $
-# $Revision: 559 $
-
 #    Copyright (c) 2007-2008 Dominique Dumont.
 #
 #    This file is part of Config-Model-Itself.
@@ -20,7 +16,10 @@
 #    along with Config-Model-Itself; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
-[
+use strict;
+use warnings;
+
+return [
   [
    name => "Itself::WarpableCargoElement",
 

@@ -16,6 +16,9 @@
 #    along with Config-Model-Itself; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
+use strict;
+use warnings;
+
 my @warp_in_string_like_parameter = (
     warp => {
         follow => {
@@ -76,7 +79,7 @@ my %assert_payload = (
     @warp_in_leaf_parameter,
 );
 
-[
+return [
     [
         name    => 'Itself::CommonElement::WarnIfMatch',
         element => [

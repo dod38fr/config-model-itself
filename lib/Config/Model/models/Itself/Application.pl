@@ -1,5 +1,7 @@
+use strict;
+use warnings;
 
-[
+return [
     {
         name => 'Itself::Application',
         # read/written by Config::Model::Itself (read_all)
