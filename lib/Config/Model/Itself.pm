@@ -910,6 +910,18 @@ parameter.  Unfortunately, there's no way to build the menu
 dynamically. So user cme must be restarted to change the menu if the
 application list is changed.
 
+=head1 CREDITS
+
+Here's the list of people who helped improve this project:
+
+=over
+
+=item Gregor Herrmann
+
+=back
+
+Thanks for the patches !
+
 =head1 SEE ALSO
 
 L<Config::Model>, L<Config::Model::Node>, L<Path::Tiny>
