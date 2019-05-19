@@ -317,15 +317,17 @@ sub read_all {
                 my $list  = delete $new_model -> {$what.'_list'} ;
                 my $h     = delete $new_model -> {$what} ;
                 $new_model -> {$what} = [] ;
-                map {
-                    push @{$new_model->{$what}}, $_, $h->{$_}
-                } @$list ;
+                foreach my $name (@$list) {
+                    push @{$new_model->{$what}}, $name, $h->{$name}
+                } ;
             }
 
             # remove hash key with undefined values
-            map { delete $new_model->{$_} unless defined $new_model->{$_}
-                                          and $new_model->{$_} ne ''
-              } keys %$new_model ;
+            foreach my $name (keys %$new_model) {
+                if (not defined $new_model->{$name} or $new_model->{$name} eq '') {
+                    delete $new_model->{$name};
+                }
+            }
             $read_models{$model_name} = $new_model ;
         }
 
@@ -337,7 +339,9 @@ sub read_all {
     # include statement while calling load_data
     my $root_obj = $self->meta_root ;
     my $class_element = $root_obj->fetch_element('class') ;
-    map { $class_element->fetch_with_id($_) } sort keys %read_models ;
+    foreach my $class (sort keys %read_models) {
+        $class_element->fetch_with_id($class);
+    }
 
     #require Tk::ObjScanner; Tk::ObjScanner::scan_object(\%read_models) ;
 
@@ -399,7 +403,9 @@ sub upgrade_model {
     if ($model->{write_config} and not $multi_backend) {
         say "Model $config_class_name: merging write_config specification in rw_config";
         if (not $multi_backend) {
-            map {$model->{rw_config}{$_} = $model->{write_config}{$_} } keys %{$model->{write_config}} ;
+            foreach my $spec ( keys %{$model->{write_config}} ) {
+                $model->{rw_config}{$spec} = $model->{write_config}{$spec}
+            } ;
             delete $model->{write_config};
         }
     }
@@ -676,7 +682,9 @@ sub list_one_class_element {
     my $inc_after = $meta_class->grab_value('include_after') ;
 
     if (@include and not defined $inc_after) {
-        map { $res .= $self->list_one_class_element($_,$pad.'  ') ;} @include ;
+        foreach my $inc (@include) {
+            $res .= $self->list_one_class_element($inc,$pad.'  ') ;
+        }
     }
 
     return $res unless @elts ;
@@ -686,7 +694,9 @@ sub list_one_class_element {
 
         $res .= $pad."  - $elt_name ($type)\n";
         if (@include and defined $inc_after and $inc_after eq $elt_name) {
-            map { $res .=$self->list_one_class_element($_,$pad.'  ') ;} @include ;
+            foreach my $inc (@include) {
+                $res .= $self->list_one_class_element($inc,$pad.'  ') ;
+            }
         }
     }
     return $res ;
