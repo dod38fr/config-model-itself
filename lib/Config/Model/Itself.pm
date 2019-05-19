@@ -263,7 +263,6 @@ sub read_all {
     my $i = $self->meta_instance ;
 
     my %read_models ;
-    my %pod_data ;
     my %class_file_map ;
 
     my @all_models;
