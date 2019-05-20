@@ -287,48 +287,7 @@ sub read_all {
 
         # - move experience, description and level status into parameter info.
         foreach my $model_name (@models) {
-            # no need to dclone model as Config::Model object is temporary
-            my $raw_model =  $tmp_model -> get_raw_model( $model_name ) ;
-            my $new_model =  $tmp_model -> get_model_clone( $model_name ) ;
-
-            $self->upgrade_model($model_name, $new_model);
-
-            # track read class to identify later classes added by user
-            $self->add_tracked_class($model_name);
-
-            # some modifications may be done to cope with older model styles. If a modif
-            # was done, mark the class as changed so it will be saved later
-            $self->add_modified_class($model_name) unless Compare($raw_model, $new_model) ;
-
-            foreach my $item (qw/description summary level experience status/) {
-                foreach my $elt_name (keys %{$new_model->{element}}) {
-                    my $moved_data = delete $new_model->{$item}{$elt_name}  ;
-                    next unless defined $moved_data ;
-                    $new_model->{element}{$elt_name}{$item} = $moved_data ;
-                }
-                delete $new_model->{$item} ;
-            }
-
-            # Since accept specs and elements are stored in a ordered hash,
-            # load_data expects a array ref instead of a hash ref.
-            # Build this array ref taking the order into
-            # account
-            foreach my $what (qw/element accept/) {
-                my $list  = delete $new_model -> {$what.'_list'} ;
-                my $h     = delete $new_model -> {$what} ;
-                $new_model -> {$what} = [] ;
-                foreach my $name (@$list) {
-                    push @{$new_model->{$what}}, $name, $h->{$name}
-                } ;
-            }
-
-            # remove hash key with undefined values
-            foreach my $name (keys %$new_model) {
-                if (not defined $new_model->{$name} or $new_model->{$name} eq '') {
-                    delete $new_model->{$name};
-                }
-            }
-            $read_models{$model_name} = $new_model ;
+            $read_models{$model_name} = $self->normalize_model($model_name, $tmp_model);
         }
 
     }
@@ -375,6 +334,54 @@ sub read_all {
     }
 
     return $self->{map} = \%class_file_map ;
+}
+
+sub normalize_model {
+    my ($self, $model_name, $tmp_model) = @_;
+
+    # no need to dclone model as Config::Model object is temporary
+    my $raw_model =  $tmp_model -> get_raw_model( $model_name ) ;
+    my $new_model =  $tmp_model -> get_model_clone( $model_name ) ;
+
+    $self->upgrade_model($model_name, $new_model);
+
+    # track read class to identify later classes added by user
+    $self->add_tracked_class($model_name);
+
+    # some modifications may be done to cope with older model styles. If a modif
+    # was done, mark the class as changed so it will be saved later
+    $self->add_modified_class($model_name) unless Compare($raw_model, $new_model) ;
+
+    foreach my $item (qw/description summary level experience status/) {
+        foreach my $elt_name (keys %{$new_model->{element}}) {
+            my $moved_data = delete $new_model->{$item}{$elt_name}  ;
+            next unless defined $moved_data ;
+            $new_model->{element}{$elt_name}{$item} = $moved_data ;
+        }
+        delete $new_model->{$item} ;
+    }
+
+    # Since accept specs and elements are stored in a ordered hash,
+    # load_data expects a array ref instead of a hash ref.
+    # Build this array ref taking the order into
+    # account
+    foreach my $what (qw/element accept/) {
+        my $list  = delete $new_model -> {$what.'_list'} ;
+        my $h     = delete $new_model -> {$what} ;
+        $new_model -> {$what} = [] ;
+        foreach my $name (@$list) {
+            push @{$new_model->{$what}}, $name, $h->{$name}
+        }
+        ;
+    }
+
+    # remove hash key with undefined values
+    foreach my $name (keys %$new_model) {
+        if (not defined $new_model->{$name} or $new_model->{$name} eq '') {
+            delete $new_model->{$name};
+        }
+    }
+    return $new_model ;
 }
 
 # can be removed end of 2019 (after buster is released)
