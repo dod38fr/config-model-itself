@@ -1,7 +1,7 @@
 package Config::Model::Itself ;
 
 use Mouse ;
-use Config::Model 2.127;
+use Config::Model 2.134;
 use 5.010;
 
 use IO::File ;
@@ -289,7 +289,7 @@ sub read_all {
         foreach my $model_name (@models) {
             # no need to dclone model as Config::Model object is temporary
             my $raw_model =  $tmp_model -> get_raw_model( $model_name ) ;
-            my $new_model =  $tmp_model -> get_model( $model_name ) ;
+            my $new_model =  $tmp_model -> get_model_clone( $model_name ) ;
 
             $self->upgrade_model($model_name, $new_model);
 
