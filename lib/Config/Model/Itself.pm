@@ -492,11 +492,11 @@ sub write_all {
     }
 
     # add remaining classes in map
-    my %new_map =  map {
-        my $f = $_;
-        $f =~ s!::!/!g;
-        ("$f.pl" => [ $_ ]) ;
-    } keys %loaded_classes ;
+    my %new_map;
+    foreach my $class (keys %loaded_classes) {
+        my $f = $class =~ s!::!/!gr;
+        $new_map{"$f.pl"} = [ $class ] ;
+    }
 
     my %map_to_write = (%$map,%new_map) ;
 
