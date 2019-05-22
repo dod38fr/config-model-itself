@@ -1,4 +1,7 @@
-[
+use strict;
+use warnings;
+
+return [
     [
         name    => "MasterModel::CheckListExamples",
         element => [

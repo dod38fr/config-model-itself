@@ -2,7 +2,10 @@
 
 # this file is used by test script
 
-[
+use strict;
+use warnings;
+
+return [
     [
         name    => 'MasterModel::SubSlave2',
         element => [

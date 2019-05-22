@@ -1,10 +1,13 @@
+use strict;
+use warnings;
+
 my @element = (
     # Value constructor args are passed in their specific array ref
     cargo_type => 'leaf',
     cargo_args => { value_type => 'string' },
 );
 
-[
+return [
     [
         name    => "MasterModel::HashIdOfValues",
         element => [
