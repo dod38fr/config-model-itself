@@ -265,32 +265,9 @@ sub read_all {
     my %read_models ;
     my %class_file_map ;
 
-    my @all_models;
-    for my $file (@files) {
-        $logger->info("loading config file $file");
-
-        # now apply some translation to read model
-        # - translate legacy warp parameters
-        # - expand elements name
-        my @legacy = $legacy ? ( legacy => $legacy ) : () ;
-        my $tmp_model = Config::Model -> new( skip_include => 1, @legacy ) ;
-
-        # @models order is important to write configuration class back in the same
-        # order as the declaration
-        my @models = $tmp_model -> load ( 'Tmp' , $file->absolute ) ;
-        push @all_models, @models;
-
-        my $rel_file = $file ;
-        $rel_file =~ s/^$read_dir\/?//;
-        die "wrong reg_exp" if $file eq $rel_file ;
-        $class_file_map{$rel_file} = \@models ;
-
-        # - move experience, description and level status into parameter info.
-        foreach my $model_name (@models) {
-            $read_models{$model_name} = $self->normalize_model($model_name, $tmp_model);
-        }
-
-    }
+    my @all_models = $self->load_model_files(
+        $read_dir, \@files, $legacy, \%class_file_map, \%read_models
+    );
 
     $self->{root_model} = $model || (sort @all_models)[0];
 
@@ -311,29 +288,40 @@ sub read_all {
         check => $force_load ? 'no' : 'yes'
     ) ;
 
-    # load annotations and comment header
-    for my $file (@files) {
-        $logger->info("loading annotations from file $file");
-        my $fh = IO::File->new($file) || die "Can't open $file: $!" ;
-        my @lines = $fh->getlines ;
-        $fh->close;
-        $root_obj->load_pod_annotation(join('',@lines)) ;
-
-        my @headers ;
-        foreach my $l (@lines) {
-            if ($l =~ /^\s*#/ or $l =~ /^\s*$/){
-                push @headers, $l
-            }
-            else {
-                last;
-            }
-        }
-        my $rel_file = $file ;
-        $rel_file =~ s/^$dir\/?//;
-        $self->{header}{$rel_file} = \@headers;
-    }
+    $self->read_model_annotations( $dir, $root_obj, \@files);
 
     return $self->{map} = \%class_file_map ;
+}
+
+sub load_model_files {
+    my ($self, $read_dir, $files, $legacy, $class_file_map, $read_models) = @_;
+
+    my @all_models;
+    for my $file (@$files) {
+        $logger->info("loading config file $file");
+
+        # now apply some translation to read model
+        # - translate legacy warp parameters
+        # - expand elements name
+        my @legacy = $legacy ? ( legacy => $legacy ) : () ;
+        my $tmp_model = Config::Model -> new( skip_include => 1, @legacy ) ;
+
+        # @models order is important to write configuration class back in the same
+        # order as the declaration
+        my @models = $tmp_model -> load ( 'Tmp' , $file->absolute ) ;
+        push @all_models, @models;
+
+        my $rel_file = $file ;
+        $rel_file =~ s/^$read_dir\/?//;
+        die "wrong reg_exp" if $file eq $rel_file ;
+        $class_file_map->{$rel_file} = \@models ;
+
+        # - move experience, description and level status into parameter info.
+        foreach my $model_name (@models) {
+            $read_models->{$model_name} = $self->normalize_model($model_name, $tmp_model);
+        }
+    }
+    return @all_models;
 }
 
 sub normalize_model {
@@ -382,6 +370,32 @@ sub normalize_model {
         }
     }
     return $new_model ;
+}
+
+sub read_model_annotations {
+    my ($self, $dir, $root_obj, $files) = @_;
+
+    # load annotations and comment header
+    for my $file (@$files) {
+        $logger->info("loading annotations from file $file");
+        my $fh = IO::File->new($file) || die "Can't open $file: $!" ;
+        my @lines = $fh->getlines ;
+        $fh->close;
+        $root_obj->load_pod_annotation(join('',@lines)) ;
+
+        my @headers ;
+        foreach my $l (@lines) {
+            if ($l =~ /^\s*#/ or $l =~ /^\s*$/){
+                push @headers, $l
+            }
+            else {
+                last;
+            }
+        }
+        my $rel_file = $file ;
+        $rel_file =~ s/^$dir\/?//;
+        $self->{header}{$rel_file} = \@headers;
+    }
 }
 
 # can be removed end of 2019 (after buster is released)
