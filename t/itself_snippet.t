@@ -111,9 +111,11 @@ X note
 
 EOS
 
-map {
-  file_contents_eq_or_diff $wr_plugin."/$plugin_name/$_.pl",  $expected_plugin{$_},  "generated $_ plugin file";
-} keys %expected_plugin ;
+foreach my $name (keys %expected_plugin) {
+    file_contents_eq_or_diff(
+        $wr_plugin."/$plugin_name/$name.pl", $expected_plugin{$name}, "generated $name plugin file"
+    );
+}
 
 my $meta_plugin_inst2 = $meta_model->instance(
     root_class_name => 'Itself::Model',
@@ -144,9 +146,11 @@ $plugin_rw_obj2->read_model_plugin(plugin_dir => $wr_plugin, plugin_name => $plu
 my $plugin_name2 = 'other_plugin';
 $plugin_rw_obj2->write_model_plugin(plugin_dir => $wr_plugin, plugin_name => $plugin_name2) ;
 
-map {
-  file_contents_eq_or_diff $wr_plugin."/$plugin_name2/$_.pl",  $expected_plugin{$_},  "regenerated $_ plugin file";
-}  keys %expected_plugin  ;
+foreach my $name (keys %expected_plugin) {
+    file_contents_eq_or_diff (
+        $wr_plugin."/$plugin_name2/$name.pl",  $expected_plugin{$name}, "regenerated $name plugin file"
+    );
+}
 
 note("testing memory cycles. Please wait...");
 memory_cycle_ok($meta_model, "Check memory cycle");
