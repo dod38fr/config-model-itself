@@ -344,7 +344,7 @@ sub _edit {
     $mw->optionAdd('*BorderWidth' => 1);
 
     my $cmu = $mw->ConfigModelEditUI(
-        -root       => $meta_root,
+        -instance   => $meta_root->instance,
         -store_sub  => $write_sub,
         -model_name => $root_model,
         -cm_lib_dir => $cm_lib_dir

@@ -23,6 +23,9 @@ use warnings ;
 use Carp ;
 use 5.10.0;
 
+use Config::Model::TkUI 1.370;
+
+
 use base qw/Config::Model::TkUI/;
 
 Construct Tk::Widget 'ConfigModelEditUI';
@@ -63,7 +66,7 @@ sub build_menu {
     my $cw = shift ;
 
     # search for config_dir override
-    my $root = $cw->{root};
+    my $root = $cw->{instance}->config_root;
     my $items = [];
     my %app;
 
@@ -82,7 +85,7 @@ sub test_model {
     my $cw = shift ;
     my $app = shift;
 
-    if ( $cw->{root}->instance->needs_save ) {
+    if ( $cw->{instance}->needs_save ) {
         my $answer = $cw->Dialog(
             -title          => "save model before test",
             -text           => "Save model ?",
@@ -104,6 +107,7 @@ sub test_model {
         $cw->_launch_test($app);
     }
 }
+
 sub _launch_test {
     my $cw = shift ;
     my $app = shift;
@@ -118,18 +122,19 @@ sub _launch_test {
     $cw->{test_model} =  $model ;
 
     my %args = ( root_dir => $cw->{root_dir} );
+    my $root = $cw->{instance}->config_root;
 
-    $args{root_class_name} = $app ? $cw->{root}->grab_value("application:$app model") : $cw->{model_name};
+    $args{root_class_name} = $app ? $root->grab_value("application:$app model") : $cw->{model_name};
     $args{instance_name} = $app ? "test $app" : $cw->{model_name};
 
     if ($app) {
         $args{application} = $app;
-        $args{config_dir} = $cw->{root}->grab_value("application:$app config_dir");
+        $args{config_dir} = $root->grab_value("application:$app config_dir");
     }
 
-    my $root = $model->instance ( %args )-> config_root ;
+    my $instance_to_test = $model->instance ( %args ) ;
 
-    $cw -> {test_widget} = $cw->ConfigModelUI (-root => $root, -quit => 'soft') ;
+    $cw -> {test_widget} = $cw->ConfigModelUI (-instance => $instance_to_test, -quit => 'soft') ;
 }
 
 1;
