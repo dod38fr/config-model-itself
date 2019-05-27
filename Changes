@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+2.018 2019-05-27
+
+  Bug fix:
+    * Fix usage of Config::Model::TkUI. This fixes the non-regression
+      tests that break with new TkUI.
+      (require Config::Model::TkUI 1.370)
+
 2.017 2019-05-26
 
   Improve the way models files are written:
