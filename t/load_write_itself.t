@@ -11,6 +11,7 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy);
 
 use warnings;
 use strict;
+use 5.10.1;
 
 $File::Copy::Recursive::KeepMode = 0;
 
