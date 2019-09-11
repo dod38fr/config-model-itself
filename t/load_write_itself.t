@@ -49,6 +49,22 @@ my $map = $rw_obj->read_all( root_model => 'Itself' );
 
 ok(1,"Read all models from $target_model_dir") ;
 
+my @expected_classes = qw/Itself::Application Itself::CargoElement
+Itself::Class Itself::CommonElement Itself::CommonElement::Assert
+Itself::CommonElement::WarnIfMatch Itself::ComputedValue
+Itself::ConfigAccept Itself::ConfigReadWrite
+Itself::ConfigReadWrite::DefaultLayer Itself::Element
+Itself::MigratedValue Itself::Model Itself::NonWarpableElement
+Itself::WarpOnlyElement Itself::WarpValue Itself::WarpableCargoElement
+Itself::WarpableElement/;
+
+my @classes = $root->fetch_element('class')->fetch_all_indexes;
+is_deeply(\@classes, \@expected_classes, "found all configuration classes of Itself model");
+
+
+my @apps = $root->fetch_element('application')->fetch_all_indexes;
+is_deeply(\@apps, [], "found no applications as they are filtered out");
+
 my $cds = $root->dump_tree (full_dump => 1) ;
 
 print $cds if $trace ;
