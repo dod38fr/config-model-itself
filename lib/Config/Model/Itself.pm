@@ -260,8 +260,6 @@ sub read_all {
     } ;
     $read_dir->visit($wanted, { recurse => 1} ) ;
 
-    my $i = $self->meta_instance ;
-
     my %read_models ;
     my %class_file_map ;
 
