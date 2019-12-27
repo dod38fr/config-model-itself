@@ -1,7 +1,7 @@
 # -*- cperl -*-
 use ExtUtils::testlib;
 use Test::More;
-use Config::Model;
+use Config::Model 2.138;
 use Config::Model::Tester::Setup qw/init_test setup_test_dir/;
 use Data::Dumper ;
 use Config::Model::Itself ;
@@ -65,7 +65,7 @@ is_deeply(\@classes, \@expected_classes, "found all configuration classes of Its
 my @apps = $root->fetch_element('application')->fetch_all_indexes;
 is_deeply(\@apps, [], "found no applications as they are filtered out");
 
-my $cds = $root->dump_tree (full_dump => 1) ;
+my $cds = $root->dump_tree (mode => 'backend') ;
 
 print $cds if $trace ;
 ok($cds,"dumped full tree in cds format") ;
@@ -83,7 +83,8 @@ foreach my $class (@expected_classes) {
 $root2 -> load ($cds) ;
 ok(1,"Created and loaded 2nd instance") ;
 
-my $cds2 = $root2 ->dump_tree (full_dump => 1) ;
+my $cds2 = $root2 ->dump_tree (mode => 'backend') ;
+print $cds2 if $trace ;
 
 is(my_diff(\$cds,\$cds2),'',"Compared the 2 full dumps") ;
 
@@ -104,7 +105,7 @@ foreach my $class (@expected_classes) {
 $root3 -> load_data ($pdata2) ;
 ok(1,"Created and loaded 3nd instance with perl data") ;
 
-my $cds3 = $root3 ->dump_tree (full_dump => 1) ;
+my $cds3 = $root3 ->dump_tree (mode => 'backend') ;
 
 is( my_diff(\$cds, \$cds3),'',"Compared the 3rd full dump with first one") ; 
 
