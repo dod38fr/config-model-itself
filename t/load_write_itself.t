@@ -73,10 +73,13 @@ ok($cds,"dumped full tree in cds format") ;
 #create a 2nd empty model
 my $inst2 = $meta_model->instance (
     root_class_name   => 'Itself::Model',
-    instance_name     => 'itself_instance'
+    instance_name     => 'itself_instance2'
 );
 
-my $root2 = $inst -> config_root ;
+my $root2 = $inst2 -> config_root ;
+foreach my $class (@expected_classes) {
+    $root2->fetch_element('class')->fetch_with_id($class);
+}
 $root2 -> load ($cds) ;
 ok(1,"Created and loaded 2nd instance") ;
 
@@ -91,10 +94,13 @@ print Dumper $pdata2 if $trace ;
 
 my $inst3 = $meta_model->instance (
     root_class_name   => 'Itself::Model',
-    instance_name     => 'itself_instance'
+    instance_name     => 'itself_instance3'
 );
 
 my $root3 = $inst -> config_root ;
+foreach my $class (@expected_classes) {
+    $root3->fetch_element('class')->fetch_with_id($class);
+}
 $root3 -> load_data ($pdata2) ;
 ok(1,"Created and loaded 3nd instance with perl data") ;
 
