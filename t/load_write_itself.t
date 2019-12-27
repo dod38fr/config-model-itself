@@ -45,7 +45,9 @@ my $rw_obj    = Config::Model::Itself->new(
     model_object => $root
 );
 
-my $map = $rw_obj->read_all( root_model => 'Itself' );
+# filter out applications not related to "Itself" model.  when using
+# "system" libraries
+my $map = $rw_obj->read_all( root_model => 'Itself', application => 'itself' );
 
 ok(1,"Read all models from $target_model_dir") ;
 
