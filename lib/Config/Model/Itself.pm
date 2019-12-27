@@ -809,7 +809,7 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 
-# ABSTRACT: Model editor for Config::Model
+# ABSTRACT: Model (or schema) editor for Config::Model
 
 __END__
 
