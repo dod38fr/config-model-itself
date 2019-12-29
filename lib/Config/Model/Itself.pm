@@ -2,7 +2,7 @@ package Config::Model::Itself ;
 
 use Mouse ;
 use Config::Model 2.134;
-use 5.010;
+use 5.014; # for the /r modifier
 
 use IO::File ;
 use Log::Log4perl 1.11;
