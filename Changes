@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+2.020 2019-12-29
+
+  Dependencies:
+    * requires perl 5.014
+
 2.019 2019-12-27
 
   Test fixes:
