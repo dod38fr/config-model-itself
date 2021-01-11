@@ -602,37 +602,41 @@ sub read_model_plugin {
     } ;
     find ($wanted, $plugin_dir ) ;
 
-    my $class_element = $self->meta_root->fetch_element('class') ;
-
     foreach my $load_file (@files) {
-        $logger->info("trying to read plugin $load_file");
-
-        $load_file = "./$load_file" if $load_file !~ m!^/! and -e $load_file;
-
-        my $plugin = do $load_file ;
-
-        unless ($plugin) {
-            if ($@) {die "couldn't parse $load_file: $@"; }
-            elsif (not defined $plugin) {die  "couldn't do $load_file: $!"}
-            else { die  "couldn't run $load_file" ;}
-        }
-
-        # there should be only only class in each plugin file
-        foreach my $model (@$plugin) {
-            my $class_name = delete $model->{name} ;
-            # load with a array ref to avoid warnings about missing order
-            $class_element->fetch_with_id($class_name)->load_data( $model ) ;
-        }
-
-        # load annotations
-        $logger->info("loading annotations from plugin file $load_file");
-        my $fh = IO::File->new($load_file) || die "Can't open $load_file: $!" ;
-        my @lines = $fh->getlines ;
-        $fh->close;
-        $self->meta_root->load_pod_annotation(join('',@lines)) ;
+        $self->read_plugin_file($load_file);
     }
 }
 
+sub read_plugin_file {
+    my ($self, $load_file) = @_;
+
+    $logger->info("trying to read plugin $load_file");
+    my $class_element = $self->meta_root->fetch_element('class') ;
+
+    $load_file = "./$load_file" if $load_file !~ m!^/! and -e $load_file;
+
+    my $plugin = do $load_file ;
+
+    unless ($plugin) {
+        if ($@) {die "couldn't parse $load_file: $@"; }
+        elsif (not defined $plugin) {die  "couldn't do $load_file: $!"}
+        else { die  "couldn't run $load_file" ;}
+    }
+
+    # there should be only only class in each plugin file
+    foreach my $model (@$plugin) {
+        my $class_name = delete $model->{name} ;
+        # load with a array ref to avoid warnings about missing order
+        $class_element->fetch_with_id($class_name)->load_data( $model ) ;
+    }
+
+    # load annotations
+    $logger->info("loading annotations from plugin file $load_file");
+    my $fh = IO::File->new($load_file) || die "Can't open $load_file: $!" ;
+    my @lines = $fh->getlines ;
+    $fh->close;
+    $self->meta_root->load_pod_annotation(join('',@lines)) ;
+}
 
 #
 # New subroutine "write_model_file" extracted - Mon Mar 12 13:38:29 2012.
