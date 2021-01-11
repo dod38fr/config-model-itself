@@ -520,38 +520,42 @@ sub write_all {
     my %map_to_write = (%$map,%new_map) ;
 
     foreach my $file (keys %map_to_write) {
-        $logger->info("checking model file $file");
+        my ($data,$notes) = $self->check_model_to_write($file, \%map_to_write, \%loaded_classes);
+        next unless @$data ; # don't write empty model
+        write_model_file ($dir->child($file), $self->{header}{$file}, $notes, $data);
+    }
 
-        my @data ;
-        my @notes ;
-        my $file_needs_write = 0;
+    $self->meta_instance->clear_changes ;
+}
 
-        # check if any a class of a file was modified
-        foreach my $class_name (@{$map_to_write{$file}}) {
-            $file_needs_write++ if $self->class_needs_write($class_name);
-            $logger->info("file $file class $class_name needs write ",$file_needs_write);
-        }
+sub check_model_to_write {
+    my ($self, $file, $map_to_write, $loaded_classes) = @_;
+    $logger->info("checking model file $file");
 
-        next unless $file_needs_write ;
+    my @data ;
+    my @notes ;
+    my $file_needs_write = 0;
 
-        foreach my $class_name (@{$map_to_write{$file}}) {
+    # check if any a class of a file was modified
+    foreach my $class_name (@{$map_to_write->{$file}}) {
+        $file_needs_write++ if $self->class_needs_write($class_name);
+        $logger->info("file $file class $class_name needs write ",$file_needs_write);
+    }
+
+    if ($file_needs_write) {
+        foreach my $class_name (@{$map_to_write->{$file}}) {
             $logger->info("writing class $class_name");
-            my $model
-              = $self-> get_perl_data_model(class_name => $class_name) ;
+            my $model = $self-> get_perl_data_model(class_name => $class_name) ;
             push @data, $model if defined $model and keys %$model;
 
             my $node = $self->{meta_root}->grab("class:".$class_name) ;
             push @notes, $node->dump_annotations_as_pod ;
             # remove class name from above list
-            delete $loaded_classes{$class_name} ;
+            delete $loaded_classes->{$class_name} ;
         }
-
-        next unless @data ; # don't write empty model
-
-        write_model_file ($dir->child($file), $self->{header}{$file}, \@notes, \@data);
     }
 
-    $self->meta_instance->clear_changes ;
+    return (\@data, \@notes);
 }
 
 sub write_model_plugin {
