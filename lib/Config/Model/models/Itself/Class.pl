@@ -53,7 +53,8 @@ return [
                 ."This Perl class must inherit L<Config::Model::Node>. Use with care.",
                 assert => {
                     "1_load_class" => {
-                        code => 'not defined $_ or eval{Mouse::Util::load_class($_)}; not $@;',
+                        code => 'return 1 unless defined $_;'
+                        .'return Mouse::Util::load_class($_);',
                         msg  => 'Error while loading $_ class ',
                     },
                    "2_class_inherit" => {
