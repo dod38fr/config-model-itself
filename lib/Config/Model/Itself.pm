@@ -186,6 +186,7 @@ sub read_app_files {
 
     my $app_dir = $read_from || $self->model_dir->parent;
     my %apps;
+    my %map;
     $logger->info("reading app files from ".$app_dir);
     foreach my $dir ( $app_dir->children(qr/\.d$/) ) {
 
@@ -210,6 +211,7 @@ sub read_app_files {
 
             my $appli = $file->basename;
             $apps{$appli} = $data{model} ;
+            $map{$appli} = $file;
 
             $self->meta_root->load_data(
                 data => { application => { $appli => \%data } },
@@ -217,6 +219,8 @@ sub read_app_files {
             ) ;
         }
     }
+
+    $self->{app_map} = \%map;
 
     return \%apps;
 }
@@ -464,6 +468,7 @@ sub write_app_files {
     my $app_obj = $self->meta_root->fetch_element('application');
 
     foreach my $app_name ( $app_obj->fetch_all_indexes ) {
+        $logger->debug("writing $app_name...");
         my $app = $app_obj->fetch_with_id($app_name);
         my $cat_dir_name = $app->fetch_element_value( name =>'category' ).'.d';
         $app_dir->child($cat_dir_name)->mkpath();
@@ -480,8 +485,14 @@ sub write_app_files {
         }
         $logger->info("writing file ".$app_file);
         $app_file->spew(@lines);
+        delete $self->{app_map}{$app_name};
     }
 
+    # prune removed app files
+    foreach my $old_file ( values %{$self->{app_map}}) {
+        $logger->debug("Removing $old_file.");
+        $old_file->remove;
+    }
 }
 
 sub write_all {
