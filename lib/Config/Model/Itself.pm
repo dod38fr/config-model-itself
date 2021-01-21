@@ -1,7 +1,7 @@
 package Config::Model::Itself ;
 
 use Mouse ;
-use Config::Model 2.134;
+use Config::Model 2.141;
 use 5.014; # for the /r modifier
 
 use IO::File ;
