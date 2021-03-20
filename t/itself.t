@@ -2,7 +2,7 @@
 
 use ExtUtils::testlib;
 use Test::More ;
-use Config::Model 2.138;
+use Config::Model 2.142;
 use Config::Model::Tester::Setup qw/init_test setup_test_dir/;
 use Data::Dumper ;
 use Path::Tiny;
