@@ -7,3 +7,4 @@ lib/Config/Model/models/Itself/ConfigReadWrite.pod
 lib/Config/Model/models/Itself/Element.pod
 lib/Config/Model/models/Itself/ConfigReadWrite/DefaultLayer.pod
 lib/Config/Model/models/Itself/WarpValue.pod
+wr_*
