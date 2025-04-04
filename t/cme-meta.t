@@ -13,6 +13,8 @@ use Test::File::Contents;
 use App::Cmd::Tester;
 use App::Cme ;
 
+binmode STDOUT, ':encoding(UTF-8)';
+
 my ($model, $trace) = init_test();
 
 my $wr_test = setup_test_dir ;

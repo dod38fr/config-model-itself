@@ -20,6 +20,8 @@ use Config::Model::TkUI ;
 use Config::Model::Itself::TkEditUI ;
 use Path::Tiny ;
 
+binmode STDOUT, ':encoding(UTF-8)';
+
 my %meta_cmd = (
     check => \&check,
     dump => \&dump_cds,
@@ -304,7 +306,7 @@ sub dump_cds {
 
     my $dump_string = $meta_root->dump_tree( mode => $opt->{dumptype} || 'custom' ) ;
 
-    path($dump_file)->spew($dump_string);
+    path($dump_file)->spew_utf8($dump_string);
 }
 
 sub dump_yaml{
@@ -316,7 +318,7 @@ sub dump_yaml{
 
     my $dump_string = Dump($meta_root->dump_as_data(ordered_hash_as_list => 0)) ;
 
-    path($dump_file)->spew($dump_string);
+    path($dump_file)->spew_utf8($dump_string);
 
 }
 
