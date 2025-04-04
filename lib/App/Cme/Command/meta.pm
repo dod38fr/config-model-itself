@@ -13,8 +13,7 @@ use base qw/App::Cme::Common/;
 use Config::Model 2.075;
 
 use Config::Model::Itself ;
-use YAML::XS;
-$YAML::XS::LoadBlessed = 0;
+use YAML::PP qw/Load Dump/;
 
 use Tk ;
 use Config::Model::TkUI ;
