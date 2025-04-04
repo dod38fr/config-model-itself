@@ -108,7 +108,7 @@ sub _build_cm_lib_dir {
     my $self = shift;
     my $p =  path('lib/Config/Model');
     if (! $p->is_dir) {
-        $p->mkpath(0, oct(755)) || die "can't create $p:$!";
+        $p->mkdir();
     }
     return $p;
 }

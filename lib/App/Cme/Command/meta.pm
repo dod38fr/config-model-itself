@@ -133,7 +133,7 @@ sub load_meta_model {
     my $cm_lib_dir = path(split m!/!, $opt->{dir}) ; # replace with cm_lib_dir ???
 
     if (! $cm_lib_dir->is_dir) {
-        $cm_lib_dir->mkpath(0, oct(755)) || die "can't create $cm_lib_dir:$!";
+        $cm_lib_dir->mkdir();
     }
 
     my $meta_model = $self->{meta_model} = Config::Model -> new();
