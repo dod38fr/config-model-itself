@@ -138,7 +138,7 @@ has model_dir => (
 sub _build_model_dir {
     my $self = shift;
     my $md = $self->cm_lib_dir->child('models');
-    $md->mkpath;
+    $md->mkdir;
     return $md;
 }
 
@@ -248,7 +248,7 @@ sub read_all {
     croak "read_all: unexpected parameters ",join(' ', keys %args) if %args ;
 
     my $dir = $self->model_dir;
-    $dir->mkpath ;
+    $dir->mkdir ;
 
     my $root_model_file = $model ;
     $root_model_file =~ s!::!/!g ;
@@ -471,7 +471,7 @@ sub write_app_files {
         $logger->debug("writing $app_name...");
         my $app = $app_obj->fetch_with_id($app_name);
         my $cat_dir_name = $app->fetch_element_value( name =>'category' ).'.d';
-        $app_dir->child($cat_dir_name)->mkpath();
+        $app_dir->child($cat_dir_name)->mkdir();
         my $app_file = $app_dir->child($cat_dir_name)->child($app->index_value) ;
 
         my @lines ;
@@ -507,7 +507,7 @@ sub write_all {
 
     my $map = $self->{map} ;
 
-    $dir->mkpath;
+    $dir->mkdir;
 
     # get list of all classes loaded by the editor
     my %loaded_classes
