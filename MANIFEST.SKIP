@@ -47,3 +47,4 @@ libconfig*
 
 # avoid tests results
 wr_test
+wr_root
