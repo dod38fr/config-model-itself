@@ -18,7 +18,7 @@ use YAML::PP qw/Load Dump/;
 use Tk ;
 use Config::Model::TkUI ;
 use Config::Model::Itself::TkEditUI ;
-use Path::Tiny ;
+use Path::Tiny 0.125; # for mkdir
 
 binmode STDOUT, ':encoding(UTF-8)';
 
