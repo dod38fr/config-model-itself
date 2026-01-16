@@ -36,7 +36,9 @@ return [
                    ]
                }
 			    },
-		   description => 'Each key of the hash is a test (as formula using the variables defined in "follow" element) that are tried in sequences to apply its associated effects',
+           description => 'Each key of the ordered hash is a test (as formula using the '
+               . 'variables defined in "follow" element) that are tried in sequences to apply '
+               . 'its associated effects. Only the first match is applied.',
 		  },
       ],
   ],
