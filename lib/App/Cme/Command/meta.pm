@@ -4,7 +4,9 @@ package App::Cme::Command::meta ;
 
 use strict ;
 use warnings ;
-use 5.10.1;
+use v5.20;
+use feature qw/postderef signatures/;
+no warnings qw/experimental::postderef experimental::signatures/;
 
 use App::Cme -command ;
 
@@ -59,6 +61,7 @@ sub validate_args {
 
     $opt->{_application} = $application ;
 
+    return;
 }
 
 sub opt_spec {
@@ -77,8 +80,9 @@ sub opt_spec {
         [ "dev!"          => 'use model in ./lib to create a plugin'],
 		[ "open-item=s"   => "force the UI to open the specified node"],
 		[ "plugin-file=s" => "create a model plugin in this file" ],
-        [ "load-yaml=s"   => "load model from YAML file" ],
-        [ "load=s"        => "load model from cds file (Config::Model serialisation file)"],
+        [ "load-yaml=s"   => "load model from YAML file. Use '-' to load from STDIN" ],
+        [ "load=s"        => "load model from cds file (Config::Model serialisation file). "
+          ."Use '-' to load from STDIN"],
         [ "system!"       => "read model from system files" ],
         [ "test-and-quit=s" => "Used for tests" ],
         $class->cme_global_options()
@@ -101,6 +105,8 @@ sub read_data {
 
     my @data ;
     if ( $load_file eq '-' ) {
+        ## no critic (InputOutput::ProhibitExplicitStdin)
+        # user called cme with -load - or -load-yaml -, cannot use ARGV
         @data = <STDIN> ;
     }
     else {
@@ -126,6 +132,7 @@ sub load_optional_data {
         my $pdata = Load($yaml) ;
         $meta_root->load_data($pdata) ;
     }
+    return;
 }
 
 sub load_meta_model {
@@ -258,6 +265,7 @@ sub execute {
     my $cmd_sub = $meta_cmd{$opt->{_meta_command}};
 
     $self->$cmd_sub($opt, $args);
+    return;
 }
 
 sub save {
@@ -266,6 +274,7 @@ sub save {
 
     say "Saving ",$rw_obj->root_model. ' model'. ($opt->dir ? ' in '.$opt->dir : '');
     &$write_sub;
+    return;
 }
 
 sub gen_dot {
@@ -275,6 +284,7 @@ sub gen_dot {
     my $out = shift @$args || "model.dot";
     say "Creating dot file $out";
     path($out) -> spew( $rw_obj->get_dot_diagram );
+    return;
 }
 
 sub check {
@@ -295,6 +305,7 @@ sub check {
         die "Found $ouch warnings in strict mode\n";
     }
 
+    return;
 }
 
 sub dump_cds {
@@ -307,6 +318,7 @@ sub dump_cds {
     my $dump_string = $meta_root->dump_tree( mode => $opt->{dumptype} || 'custom' ) ;
 
     path($dump_file)->spew_utf8($dump_string);
+    return;
 }
 
 sub dump_yaml{
@@ -320,18 +332,21 @@ sub dump_yaml{
 
     path($dump_file)->spew_utf8($dump_string);
 
+    return;
 }
 
 sub plugin {
     my ($self, $opt, $args) = @_;
     my @info = $self->load_meta_plugin($opt, $args) ;
     $self->_edit($opt, $args, @info);
+    return;
 }
 
 sub edit {
     my ($self, $opt, $args) = @_;
     my @info = $self->load_meta_root($opt, $args) ;
     $self->_edit($opt, $args, @info);
+    return;
 }
 
 sub _edit {
@@ -381,6 +396,7 @@ sub _edit {
     }
     &MainLoop ; # Tk's
     say "Exited GUI";
+    return;
 }
 
 1;

@@ -3,6 +3,10 @@ package Config::Model::Itself::BackendDetector ;
 # since this package is mostly targeted for dev environments
 # let the detector detect models under development
 use lib 'lib';
+use v5.20;
+use feature qw/postderef signatures/;
+no warnings qw/experimental::postderef experimental::signatures/;
+
 
 use Pod::POM ;
 use File::Find ;
@@ -12,13 +16,12 @@ use base qw/Config::Model::Value/ ;
 use strict ;
 use warnings ;
 
-sub setup_enum_choice {
-    my $self = shift ;
+sub setup_enum_choice ($self, @args) {
 
     # using a hash to make sure that a backend is not listed twice. This may
     # happen in development environment where a backend in found in /usr/lib
     # and in ./lib (or ./blib)
-    my %choices = map { ($_ => 1);} ref $_[0] ? @{$_[0]} : @_ ;
+    my %choices = map { ($_ => 1);} ref $args[0] ? @{$args[0]} : @args ;
 
     # find available backends in all @INC directories
     my $wanted = sub { 
@@ -36,6 +39,7 @@ sub setup_enum_choice {
     }
 
     $self->SUPER::setup_enum_choice(sort keys %choices) ;
+    return;
 }
 
 sub set_help {
@@ -75,6 +79,7 @@ sub set_help {
     find ($wanted, $path ) ;
 
     $self->{help} =  $help;
+    return;
 }
 
 1;

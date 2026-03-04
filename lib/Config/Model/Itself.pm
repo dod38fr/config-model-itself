@@ -2,7 +2,8 @@ package Config::Model::Itself ;
 
 use Mouse ;
 use Config::Model 2.157;
-use 5.014; # for the /r modifier
+use v5.20;
+use feature qw/postderef signatures/;
 
 use IO::File ;
 use Log::Log4perl 1.11;
@@ -160,16 +161,19 @@ sub BUILD {
     } ;
     $self->meta_instance -> on_change_cb($cb) ;
 
+    return;
 }
 
 sub add_tracked_class {
     my $self = shift;
     $self->set_class(shift,0) ;
+    return;
 }
 
 sub add_modified_class {
     my $self = shift;
     $self->set_class(shift,1) ;
+    return;
 }
 
 sub class_needs_write {
@@ -225,10 +229,7 @@ sub read_app_files {
     return \%apps;
 }
 
-sub read_all {
-    my $self = shift ;
-    my %args = @_ ;
-
+sub read_all ($self, %args) {
     my $force_load = delete $args{force_load} || 0 ;
     my $read_from ;
     my $model_dir ;
@@ -398,6 +399,7 @@ sub read_model_annotations {
         $rel_file =~ s/^$dir\/?//;
         $self->{header}{$rel_file} = \@headers;
     }
+    return;
 }
 
 # can be removed end of 2019 (after buster is released)
@@ -432,12 +434,11 @@ sub upgrade_model {
             delete $model->{write_config};
         }
     }
+    return;
 }
 
 # internal
-sub get_perl_data_model{
-    my $self = shift ;
-    my %args = @_ ;
+sub get_perl_data_model ($self, %args) {
     my $root_obj = $self->{meta_root};
     my $class_name = $args{class_name}
       || croak __PACKAGE__," read: undefined class name";
@@ -493,11 +494,10 @@ sub write_app_files {
         $logger->debug("Removing $old_file.");
         $old_file->remove;
     }
+    return;
 }
 
-sub write_all {
-    my $self = shift ;
-    my %args = @_ ;
+sub write_all ($self, %args) {
     my $root_obj = $self->meta_root ;
     my $dir = $self->model_dir ;
 
@@ -543,6 +543,7 @@ sub write_all {
         $dir->child($goner)->remove;
     }
     $self->meta_instance->clear_changes ;
+    return;
 }
 
 sub check_model_to_write {
@@ -575,9 +576,7 @@ sub check_model_to_write {
     return (\@data, \@notes);
 }
 
-sub write_model_plugin {
-    my $self = shift ;
-    my %args = @_ ;
+sub write_model_plugin ($self, %args) {
     my $plugin_dir = delete $args{plugin_dir}
       || croak __PACKAGE__," write_model_plugin: undefined plugin_dir";
     my $plugin_name = delete $args{plugin_name}
@@ -600,11 +599,10 @@ sub write_model_plugin {
     }
 
     $self->meta_instance->clear_changes ;
+    return;
 }
 
-sub read_model_plugin {
-    my $self = shift ;
-    my %args = @_ ;
+sub read_model_plugin ($self, %args) {
     my $plugin_dir = delete $args{plugin_dir}
       || croak __PACKAGE__," write_model_plugin: undefined plugin_dir";
     my $plugin_name = delete $args{plugin_name}
@@ -626,6 +624,7 @@ sub read_model_plugin {
     foreach my $load_file (@files) {
         $self->read_plugin_file($load_file);
     }
+    return;
 }
 
 sub read_plugin_file {
@@ -657,6 +656,7 @@ sub read_plugin_file {
     my @lines = $fh->getlines ;
     $fh->close;
     $self->meta_root->load_pod_annotation(join('',@lines)) ;
+    return;
 }
 
 #
@@ -695,6 +695,7 @@ sub write_model_file {
 
     $wr->close;
 
+    return;
 }
 
 

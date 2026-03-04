@@ -19,6 +19,7 @@ sub ClassInit {
 
 
     # cw->Advertise(name=>$widget);
+    return;
 }
 
 sub Populate { 
@@ -42,6 +43,7 @@ sub Populate {
     $cw->{root_dir} = $root_dir ;
 
     $cw->show_message("Add a name in Class to create your model") unless $model_name;
+    return;
 }
 
 sub build_menu {
@@ -88,6 +90,7 @@ sub test_model {
     else {
         $cw->_launch_test($app);
     }
+    return;
 }
 
 sub _launch_test {
@@ -117,6 +120,7 @@ sub _launch_test {
     my $instance_to_test = $model->instance ( %args ) ;
 
     $cw -> {test_widget} = $cw->ConfigModelUI (-instance => $instance_to_test, -quit => 'soft') ;
+    return;
 }
 
 1;
