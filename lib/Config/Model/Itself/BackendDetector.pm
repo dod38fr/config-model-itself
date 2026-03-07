@@ -17,7 +17,7 @@ use base qw/Config::Model::Value/ ;
 sub setup_enum_choice ($self, @args) {
 
     # using a hash to make sure that a backend is not listed twice. This may
-    # happen in development environment where a backend in found in /usr/lib
+    # happen in development environment where a backend is found in /usr/lib
     # and in ./lib (or ./blib)
     my %choices = map { ($_ => 1);} ref $args[0] ? @{$args[0]} : @args ;
 
