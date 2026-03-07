@@ -5,8 +5,7 @@ use warnings ;
 use Carp ;
 use 5.10.0;
 
-use Config::Model::TkUI 1.378;
-
+use Config::Model::TkUI 1.381;
 
 use base qw/Config::Model::TkUI/;
 

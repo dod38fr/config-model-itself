@@ -18,7 +18,7 @@ use Config::Model::Itself ;
 use YAML::PP qw/Load Dump/;
 
 use Tk ;
-use Config::Model::TkUI ;
+use Config::Model::TkUI 1.381;
 use Config::Model::Itself::TkEditUI ;
 use Path::Tiny 0.125; # for mkdir
 
