@@ -3,7 +3,10 @@ package Config::Model::Itself ;
 use Mouse ;
 use Config::Model 2.157;
 use v5.20;
+use strict;
+use warnings;
 use feature qw/postderef signatures/;
+no warnings qw/experimental::postderef experimental::signatures/;
 
 use IO::File ;
 use Log::Log4perl 1.11;

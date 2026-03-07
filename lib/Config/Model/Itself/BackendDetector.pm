@@ -4,17 +4,15 @@ package Config::Model::Itself::BackendDetector ;
 # let the detector detect models under development
 use lib 'lib';
 use v5.20;
+use strict ;
+use warnings ;
 use feature qw/postderef signatures/;
 no warnings qw/experimental::postderef experimental::signatures/;
-
 
 use Pod::POM ;
 use File::Find ;
 
 use base qw/Config::Model::Value/ ;
-
-use strict ;
-use warnings ;
 
 sub setup_enum_choice ($self, @args) {
 
