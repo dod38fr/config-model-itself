@@ -121,9 +121,10 @@ foreach my $name (keys %expected_plugin) {
     );
 }
 
+# create another independent model
 my $meta_plugin_inst2 = $meta_model->instance(
     root_class_name => 'Itself::Model',
-    instance_name   => 'itself_plugin',
+    instance_name   => 'itself_plugin_2',
     root_dir        => $wr_model1,
 );
 ok($meta_plugin_inst2,"Read Itself::Model and created instance for model plugin") ;
@@ -143,7 +144,7 @@ $plugin_rw_obj2->read_all(
 
 ok(1,"Read all models in data dir in layered mode") ;
 
-$meta_plugin_inst->layered_stop ;
+$meta_plugin_inst2->layered_stop ;
 
 $plugin_rw_obj2->read_model_plugin(plugin_dir => $wr_plugin, plugin_name => $plugin_name) ;
 
