@@ -13,7 +13,6 @@ use Log::Log4perl 1.11;
 use Carp ;
 use Data::Dumper ;
 use Scalar::Util qw/weaken/;
-use File::Find ;
 use File::Path ;
 use File::Basename ;
 use Data::Compare ;
@@ -614,15 +613,18 @@ sub read_model_plugin ($self, %args) {
     croak "read_model_plugin: unexpected parameters ",join(' ', keys %args) if %args ;
 
     my @files ;
-    my $wanted = sub {
-        my $n = $File::Find::name ;
-        push @files, $n if (-f $_ and not /~$/
-                            and $n !~ /CVS/
-                            and $n !~ m!.(svn|orig|pod)$!
-                            and $n =~ m!\.d/$plugin_name!
-                           ) ;
+    my $wanted = sub ($path, $) {
+        if ($path->is_file
+            and not /~$/
+            and not /CVS/
+            and not m!.(orig|pod)$!
+            and m!\.d/$plugin_name!
+        ) {
+            say "add $path";
+            push @files, $path;
+        }
     } ;
-    find ($wanted, $plugin_dir ) ;
+    path($plugin_dir)->visit($wanted, { recurse => 1 } ) ;
 
     foreach my $load_file (@files) {
         $self->read_plugin_file($load_file);
@@ -636,9 +638,7 @@ sub read_plugin_file {
     $logger->info("trying to read plugin $load_file");
     my $class_element = $self->meta_root->fetch_element('class') ;
 
-    $load_file = "./$load_file" if $load_file !~ m!^/! and -e $load_file;
-
-    my $plugin = do $load_file ;
+    my $plugin = do $load_file->absolute ;
 
     unless ($plugin) {
         if ($@) {die "couldn't parse $load_file: $@"; }
@@ -655,10 +655,7 @@ sub read_plugin_file {
 
     # load annotations
     $logger->info("loading annotations from plugin file $load_file");
-    my $fh = IO::File->new($load_file) || die "Can't open $load_file: $!" ;
-    my @lines = $fh->getlines ;
-    $fh->close;
-    $self->meta_root->load_pod_annotation(join('',@lines)) ;
+    $self->meta_root->load_pod_annotation($load_file->slurp_utf8) ;
     return;
 }
 
