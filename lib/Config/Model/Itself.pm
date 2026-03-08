@@ -13,8 +13,6 @@ use Log::Log4perl 1.11;
 use Carp ;
 use Data::Dumper ;
 use Scalar::Util qw/weaken/;
-use File::Path ;
-use File::Basename ;
 use Data::Compare ;
 use Path::Tiny 0.125; # for mkdir
 use Mouse::Util::TypeConstraints;
@@ -597,7 +595,7 @@ sub write_model_plugin ($self, %args) {
         my @notes = $self->meta_root->grab("class:$class")->dump_annotations_as_pod ;
         my $plugin_file = $class.'.pl';
         $plugin_file =~ s!::!/!g;
-        write_model_file ("$plugin_dir/$plugin_name/$plugin_file", [], \@notes, [ $data ]);
+        write_model_file ($plugin_dir->child($plugin_name)->child($plugin_file), [], \@notes, [ $data ]);
     }
 
     $self->meta_instance->clear_changes ;
@@ -659,22 +657,14 @@ sub read_plugin_file {
     return;
 }
 
-#
-# New subroutine "write_model_file" extracted - Mon Mar 12 13:38:29 2012.
-#
 sub write_model_file {
-    my $wr_file  = shift;
+    my $wr_file  = shift; # Path::Tiny object
     my $comments = shift ;
     my $notes    = shift;
     my $data     = shift;
 
-    my $wr_dir = dirname($wr_file);
-    unless ( -d $wr_dir ) {
-        mkpath( $wr_dir, 0, oct(755) ) || die "Can't mkpath $wr_dir:$!";
-    }
+    $wr_file->parent->mkdir();
 
-    my $wr = IO::File->new( $wr_file, '>' )
-      || croak "Cannot open file $wr_file:$!" ;
     $logger->info("in $wr_file");
 
     my $dumper = Data::Dumper->new( [ \@$data ] );
@@ -687,13 +677,10 @@ sub write_model_file {
     # munge pod text embedded in values to avoid spurious pod formatting
     $dump =~ s/\n=/\n'.'=/g;
 
-    $wr->print( @$comments ) ;
-    $wr->print( "use strict;\nuse warnings;\n\n" );
-    $wr->print( "return $dump;\n\n" );
-
-    $wr->print( join( "\n", @$notes ) );
-
-    $wr->close;
+    $wr_file->spew_utf8(
+        @$comments,
+        join("\n", "use strict;","use warnings;","", "return $dump;", "", @$notes)
+    );
 
     return;
 }
@@ -924,7 +911,8 @@ structure of the read directory is respected.
 
 =head2 write_model_plugin( plugin_dir => foo, plugin_name => bar )
 
-Write plugin models in the  passed C<plugin_dir> directory. The written file is path is
+Write plugin models in the  passed C<plugin_dir> directory (expected to be a L<Path::Tiny> object).
+The written file is path is
 made of plugin name and class names. E.g. a plugin named C<bar> for class
 C<Foo::Bar> is written in C<bar/Foo/Bar.pl> file. This file is to be used
 by L<augment_config_class|Config::Model/"augment_config_class (name => '...', class_data )">

@@ -248,7 +248,7 @@ sub load_meta_plugin {
     $root_model_dir =~ s!::!/!g;
     my $write_sub = sub {
             $rw_obj->write_model_plugin(
-                plugin_dir => "$cm_lib_dir/models/$root_model_dir.d",
+                plugin_dir => $cm_lib_dir->child("models/$root_model_dir.d"),
                 plugin_name => $plugin_name
             );
         } ;
