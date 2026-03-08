@@ -538,7 +538,7 @@ sub write_all ($self, %args) {
     }
 
     # remove existing files that contain only deleted classes
-    foreach my $goner (%map_to_write) {
+    foreach my $goner (sort keys %map_to_write) {
         $logger->debug("Removing model file $goner.");
         $dir->child($goner)->remove;
     }
