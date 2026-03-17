@@ -23,7 +23,9 @@ sub setup_enum_choice ($self, @args) {
 
     # find available backends in all @INC directories
     my $wanted = sub ($path, $) {
-        my $n = $path->basename();
+        # Get the backend file relative to Config/Model/Backend dir
+        my ($n) = ($path =~ s!.*Backend/!!r);
+
         if ($path->is_file and $n =~ s/\.pm$// and $n !~ /Any$/) {
             $n =~ s!/!::!g ;
             $choices{$n} = 1 ;
