@@ -1,13 +1,15 @@
 package Config::Model::Itself ;
 
 use Mouse ;
-use Config::Model 2.157;
+use Mouse::Util::TypeConstraints;
+
 use v5.20;
 use strict;
 use warnings;
 use feature qw/postderef signatures/;
 no warnings qw/experimental::postderef experimental::signatures/;
 
+use Config::Model 2.157;
 use IO::File ;
 use Log::Log4perl 1.11;
 use Carp ;
@@ -15,7 +17,6 @@ use Data::Dumper ;
 use Scalar::Util qw/weaken/;
 use Data::Compare ;
 use Path::Tiny 0.125; # for mkdir
-use Mouse::Util::TypeConstraints;
 
 my $logger = Log::Log4perl::get_logger("Backend::Itself");
 
