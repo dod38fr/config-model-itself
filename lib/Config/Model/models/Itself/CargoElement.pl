@@ -6,7 +6,7 @@ return [
         name => "Itself::CargoElement",
 
         include =>
-          [ 'Itself::NonWarpableElement', 'Itself::WarpableCargoElement' ],
+          [ 'Itself::NonWarpableElement', 'Itself::WarpableElement' ],
         include_after => 'type',
 
         'element' => [

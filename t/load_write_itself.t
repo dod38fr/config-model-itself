@@ -62,7 +62,7 @@ my @expected_classes =
           Itself::ConfigAccept Itself::ConfigReadWrite
           Itself::ConfigReadWrite::DefaultLayer Itself::Element
           Itself::MigratedValue Itself::Model Itself::NonWarpableElement
-          Itself::WarpOnlyElement Itself::WarpValue Itself::WarpableCargoElement
+          Itself::WarpOnlyElement Itself::WarpValue
           Itself::WarpableElement
       /;
 

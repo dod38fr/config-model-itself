@@ -28,7 +28,7 @@ return [
                warp => {
                    rules => [
                        '&get_type =~ /hash|list/' => {
-                           config_class_name => 'Itself::WarpableCargoElement'
+                           config_class_name => 'Itself::WarpableElement'
                        },
                        '&get_type !~ /hash|list/' => {
                            config_class_name => 'Itself::WarpOnlyElement' ,
