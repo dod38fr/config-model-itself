@@ -644,7 +644,9 @@ sub write_model_file {
     $wr_file->spew_utf8(
         @$comments,
         "use strict;\n",
-        "use warnings;\n\n",
+        "use warnings;\n",
+        "use v5.20;\n",
+        "use utf8;\n\n",
         "return $dump;\n",
     );
 
