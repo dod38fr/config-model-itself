@@ -14,6 +14,8 @@ use Test::File::Contents;
 
 use warnings;
 use strict;
+use v5.20;
+use utf8;
 
 my ($meta_model, $trace) = init_test();
 
@@ -133,6 +135,9 @@ my $master_model = $meta_inst->grab('class:MasterModel');
 is($master_model->grab_value('rw_config backend'), 'cds_file', "read_config data was migrated in rw_config");
 is($master_model->grab_value('rw_config file'), 'mymaster.cds', "write_config data was migrated in rw_config");
 
+# check that utf8 description is not garbled
+is($master_model->grab_value('element:std_id description'), "test utf8 😀", "test utf8 description");
+
 # add a new class 
 $meta_root->load("class:Master::Created element:created1 type=leaf value_type=number"
                      ." - element:created2 type=leaf value_type=uniline") ;
@@ -151,7 +156,7 @@ ok($cds,"dumped full tree in cds format") ;
 
 #like($cds,qr/dumb/,"check for a peculiar warp effet") ;
 
-$wr_conf1->child("orig.cds")->spew($cds);
+$wr_conf1->child("orig.cds")->spew_utf8($cds);
 
 $rw_obj -> write_all();
 ok( ! $wr_model1->child("models/MasterModel/ToTrash.pl")->exists,
@@ -170,14 +175,14 @@ $meta_root2 -> load (steps => $cds, check => 'no') ;
 ok(1,"Created and loaded 2nd instance") ;
 
 my $cds2 = $meta_root2 ->dump_tree () ;
-$wr_conf1->child("inst2.cds")->spew($cds2);
+$wr_conf1->child("inst2.cds")->spew_utf8($cds2);
 
 is_deeply([split /\n/,$cds2],\@cds_orig,"Compared the 2 full dumps") ; 
 
 my $pdata2 = $meta_root2 -> dump_as_data ;
 print Dumper $pdata2 if $trace ;
 
-$wr_conf1->child("inst2.pl")->spew(Dumper $pdata2);
+$wr_conf1->child("inst2.pl")->spew_utf8(Dumper $pdata2);
 
 my $rw_obj2 = Config::Model::Itself -> new(
     model_object => $meta_root2,
@@ -202,7 +207,7 @@ $meta_root3 -> load_data (data => $pdata2, check => 'no') ;
 ok(1,"Created and loaded 3nd instance with perl data") ;
 
 my $cds3 = $meta_root3 ->dump_tree () ;
-$wr_conf1->child("inst3.cds")->spew($cds3);
+$wr_conf1->child("inst3.cds")->spew_utf8($cds3);
 
 is_deeply([split /\n/,$cds3],\@cds_orig,"Compared the 3rd full dump with first one") ; 
 

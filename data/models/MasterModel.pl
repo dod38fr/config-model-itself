@@ -4,6 +4,8 @@
 
 use strict;
 use warnings;
+use v5.20;
+use utf8;
 
 return [
     [
@@ -124,7 +126,8 @@ return [
                 cargo => {
                     type => 'node',
                     config_class_name => 'MasterModel::SlaveZ',
-                }
+                },
+                description => "test utf8 😀"
             },
             integer_with_warn_if => {
                 type        => 'leaf',
