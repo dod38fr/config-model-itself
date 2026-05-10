@@ -537,7 +537,6 @@ sub check_model_to_write {
             my $model = $self-> get_perl_data_model(class_name => $class_name) ;
             push @data, $model if defined $model and keys %$model;
 
-            my $node = $self->{meta_root}->grab("class:".$class_name) ;
             # remove class name from above list
             delete $loaded_classes->{$class_name} ;
         }
