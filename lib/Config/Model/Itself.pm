@@ -333,8 +333,6 @@ sub normalize_model {
     my $raw_model =  $tmp_model -> get_raw_model( $model_name ) ;
     my $new_model =  $tmp_model -> get_model_clone( $model_name ) ;
 
-    $self->upgrade_model($model_name, $new_model);
-
     # track read class to identify later classes added by user
     $self->add_tracked_class($model_name);
 
@@ -372,41 +370,6 @@ sub normalize_model {
         }
     }
     return $new_model ;
-}
-
-# can be removed end of 2019 (after buster is released)
-sub upgrade_model {
-    my ($self, $config_class_name, $model) = @_ ;
-
-    my $multi_backend = 0;
-    foreach my $config (qw/read_config write_config/) {
-        my $ref = $model->{$config};
-        if ($ref and ref($ref) eq 'ARRAY') {
-            if (@$ref == 1) {
-                $model->{$config} = $ref->[0];
-            }
-            elsif (@$ref > 1){
-                $logger->warn("$config_class_name $config: cannot migrate multiple backends to rw_config");
-                $multi_backend++;
-            }
-        }
-    }
-
-    if ($model->{read_config} and not $multi_backend) {
-        say ("Model $config_class_name: moving read_config specification to rw_config");
-        $model->{rw_config} = delete $model->{read_config};
-    }
-
-    if ($model->{write_config} and not $multi_backend) {
-        say "Model $config_class_name: merging write_config specification in rw_config";
-        if (not $multi_backend) {
-            foreach my $spec ( keys %{$model->{write_config}} ) {
-                $model->{rw_config}{$spec} = $model->{write_config}{$spec}
-            } ;
-            delete $model->{write_config};
-        }
-    }
-    return;
 }
 
 # internal
