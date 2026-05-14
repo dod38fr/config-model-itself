@@ -26,6 +26,8 @@ return [
   include => ['Itself::NonWarpableElement' ,'Itself::WarpableElement'],
   include_after => 'type' , 
 
+  gist => '{level} {status} {type}',
+
   'element' 
   => [
 

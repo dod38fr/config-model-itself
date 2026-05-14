@@ -9,6 +9,8 @@ return [
           [ 'Itself::NonWarpableElement', 'Itself::WarpableElement' ],
         include_after => 'type',
 
+        gist => '{type}',
+
         'element' => [
 
             # structural information
