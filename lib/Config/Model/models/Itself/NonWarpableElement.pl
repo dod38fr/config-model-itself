@@ -35,12 +35,13 @@ return [
                 ],
                 'warp'     => {
                     follow  => { 't' => '- type' },
-                    'rules' => [
-                        '$t eq "leaf"' => {
+                    'rules' => [{
+                        when => '$t eq "leaf"',
+                        apply => {
                             level     => 'normal',
                             mandatory => 1,
                         }
-                    ]
+                    }]
                 },
                 help => {
                     integer => 'positive or negative integer',
@@ -60,7 +61,10 @@ return [
                 ."Use with care.",
                 'warp'     => {
                     follow  => { 't'              => '- type' },
-                    'rules' => [ '$t and $t !~ /node/' => { level => 'normal', } ]
+                    'rules' => [{
+                        when => '$t and $t !~ /node/',
+                        apply => { level => 'normal', }
+                    }]
                 }
             },
 
@@ -69,13 +73,14 @@ return [
                 level      => 'hidden',
                 value_type => 'boolean',
                 'warp'     => {
-                    follow  => '- type',
-                    'rules' => {
-                        'warped_node' => {
+                    follow  => { type => '- type' },
+                    'rules' => [{
+                        when => '$type eq "warped_node"',
+                        apply => {
                             level            => 'normal',
                             upstream_default => 0,
                         },
-                    }
+                    }]
                 },
                 description =>
                   "When set, a recurse copy of the value from the old object "
@@ -96,10 +101,10 @@ return [
                         t  => '- type',
                         vt => '- value_type',
                     },
-                    'rules' => [
-                        '$t  eq "check_list" or $vt eq "reference"' =>
-                          { level => 'important', },
-                    ]
+                    'rules' => [{
+                        when => '$t  eq "check_list" or $vt eq "reference"',
+                        apply => { level => 'important', },
+                    }]
                 },
                 description =>
                   "points to an array or hash element in the configuration "
@@ -117,12 +122,13 @@ return [
                         t  => '- type',
                         vt => '- value_type',
                     },
-                    'rules'    => [
-                        '$t  eq "check_list" or $vt eq "reference"' => {
+                    'rules'    => [{
+                        when => '$t eq "check_list" or $vt eq "reference"',
+                        apply => {
                             level             => 'normal',
                             config_class_name => 'Itself::ComputedValue',
                         },
-                    ],
+                    }],
                 },
                 description =>
                   "points to an array or hash element in the configuration "
@@ -141,8 +147,11 @@ return [
                 level      => 'hidden',
                 value_type => 'uniline',
                 warp       => {
-                    follow  => { t               => '- type' },
-                    'rules' => [ '$t  eq "leaf"' => { level => 'important', }, ]
+                    follow  => { t => '- type' },
+                    'rules' => [{
+                        when => '$t  eq "leaf"',
+                        apply => { level => 'important', },
+                    }]
                 },
                 description =>
                   "Path specifying a hash of value element in the configuration "
@@ -157,12 +166,13 @@ return [
 
                 warp => {
                     follow  => { t => '- type', },
-                    'rules' => [
-                        '$t  eq "leaf"' => {
+                    'rules' => [{
+                        when => '$t  eq "leaf"',
+                        apply => {
                             level             => 'normal',
                             config_class_name => 'Itself::ComputedValue',
                         },
-                    ],
+                    }],
                 },
                 description =>
                   "compute the default value according to a formula and value "
@@ -175,12 +185,13 @@ return [
 
                 warp => {
                     follow  => { t => '- type', },
-                    'rules' => [
-                        '$t  eq "leaf"' => {
+                    'rules' => [{
+                        when => '$t  eq "leaf"',
+                        apply => {
                             level             => 'normal',
                             config_class_name => 'Itself::MigratedValue',
                         },
-                    ],
+                    }],
                 },
                 description =>
                     "Specify an upgrade path from an old value and compute "
@@ -194,9 +205,10 @@ return [
 
                 warp => {
                     follow  => { t => '- type', vt => '- value_type'},
-                    rules   => [
-                        '$t eq "leaf" and $vt eq "boolean"' => { level => 'normal', },
-                    ]
+                    rules   => [{
+                        when => '$t eq "leaf" and $vt eq "boolean"',
+                        apply => { level => 'normal', },
+                    }]
                 },
                 cargo => {
                     type => 'leaf',
@@ -212,8 +224,11 @@ return [
                 level      => 'hidden',
                 value_type => 'uniline',
                 warp       => {
-                    follow  => { 't'                            => '?type' },
-                    'rules' => [ '$t eq "hash" or $t eq "list"' => { level => 'normal', } ]
+                    follow  => { 't' => '?type' },
+                    'rules' => [{
+                        when => '$t eq "hash" or $t eq "list"',
+                        apply => { level => 'normal', }
+                    }]
                 } ,
                 description => 'Specifies that the values of the hash or list are copied '
                     . 'from another hash or list in the configuration tree once configuration '
@@ -227,7 +242,10 @@ return [
                 value_type => 'uniline',
                 warp       => {
                     follow  => { 't'            => '?type' },
-                    'rules' => [ '$t eq "hash"' => { level => 'normal', } ]
+                    'rules' => [{
+                        when => '$t eq "hash"',
+                        apply => { level => 'normal', }
+                    }]
                 },
                 description => 'Specifies that the keys of the hash are copied from another hash '
                     . 'in the configuration tree only when the hash is created.',
@@ -240,7 +258,10 @@ return [
                 upstream_default => 0,
                 warp       => {
                     follow  => { 't'            => '?type' },
-                    rules   => [ '$t eq "hash"' => { level => 'normal', } ]
+                    rules   => [{
+                        when => '$t eq "hash"',
+                        apply => { level => 'normal', }
+                    }]
                 },
                 description => 'By default, hash entries without data are not saved in configuration '
                     . 'files. Set this parameter to 1 if a key must be saved in the configuration '
