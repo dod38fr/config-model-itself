@@ -1,4 +1,3 @@
-# -*- cperl -*-
 use ExtUtils::testlib;
 use Test::More;
 use Config::Model 2.138;
@@ -62,7 +61,7 @@ my @expected_classes =
           Itself::ConfigAccept Itself::ConfigReadWrite
           Itself::ConfigReadWrite::DefaultLayer Itself::Element
           Itself::MigratedValue Itself::Model Itself::NonWarpableElement
-          Itself::WarpOnlyElement Itself::WarpValue
+          Itself::WarpApply Itself::WarpOnlyElement Itself::WarpValue
           Itself::WarpableElement
       /;
 

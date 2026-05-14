@@ -9,7 +9,7 @@ use warnings;
 use feature qw/postderef signatures/;
 no warnings qw/experimental::postderef experimental::signatures/;
 
-use Config::Model 2.157;
+use Config::Model 2.163;
 use IO::File ;
 use Log::Log4perl 1.11;
 use Carp ;
