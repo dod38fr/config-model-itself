@@ -397,6 +397,80 @@ sub get_perl_data_model ($self, %args) {
     return $model ;
 }
 
+sub factorize_model ($model) {
+    # move some element data out of element structure
+    my $moved;
+    for my $param (qw/description summary level status/) {
+        $moved->{$param} = $model->{$param} // {};
+        next unless defined $model->{element};
+
+        for (my $idx = 0; $idx < $model->{element}->@*; $idx+=2) {
+            my $elt_name = $model->{element}[$idx];
+            my $data = $model->{element}[$idx+1];
+            if (ref $data and $data->{$param}) {
+                $moved->{$param}{$elt_name} = delete $data->{$param};
+            }
+        }
+        if (keys $moved->{$param}->%* > 0) {
+            $model->{$param} = $moved->{$param};
+        }
+    }
+
+    factorize_element($model->{element});
+
+    # compare elements data and remove duplicated data
+    # i.e. [ foo => <data A>, bar => <data A>, baz => <data B> ]
+    # =>   [ [qw/foo bar/] => <data A>, baz => <data B> ]
+    for my $param (qw/description summary level status warp/) {
+        factorize_data($model->{$param});
+    }
+}
+
+sub factorize_data ($factorized_data) {
+    return unless defined $factorized_data;
+    my %equiv;
+    my @to_remove;
+    foreach my $name (sort keys $factorized_data->%*) {
+        my $data = $factorized_data->{$name};
+
+        my $found;
+        while (my ($equiv_key, $equiv_data) = each %equiv) {
+            if (Compare($data, $equiv_data)) {
+                $found = $equiv_key;
+                last;
+            }
+        }
+        if ($found) {
+            $factorized_data->{$name} = "*$found";
+        }
+        else {
+            $equiv{$name} = $data;
+        }
+    }
+}
+
+# this is similar to factorize_data, but the element order must be
+# preserved.
+sub factorize_element ($factorized_element) {
+    return unless defined $factorized_element;
+    my $previous_data;
+    my $previous_name;
+
+    for (my $idx = 0; $idx < $factorized_element->@*; $idx+=2) {
+        my $name = $factorized_element->[$idx];
+        my $data = $factorized_element->[$idx+1];
+
+        if (Compare($data, $previous_data)) {
+            $factorized_element->[$idx+1] = "*$previous_name";
+        }
+        elsif (ref $data) {
+            $previous_name = $name;
+            $previous_data = $data;
+        }
+        # else $data is already an alias
+    }
+}
+
 sub write_app_files {
     my $self = shift;
 
