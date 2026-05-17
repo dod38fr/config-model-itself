@@ -1,5 +1,6 @@
 use ExtUtils::testlib;
 use Test::More;
+use Test::Differences;
 use Config::Model 2.138;
 use Config::Model::Tester::Setup qw/init_test setup_test_dir/;
 use Data::Dumper ;
@@ -46,6 +47,7 @@ my @expected_classes =
       /;
 
 my $ref_cds;
+my @ref_elements;
 subtest "Dog food Itself" => sub {
     my $inst = $meta_model->instance (
         root_class_name   => 'Itself::Model',
@@ -71,12 +73,12 @@ subtest "Dog food Itself" => sub {
     is_deeply(\@classes, \@expected_classes, "found all configuration classes of Itself model");
 
     # TODO: check order of these elments after write_all, need to load written data
-    #my @warpable_elements = $root->grab('class:"Itself::NonWarpableElement" element')->fetch_all_indexes;
+    @ref_elements = $root->grab('class:"Itself::NonWarpableElement" element')->fetch_all_indexes;
 
     my @apps = $root->fetch_element('application')->fetch_all_indexes;
     is_deeply(\@apps, [], "found no applications as they are filtered out");
 
-    $ref_cds = $root->dump_tree (mode => 'backend') ;
+    $ref_cds = $root->dump_tree (mode => 'custom') ;
 
     print $ref_cds if $trace ;
     ok($ref_cds,"dumped full tree in cds format") ;
@@ -86,7 +88,7 @@ subtest "Dog food Itself" => sub {
 };
 
 my $ref_pdata;
-subtest "load with cds data" => sub {
+subtest "load model with cds data" => sub {
     #create a 2nd empty model
     my $inst = $meta_model->instance (
         root_class_name   => 'Itself::Model',
@@ -103,17 +105,17 @@ subtest "load with cds data" => sub {
     $root-> load ($ref_cds) ;
     ok(1,"Created and loaded instance with cds data") ;
 
-    my $cds = $root ->dump_tree (mode => 'backend') ;
+    my $cds = $root ->dump_tree (mode => 'custom') ;
     print $cds if $trace ;
 
     is(my_diff(\$ref_cds,\$cds),'',"Compared the 2 full dumps") ;
 
-    $ref_pdata = $root -> dump_as_data(mode => 'backend') ;
+    $ref_pdata = $root -> dump_as_data(mode => 'custom') ;
     print Dumper $ref_pdata if $trace ;
 };
 
 # create 3rd instance - test load after dump_as_data
-subtest "load with Perl data" => sub {
+subtest "load model with Perl data" => sub {
     my $inst = $meta_model->instance (
         root_class_name   => 'Itself::Model',
         instance_name     => 'itself_instance3'
@@ -129,9 +131,37 @@ subtest "load with Perl data" => sub {
     $root -> load_data ($ref_pdata) ;
     ok(1,"Created and loaded instance with perl data") ;
 
-    my $cds = $root ->dump_tree (mode => 'backend') ;
+    my $cds = $root ->dump_tree (mode => 'custom') ;
 
-    is( my_diff(\$ref_cds, \$cds),'',"Compared the 3rd full dump with first one");
+    is( my_diff(\$ref_cds, \$cds),'',"Compared the full dump with first one");
+};
+
+subtest "load the model that was written back" => sub {
+    my $inst = $meta_model->instance (
+        root_class_name   => 'Itself::Model',
+        instance_name     => 'itself_instance4'
+    );
+
+    my $root = $inst -> config_root ;
+
+    my $rw_obj = Config::Model::Itself->new(
+        cm_lib_dir  => $target_cm_dir->stringify,
+        model_object => $root
+    );
+
+    # filter out applications not related to "Itself" model.  when using
+    # "system" libraries
+    my $map = $rw_obj->read_all( root_model => 'Itself', application => 'itself' );
+
+    ok(1,"Created and loaded  instance with written back model") ;
+
+    my $cds = $root->dump_tree(mode => 'custom');
+
+    is( my_diff(\$ref_cds, \$cds),'',"Compared the full dump with the first one");
+
+    my @elements = $root->grab('class:"Itself::NonWarpableElement" element')->fetch_all_indexes;
+
+    eq_or_diff(\@elements, \@ref_elements, "check element list of a class");
 };
 
 # require Tk::ObjScanner; Tk::ObjScanner::scan_object($meta_model) ;
