@@ -373,10 +373,8 @@ sub normalize_model {
 }
 
 # internal
-sub get_perl_data_model ($self, %args) {
+sub get_perl_data_model ($self, $class_name) {
     my $root_obj = $self->{meta_root};
-    my $class_name = $args{class_name}
-      || croak __PACKAGE__," read: undefined class name";
 
     my $class_element = $root_obj->fetch_element('class') ;
 
@@ -571,7 +569,7 @@ sub check_model_to_write {
     if ($file_needs_write) {
         foreach my $class_name (@{$map_to_write->{$file}}) {
             $logger->info("writing class $class_name");
-            my $model = $self-> get_perl_data_model(class_name => $class_name) ;
+            my $model = $self-> get_perl_data_model($class_name) ;
             push @data, $model if defined $model and keys %$model;
 
             # remove class name from above list

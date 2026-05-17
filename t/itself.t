@@ -212,7 +212,7 @@ $wr_conf1->child("inst3.cds")->spew_utf8($cds3);
 is_deeply([split /\n/,$cds3],\@cds_orig,"Compared the 3rd full dump with first one") ; 
 
 # check dump of one class
-my $dump = $rw_obj -> get_perl_data_model ( class_name => 'MasterModel' ) ;
+my $dump = $rw_obj -> get_perl_data_model ('MasterModel') ;
 
 print Dumper $dump if $trace ;
 ok($dump,"Checked dump of one class");
