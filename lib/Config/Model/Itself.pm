@@ -373,7 +373,7 @@ sub normalize_model {
 }
 
 # internal
-sub get_perl_data_model ($self, $class_name) {
+sub get_perl_data_model ($self, $class_name, $factorize = 'all') {
     my $root_obj = $self->{meta_root};
 
     my $class_element = $root_obj->fetch_element('class') ;
@@ -389,16 +389,33 @@ sub get_perl_data_model ($self, $class_name) {
     # - Do NOT translate legacy warp parameters
     # - Do not compact elements name
 
+    factorize_model($model, $factorize);
+
     # don't forget to add name
     $model->{name} = $class_name if keys %$model;
 
     return $model ;
 }
 
-sub factorize_model ($model) {
+my @may_factorize = qw/description summary level status warp/;
+my %may_factorize = map { $_ => 1 } @may_factorize;
+
+sub factorize_model ($model, $factorize = 'none') {
     # move some element data out of element structure
+    my @to_factorize;
+    if ($factorize eq 'all') {
+        @to_factorize =  @may_factorize;
+    }
+    elsif ($factorize ne 'none') {
+        my @to_factorize = split /,/,$factorize;
+        foreach my $param (@to_factorize) {
+            next if $may_factorize{$param};
+            carp "unexpected item to factorize: $param. Expected @may_factorize";
+        }
+    }
+
     my $moved;
-    for my $param (qw/description summary level status/) {
+    for my $param (@to_factorize) {
         $moved->{$param} = $model->{$param} // {};
         next unless defined $model->{element};
 
@@ -420,6 +437,7 @@ sub factorize_model ($model) {
     # i.e. [ foo => <data A>, bar => <data A>, baz => <data B> ]
     # =>   [ [qw/foo bar/] => <data A>, baz => <data B> ]
     for my $param (qw/description summary level status warp/) {
+    # for my $param (@to_factorize) {
         factorize_data($model->{$param});
     }
 }
@@ -507,6 +525,7 @@ sub write_app_files {
 sub write_all ($self, %args) {
     my $root_obj = $self->meta_root ;
     my $dir = $self->model_dir ;
+    my $factorize = delete $args{factorize} // 'all';
 
     croak "write_all: unexpected parameters ",join(' ', keys %args) if %args ;
 
@@ -538,7 +557,7 @@ sub write_all ($self, %args) {
     my %map_to_write = (%$map,%new_map) ;
 
     foreach my $file (keys %map_to_write) {
-        my $data = $self->check_model_to_write($file, \%map_to_write, \%loaded_classes);
+        my $data = $self->check_model_to_write($file, $factorize, \%map_to_write, \%loaded_classes);
         next unless @$data ; # don't write empty model
         write_model_file ($dir->child($file), $self->{header}{$file}, $data);
         delete $map_to_write{$file};
@@ -553,8 +572,7 @@ sub write_all ($self, %args) {
     return;
 }
 
-sub check_model_to_write {
-    my ($self, $file, $map_to_write, $loaded_classes) = @_;
+sub check_model_to_write ($self, $file, $factorize, $map_to_write, $loaded_classes) {
     $logger->info("checking model file $file");
 
     my @data ;
@@ -569,7 +587,7 @@ sub check_model_to_write {
     if ($file_needs_write) {
         foreach my $class_name (@{$map_to_write->{$file}}) {
             $logger->info("writing class $class_name");
-            my $model = $self-> get_perl_data_model($class_name) ;
+            my $model = $self-> get_perl_data_model($class_name, $factorize) ;
             push @data, $model if defined $model and keys %$model;
 
             # remove class name from above list

@@ -53,7 +53,7 @@ subtest "factorize description and level" => sub {
         }
     };
 
-    Config::Model::Itself::factorize_model($class);
+    Config::Model::Itself::factorize_model($class,'all');
 
     eq_or_diff($class, $expect, "test factorized class" );
 };
@@ -98,7 +98,7 @@ subtest "deduplicate description" => sub {
         },
     };
 
-    Config::Model::Itself::factorize_model($class);
+    Config::Model::Itself::factorize_model($class, 'all');
 
     eq_or_diff($class, $expect, "test factorized class" );
 };
@@ -127,6 +127,7 @@ subtest "test on many identical elements" => sub {
 
     eq_or_diff($class, $expect, "test factorized element" );
 
+    # no need to add 'all', element is always factorized
     Config::Model::Itself::factorize_model($class);
 
     eq_or_diff($class, $expect, "test factorized class" );
