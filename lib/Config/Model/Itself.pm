@@ -340,14 +340,8 @@ sub normalize_model {
     # was done, mark the class as changed so it will be saved later
     $self->add_modified_class($model_name) unless Compare($raw_model, $new_model) ;
 
-    foreach my $item (qw/description summary level experience status/) {
-        foreach my $elt_name (keys %{$new_model->{element}}) {
-            my $moved_data = delete $new_model->{$item}{$elt_name}  ;
-            next unless defined $moved_data ;
-            $new_model->{element}{$elt_name}{$item} = $moved_data ;
-        }
-        delete $new_model->{$item} ;
-    }
+    # translate legacy and copy packed status, level, etc inside element hash
+    $tmp_model->copy_element_properties($new_model, $raw_model, $model_name);
 
     # Since accept specs and elements are stored in a ordered hash,
     # load_data expects a array ref instead of a hash ref.
