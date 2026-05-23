@@ -1,7 +1,6 @@
-# -*- cperl -*-
-
 use ExtUtils::testlib;
 use Test::More ;
+use Test::Differences;
 use Config::Model 2.142;
 use Config::Model::Tester::Setup qw/init_test setup_test_dir/;
 use Data::Dumper ;
@@ -219,9 +218,10 @@ ok($dump,"Checked dump of one class");
 
 $rw_obj->write_all( ) ;
 
+my $model_dir4 = $wr_model1->child("models")->relative($wr_lib)->stringify;
 my $model4 = Config::Model->new(
     legacy => 'ignore',
-    model_dir => $wr_model1->child("models")->relative($wr_lib)->stringify
+    model_dir => $model_dir4,
 ) ;
 
 my $inst4 = $model4->instance (
@@ -229,13 +229,13 @@ my $inst4 = $model4->instance (
     instance_name     => 'test_instance4',
     root_dir  => $wr_conf1->stringify,
 );
-ok($inst4,"Read MasterModel and created instance") ;
+ok($inst4,"Read MasterModel and created instance from $model_dir4") ;
 
 my $root4 = $inst4->config_root ;
 ok($root4,"Created MasterModel root") ;
 
 my @elt4 = $root4->get_element_name() ;
-is(scalar @elt4,scalar @elt1,"Check number of elements of root4") ;
+eq_or_diff(\@elt4, \@elt1,"Check number of elements of root4") ;
 
 # require Tk::ObjScanner; Tk::ObjScanner::scan_object($meta_model) ;
 
