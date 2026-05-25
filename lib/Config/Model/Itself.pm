@@ -391,72 +391,117 @@ sub get_perl_data_model ($self, $class_name, $factorize = 'all') {
     return $model ;
 }
 
-my @may_factorize = qw/description summary level status warp/;
-my %may_factorize = map { $_ => 1 } @may_factorize;
+# depending on property, the factorization method is different
+my %may_factorize = (
+    description => \&factorize_with_alias,
+    level => \&factorize_reverse_packed,
+    status => \&factorize_reverse_packed,
+    summary => \&factorize_with_alias,
+    warp => \&factorize_with_alias,
+);
 
+# move some element data out of element structure, and reduce
+# redundancies
 sub factorize_model ($model, $factorize = 'none') {
-    # move some element data out of element structure
-    my @to_factorize;
+    my $to_factorize = get_properties_to_factorize($factorize);
+
+    move_properties_out_of_element($model, $to_factorize);
+
+    factorize_element($model->{element});
+
+    # compare elements data and remove duplicated data
+    while (my ($prop, $sub) = each $to_factorize->%*) {
+        $sub->($model->{$prop});
+    }
+}
+
+sub get_properties_to_factorize($factorize) {
+    my %to_factorize;
     if ($factorize eq 'all') {
-        @to_factorize =  @may_factorize;
+        %to_factorize =  %may_factorize;
     }
     elsif ($factorize ne 'none') {
-        my @to_factorize = split /,/,$factorize;
-        foreach my $param (@to_factorize) {
-            next if $may_factorize{$param};
-            carp "unexpected item to factorize: $param. Expected @may_factorize";
+        my @factorize = split /,/,$factorize;
+        foreach my $prop (@factorize) {
+            if ($may_factorize{$prop}) {
+                $to_factorize{$prop} = $may_factorize{$prop};
+            } else {
+                carp "unexpected item to factorize: $prop. Expected ".
+                    join(' ', sort keys %may_factorize);
+            }
         }
     }
+    return \%to_factorize;
+}
 
+sub move_properties_out_of_element ($model, $to_factorize) {
     my $moved;
-    for my $param (@to_factorize) {
-        $moved->{$param} = $model->{$param} // {};
+    for my $prop (sort keys $to_factorize->%*) {
+        $moved->{$prop} = $model->{$prop} // {};
         next unless defined $model->{element};
 
         for (my $idx = 0; $idx < $model->{element}->@*; $idx+=2) {
             my $elt_name = $model->{element}[$idx];
             my $data = $model->{element}[$idx+1];
-            if (ref $data and $data->{$param}) {
-                $moved->{$param}{$elt_name} = delete $data->{$param};
+            if (ref $data and $data->{$prop}) {
+                $moved->{$prop}{$elt_name} = delete $data->{$prop};
             }
         }
-        if (keys $moved->{$param}->%* > 0) {
-            $model->{$param} = $moved->{$param};
+        if (keys $moved->{$prop}->%* > 0) {
+            $model->{$prop} = $moved->{$prop};
         }
-    }
-
-    factorize_element($model->{element});
-
-    # compare elements data and remove duplicated data
-    # i.e. [ foo => <data A>, bar => <data A>, baz => <data B> ]
-    # =>   [ [qw/foo bar/] => <data A>, baz => <data B> ]
-    for my $param (qw/description summary level status warp/) {
-    # for my $param (@to_factorize) {
-        factorize_data($model->{$param});
     }
 }
 
-sub factorize_data ($factorized_data) {
-    return unless defined $factorized_data;
+# transform { eltA => data, eltB => data}
+# in { eltA => data, eltB => '*eltA' }
+sub factorize_with_alias ($property_set) {
+    return unless defined $property_set;
     my %equiv;
-    my @to_remove;
-    foreach my $name (sort keys $factorized_data->%*) {
-        my $data = $factorized_data->{$name};
+    foreach my $property_name (sort keys $property_set->%*) {
+        my $property_data = $property_set->{$property_name};
 
         my $found;
-        while (my ($equiv_key, $equiv_data) = each %equiv) {
-            if (Compare($data, $equiv_data)) {
+        foreach my $equiv_key (sort keys %equiv) {
+            if (Compare($property_data, $equiv{$equiv_key})) {
                 $found = $equiv_key;
                 last;
             }
         }
         if ($found) {
-            $factorized_data->{$name} = "*$found";
+            $property_set->{$property_name} = "*$found";
         }
         else {
-            $equiv{$name} = $data;
+            $equiv{$property_name} = $property_data;
         }
     }
+}
+
+# transform { eltA => str, eltB => other, eltC => str}
+# in { str => [eltA, eltC], other => eltB }
+sub factorize_reverse_packed ($property_set) {
+    return unless defined $property_set;
+    my %old = $property_set->%*;
+    my %new;
+
+    foreach my $property_name (sort keys %old) {
+        my $property_data = $old{$property_name};
+        if (ref $property_data) {
+            carp "value of $property_name is not a scalar";
+        }
+
+        if (not exists $new{$property_data}) {
+            $new{$property_data} = $property_name;
+        }
+        elsif (not ref $new{$property_data}) {
+            $new{$property_data} = [ $new{$property_data} , $property_name];
+        }
+        else {
+            push $new{$property_data}->@*, $property_name;
+        }
+    }
+    $property_set->%* = %new;
+    return;
 }
 
 # this is similar to factorize_data, but the element order must be

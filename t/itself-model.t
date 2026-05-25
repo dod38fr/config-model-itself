@@ -15,6 +15,35 @@ use strict;
 use v5.20;
 use utf8;
 
+subtest "deduplicate level" => sub {
+    my $input = {
+        A => 'important',
+        B => 'hidden',
+        C => 'important',
+        D => 'standard',
+    };
+    my $expect = {
+        important => [qw/A C/],
+        qw/hidden B standard D/
+    };
+    Config::Model::Itself::factorize_reverse_packed($input);
+    
+    eq_or_diff($input, $expect, "test factorize_reverse_packed" );
+};
+
+subtest "deduplicate summary" => sub {
+    my $input = {
+        A => 'summary1',
+        B => 'summary2',
+        C => 'summary1',
+        D => 'summary2',
+    };
+    my $expect = {qw/A summary1 B summary2 C *A D *B/};
+    Config::Model::Itself::factorize_with_alias($input);
+    
+    eq_or_diff($input, $expect, "test factorize_with_alias" );
+};
+
 subtest "factorize description and level" => sub {
     my $class = {
         name    => 'Itself::CommonElement::WarnIfMatch',
@@ -23,6 +52,7 @@ subtest "factorize description and level" => sub {
                 type       => 'leaf',
                 value_type => 'string',
                 description => 'msg description',
+                level => 'important',
             },
             fix => {
                 type       => 'leaf',
@@ -49,7 +79,7 @@ subtest "factorize description and level" => sub {
             msg => 'msg description',
         },
         level => {
-            fix => 'important',
+            important => [qw/fix msg/],
         }
     };
 
