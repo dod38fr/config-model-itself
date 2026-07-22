@@ -221,7 +221,7 @@ return [
                         vt => '?value_type',
                     },
                     'rules' => [
-                        '  ($t eq "leaf" and (   $vt eq "enum" 
+                        '  ($t eq "leaf" and (   $vt eq "enum"
                                                 or $vt eq "reference")
                              )
                            or $t eq "check_list"' => { level => 'normal', },
@@ -241,9 +241,9 @@ return [
                         'vtype' => '?value_type',
                     },
                     'rules' => [
-                        '    $type eq "leaf" 
-                           and (    $vtype eq "integer" 
-                                 or $vtype eq "number" 
+                        '    $type eq "leaf"
+                           and (    $vtype eq "integer"
+                                 or $vtype eq "number"
                                )
                           '
                           => { level => 'normal', }
@@ -262,9 +262,9 @@ return [
                         'vtype' => '?value_type',
                     },
                     'rules' => [
-                        '    $type eq "leaf" 
-                           and (    $vtype eq "integer" 
-                                 or $vtype eq "number" 
+                        '    $type eq "leaf"
+                           and (    $vtype eq "integer"
+                                 or $vtype eq "number"
                                )
                           '
                           => { level => 'normal', }
