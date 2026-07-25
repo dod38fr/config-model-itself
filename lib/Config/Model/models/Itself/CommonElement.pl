@@ -314,9 +314,18 @@ return [
                 description => 'Specify default value. This default value is written '
                     .'in the configuration data',
                 warp => {
-                    follow  => { 't'            => '?type' },
-                    'rules' => [ '$t eq "leaf"' => { level => 'normal', } ]
-                }
+                  follow => {
+                    t => '?type'
+                  },
+                  rules => [
+                    {
+                      apply => {
+                        level => 'normal'
+                      },
+                      when => '$t eq "leaf" and &parent->element_name ne "cargo"'
+                    }
+                  ]
+                },
             },
 
             'upstream_default' => {
@@ -326,9 +335,18 @@ return [
                 description =>
 'Another way to specify a default value. But this default value is considered as "built_in" the application and is not written in the configuration data (unless modified)',
                 warp => {
-                    follow  => { 't'            => '?type' },
-                    'rules' => [ '$t eq "leaf"' => { level => 'normal', } ]
-                }
+                  follow => {
+                    t => '?type'
+                  },
+                  rules => [
+                    {
+                      apply => {
+                        level => 'normal'
+                      },
+                      when => '$t eq "leaf" and &parent->element_name ne "cargo"',
+                    }
+                  ]
+                },
             },
 
             'convert' => {
