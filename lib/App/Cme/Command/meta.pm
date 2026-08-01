@@ -146,11 +146,14 @@ sub load_optional_data {
     return;
 }
 
-sub load_meta_model {
-    my ($self, $opt, $args) = @_;
-
-    my $root_model = $opt->{_root_model};
-    my $cm_lib_dir = path(split m!/!, $opt->{dir}) ; # replace with cm_lib_dir ???
+# create meta model (i.e. loaded with Config::Model::Itself)
+# returns:
+# - meta instance
+# - meta root
+# - config::model lib dir, where the model to check or edit is  (e.g. ./lib/Config/Model/models)
+# - system config::model lib dir (e.g. /usr/share/perl5/Config/Model/models/ on Debian)
+sub load_meta_model ($self, $opt, $args) {
+    my $cm_lib_dir = path($opt->{dir}) ;
 
     if (! $cm_lib_dir->is_dir) {
         $cm_lib_dir->mkdir();
