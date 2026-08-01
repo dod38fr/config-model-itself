@@ -175,16 +175,17 @@ sub load_meta_model ($self, $opt, $args) {
     return ($meta_inst, $meta_root, $cm_lib_dir, path($system_cm_lib_dir));
 }
 
-sub load_meta_root {
-    my ($self, $opt, $args) = @_;
-
+# create and load meta model (i.e. meta instance loaded with model to edit or check)
+# returns:
+# - object to read/write model (instance of Config::Model::Itself)
+# - config::model lib dir, where the model to check or edit is  (e.g. ./lib/Config/Model/models)
+# - meta root
+# - write callback. To be called after edition to write back model.
+sub load_meta_root ($self, $opt, $args) {
     my ($meta_inst, $meta_root, $cm_lib_dir, $system_cm_lib_dir) = $self->load_meta_model($opt,$args);
-
-    my $root_model = $opt->{_root_model};
 
     say "Reading model from $system_cm_lib_dir" if $opt->system();
 
-    # now load model
     my $rw_obj = Config::Model::Itself -> new(
         model_object => $meta_root,
         cm_lib_dir   => $cm_lib_dir->canonpath
@@ -192,6 +193,7 @@ sub load_meta_root {
 
     $meta_inst->initial_load_start ;
 
+    my $root_model = $opt->{_root_model};
     my @read_args = (
         force_load => $opt->{'force-load'},
         root_model => $root_model,
@@ -202,6 +204,8 @@ sub load_meta_root {
             application => $opt->{_application},
             read_from => $system_cm_lib_dir ;
     }
+
+    # now load model
     $rw_obj->read_all(@read_args);
 
     $meta_inst->initial_load_stop ;
