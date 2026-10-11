@@ -4,17 +4,16 @@ package Config::Model::Itself::BackendDetector ;
 # let the detector detect models under development
 use lib 'lib';
 use v5.20;
-use strict ;
-use warnings ;
+use Mouse;
 use feature qw/postderef signatures/;
 no warnings qw/experimental::postderef experimental::signatures/;
 
 use Pod::POM ;
 use Path::Tiny;
 
-use base qw/Config::Model::Value/ ;
+extends 'Config::Model::Value' ;
 
-sub setup_enum_choice ($self, @args) {
+around 'setup_enum_choice' => sub ($orig, $self, @args) {
     my @input = ref($args[0]) ? $args[0]->@* : @args ;
 
     # using a hash to make sure that a backend is not listed twice. This may
@@ -38,9 +37,9 @@ sub setup_enum_choice ($self, @args) {
         $path->visit($wanted, { recurse => 1} ) if $path->is_dir;
     }
 
-    $self->SUPER::setup_enum_choice(sort keys %choices) ;
+    $self->$orig(sort keys %choices) ;
     return;
-}
+};
 
 sub set_help {
     my ($self,$args) = @_ ;
@@ -99,7 +98,7 @@ __END__
   (
    name => "Test",
    'element'
-   => [ 
+   => [
        'backend' => { type => 'leaf',
                       class => 'Config::Model::Itself::BackendDetector' ,
                       value_type => 'enum',
@@ -139,4 +138,3 @@ editor.
 L<Config::Model>, L<Config::Model::Node>, L<Config::Model::Value>
 
 =cut
-
