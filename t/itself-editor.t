@@ -157,5 +157,3 @@ unless ($args->{show} || $args->{interactive}) {
 }
 
 done_testing;
-
-
