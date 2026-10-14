@@ -77,7 +77,7 @@ my $rw_obj = Config::Model::Itself -> new(
 
 my $map = $rw_obj -> read_all(
     root_model => 'MasterModel',
-    legacy => 'ignore',
+    legacy => 'warn',
 ) ;
 
 ok(1,"Read all models in data dir") ;
